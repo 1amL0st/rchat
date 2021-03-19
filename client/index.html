@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>gchat</title>
+
+    <script src="scripts/script.js" type="module"></script>
+    <link rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+    <div id="signin-window" class="popup-window popup-window--hidden">
+      <div class="popup-window__content flex-column login-form">
+        <input type="text" class="input login-form__input" placeholder="Enter login">
+        <p id="sign-in-err" class="error-msg login-form__error">This name already exist...</p>
+        <button class="button login-form__sign-in">Sign in</button>
+      </div>
+    </div>
+
+    <div class="app flex-column">
+      <header class="header flex-row">
+        <button class="button">Leave</button>
+        <div  id="user-name-p" class="user-name">User name</div>
+      </header>
+
+      <main class="main flex-column">
+        <div class="chat flex-column">
+          <div id="inbox-msgs" class="inbox flex-column"></div>
+          <div class="msg-input flex-row">
+            <textarea id="msg-textarea" class="msg-input__textarea" rows="6"></textarea>
+            <button id="msg-text-area-send-btn" class="button">Click me</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </body>
+</html>
