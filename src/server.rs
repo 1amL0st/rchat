@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use actix::dev::{MessageResponse, ResponseChannel};
 use actix::prelude::*;
 use actix::{Actor, Handler};
 
@@ -10,122 +9,112 @@ use super::message;
 #[rtype(result = "usize")]
 pub enum ClientMessage {
     Text(String),
-    LoginFail,
-    LoginSuccess(String)
-}
-
-#[derive(Message, Debug)]
-#[rtype(result = "ServerResponse")]
-pub enum ServerMessage {
-    TextMsg{ author: String, text: String },
-    Login { new_login: String, recipient: Recipient<ClientMessage>, text: String, old_login: String },
-    Leave { login: String },
-}
-
-pub enum ServerResponse {
-    Success,
-    LoginFailed(String),
-}
-
-impl<A, M> MessageResponse<A, M> for ServerResponse
-where
-    A: Actor,
-    M: Message<Result = ServerResponse>,
-{
-    fn handle<R: ResponseChannel<M>>(self, _: &mut A::Context, tx: Option<R>) {
-        if let Some(tx) = tx {
-            tx.send(self);
-        }
-    }
+    Login(String),
 }
 
 #[derive(Debug, Clone)]
 pub struct Server {
-    users: HashMap<String, Recipient<ClientMessage>>
+    users: HashMap<String, Recipient<ClientMessage>>,
 }
 
 impl Server {
     pub fn new() -> Self {
         Self {
-            users: HashMap::new()
+            users: HashMap::new(),
         }
     }
 
     fn send_msg_to_all_users(&self, msg_text: String) {
         for (_, recipient) in &self.users {
             if let Err(err) = recipient.do_send(ClientMessage::Text(msg_text.clone())) {
-                panic!("Server error in process of send text message {}", err);
+                panic!("Server error in process of sending text message {}", err);
             }
-        }
-    }
-
-    fn handle_login(&mut self, msg: ServerMessage, _: &mut Context<Self>) -> ServerResponse {
-        if let ServerMessage::Login { old_login, text, new_login, recipient } = msg {
-            if self.users.contains_key(&new_login) {
-                recipient.do_send(ClientMessage::LoginFail).unwrap();
-                ServerResponse::LoginFailed("Login exists!".to_string())
-            } else {
-                self.users.remove(&old_login);
-
-                recipient.do_send(ClientMessage::LoginSuccess(new_login.clone())).unwrap();
-
-                self.users.insert(new_login, recipient);
-                self.send_msg_to_all_users(text);
-                ServerResponse::Success
-            }
-        } else {
-            unreachable!()
-        }
-    }
-
-    fn handle_leave(&mut self, msg: ServerMessage, _: &mut Context<Self>) -> ServerResponse {
-        if let ServerMessage::Leave {login } = msg {
-            println!("Server handle: Leave message login = {}", login);
-            self.users.remove(&login);
-
-            let msg_text = message::user_text_message(
-                "Server".to_string(),
-                format!("User {} has left!", login)
-            );
-
-            self.send_msg_to_all_users(msg_text);
-            ServerResponse::Success
-        } else {
-            unreachable!()
-        }
-    }
-
-    fn handle_text_msg(&mut self, msg: ServerMessage, ctx: &mut Context<Self>) -> ServerResponse {
-        if let ServerMessage::TextMsg { author, text } = msg {
-            let text = message::user_text_message(author, text);
-            self.send_msg_to_all_users(text);
-            ServerResponse::Success                
-        } else {
-            unreachable!()
         }
     }
 }
 
 impl Actor for Server {
     type Context = actix::Context<Self>;
+}
 
-    fn started(&mut self, _: &mut Self::Context) {
-        println!("Server is started!");
-    }
+#[derive(Message)]
+#[rtype(result = "bool")]
+pub struct Login {
+    pub new_login: String,
+    pub recipient: Recipient<ClientMessage>,
+    pub text: String,
+    pub old_login: String,
+}
 
-    fn stopped(&mut self, _: &mut Self::Context) {
-        println!("Server is stopped!")
+impl Handler<Login> for Server {
+    type Result = MessageResult<Login>;
+
+    fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
+        let new_login = msg.new_login;
+        let recipient = msg.recipient;
+        let old_login = msg.old_login;
+        let text = msg.text;
+
+        if self.users.contains_key(&new_login) {
+            MessageResult(false)
+        } else {
+            recipient
+                .try_send(ClientMessage::Login(new_login.clone()))
+                .unwrap();
+
+            self.users.remove(&old_login);
+            self.users.insert(new_login, recipient);
+
+            self.send_msg_to_all_users(text);
+
+            MessageResult(true)
+        }
     }
 }
 
-impl Handler<ServerMessage> for Server {
-    type Result = ServerResponse;
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct TextMsg {
+    pub author: String,
+    pub text: String,
+}
 
-    fn handle(&mut self, msg: ServerMessage, ctx: &mut Context<Self>) -> Self::Result {
-        match msg {
-            ServerMessage::Login {..} => self.handle_login(msg, ctx),
-            ServerMessage::Leave {..} => self.handle_leave(msg, ctx),
-            ServerMessage::TextMsg {..} => self.handle_text_msg(msg, ctx)
-        }
+impl Handler<TextMsg> for Server {
+    type Result = ();
+
+    fn handle(&mut self, msg: TextMsg, _: &mut Self::Context) -> Self::Result {
+        let text = message::user_text_message(msg.author, msg.text);
+        self.send_msg_to_all_users(text);
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct Leave(pub String);
+
+impl Handler<Leave> for Server {
+    type Result = ();
+
+    fn handle(&mut self, msg: Leave, _: &mut Self::Context) {
+        println!("Login leave = {}", msg.0);
+        self.users.remove(&msg.0);
+
+        let msg_text =
+            message::user_text_message("Server".to_string(), format!("User {} has left!", msg.0));
+
+        self.send_msg_to_all_users(msg_text);
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "Vec<String>")]
+pub struct ListUsers;
+
+impl Handler<ListUsers> for Server {
+    type Result = MessageResult<ListUsers>;
+
+    fn handle(&mut self, _: ListUsers, _: &mut Context<Self>) -> Self::Result {
+        let users: Vec<String> = self.users.keys().cloned().collect();
+        MessageResult(users)
     }
 }

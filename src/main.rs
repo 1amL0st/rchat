@@ -1,13 +1,13 @@
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 use actix::*;
 use actix_files::Files;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
-mod server;
 mod message;
-use server::{ClientMessage, Server, ServerMessage};
+mod server;
+use server::{ClientMessage, Leave, Login, Server, TextMsg};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -17,7 +17,7 @@ struct Client {
 
     login: String,
 
-    server: Addr<Server>
+    server: Addr<Server>,
 }
 
 impl Actor for Client {
@@ -34,13 +34,7 @@ impl Handler<ClientMessage> for Client {
     fn handle(&mut self, msg: ClientMessage, ctx: &mut Self::Context) -> Self::Result {
         match msg {
             ClientMessage::Text(text) => ctx.text(text),
-            ClientMessage::LoginFail => {
-                ctx.text("Login exists!")
-            }
-            ClientMessage::LoginSuccess(login) => {
-                self.login = login;
-                ctx.text("Login is set")
-            }
+            ClientMessage::Login(login) => self.login = login,
         }
         0
     }
@@ -51,54 +45,78 @@ impl Client {
         Client {
             server: server,
             login: name,
-            hb: Instant::now()
+            hb: Instant::now(),
         }
     }
 
     fn handle_login(&mut self, ctx: &mut ws::WebsocketContext<Self>, login: &str) {
-        let login = login.to_string();
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            message::user_text_message(
-                "Server".to_string(),
-                format!("User {} joined!", login)
-            )
+            message::user_text_message("Server".to_string(), format!("User {} joined!", login))
         } else {
             message::user_text_message(
                 "Server".to_string(),
-                format!("User {} has change its name to {}!", self.login, login)
+                format!("User {} has changed its name to {}!", self.login, login),
             )
         };
 
-        let msg = ServerMessage::Login {
+        let login_msg = Login {
             old_login: self.login.clone(),
             text: msg,
-            new_login: login,
-            recipient: recipient
+            new_login: login.to_string(),
+            recipient: recipient,
         };
 
-        self.server.try_send(msg).unwrap();
+        self.server
+            .send(login_msg)
+            .into_actor(self)
+            .then(|res, _, ctx| {
+                if let Ok(login_result) = res {
+                    if login_result {
+                        ctx.text("Login is set")
+                    } else {
+                        ctx.text("Login exists")
+                    }
+                }
+                fut::ready(())
+            })
+            .wait(ctx);
     }
 
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
-        let pair: Vec<&str>  = text.split(" ").collect();
+        let pair: Vec<&str> = text.split(" ").collect();
 
         match pair[0] {
             "/login" => {
                 let login = pair[1];
                 self.handle_login(ctx, login)
-            },
-            "/leave" => {
-                self.server.try_send(ServerMessage::Leave { login: self.login.clone() }).unwrap();
-                ctx.stop();
-                ctx.close(None);
             }
+            "/leave" => {
+                self.server.try_send(Leave(self.login.clone())).unwrap();
+            }
+            "/list_users" => self
+                .server
+                .send(server::ListUsers)
+                .into_actor(self)
+                .then(|res, _, ctx| {
+                    match res {
+                        Ok(users) => {
+                            let msg = serde_json::json!({ "users": users }).to_string();
+                            ctx.text(msg);
+                        }
+                        _ => println!("Something is wrong"),
+                    }
+                    fut::ready(())
+                })
+                .wait(ctx),
             _ => {
-                self.server.do_send(ServerMessage::TextMsg {
-                    author: self.login.to_string(),
-                    text: text
-                });
+                self.server
+                    .try_send(TextMsg {
+                        author: self.login.to_string(),
+                        text: text,
+                    })
+                    .unwrap();
             }
         }
     }
@@ -106,15 +124,11 @@ impl Client {
     fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
-                println!("Websocket Client heartbeat failed, disconnecting!");
+                act.server.do_send(Leave(act.login.clone()));
 
-                let msg = ServerMessage::Leave { login: act.login.clone() };
-                act.server.do_send(msg);
-                
                 ctx.stop();
                 return;
             }
-
             ctx.ping(b"");
         });
     }
@@ -140,15 +154,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
             }
             ws::Message::Text(text) => {
                 self.handle_text(text, ctx);
-            },
+            }
             ws::Message::Close(_) => {
-                println!("CLOSE!");
-
-                let server_msg = ServerMessage::Leave {
-                    login: self.login.clone(),
-                };
-
-                self.server.try_send(server_msg).unwrap();
+                self.server.try_send(Leave(self.login.clone())).unwrap();
             }
             _ => (),
         }
@@ -158,7 +166,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
 async fn start_ws_connection(
     req: HttpRequest,
     stream: web::Payload,
-    server: web::Data<Addr<Server>>
+    server: web::Data<Addr<Server>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let client = Client::new(server.get_ref().clone(), String::from(""));
     let resp = ws::start(client, &req, stream);

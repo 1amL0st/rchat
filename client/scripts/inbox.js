@@ -9,6 +9,10 @@ export async function inboxNewMsg(rawMsgText) {
   inbox.scroll(0, inbox.scrollHeight);
 }
 
+export function clearInbox() {
+  document.getElementById('inbox-msgs').innerHTML = '';
+}
+
 export function inboxAddMessage(author, text) {
   const msg = JSON.stringify({
     author: author,
