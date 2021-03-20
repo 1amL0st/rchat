@@ -1,19 +1,49 @@
+use std::time::{Instant, Duration};
+
 use actix::*;
 use actix_files::Files;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
 mod server;
-use server::{ClientMessage, Server, ServerMessage as ServerMsg, ServerResponse};
+mod message;
+use server::{ClientMessage, Server, ServerMessage};
+
+const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
+const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 
 struct Client {
+    hb: Instant,
+
     login: String,
 
     server: Addr<Server>
 }
 
+impl Client {
+    fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
+        ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
+            if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
+                println!("Websocket Client heartbeat failed, disconnecting!");
+
+                let msg = ServerMessage::Leave { login: act.login.clone() };
+                act.server.do_send(msg);
+
+                ctx.stop();
+                return;
+            }
+
+            ctx.ping(b"");
+        });
+    }
+}
+
 impl Actor for Client {
     type Context = ws::WebsocketContext<Self>;
+
+    fn started(&mut self, ctx: &mut Self::Context) {
+        self.hb(ctx);
+    }
 }
 
 impl Handler<ClientMessage> for Client {
@@ -38,7 +68,8 @@ impl Client {
     fn new(server: Addr<Server>, name: String) -> Self {
         Client {
             server: server,
-            login: name
+            login: name,
+            hb: Instant::now()
         }
     }
 
@@ -47,29 +78,28 @@ impl Client {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            serde_json::json!({
-                "author": "Server",
-                "text": format!("User {} joined!", login)
-            }).to_string()
+            message::user_text_message(
+                "Server".to_string(),
+                format!("User {} joined!", login)
+            )
         } else {
-            serde_json::json!({
-                "author": "Server",
-                "text": format!("User {} has change its name to {}!", self.login, login)
-            }).to_string()
+            message::user_text_message(
+                "Server".to_string(),
+                format!("User {} has change its name to {}!", self.login, login)
+            )
         };
 
-        let msg = ServerMsg::Login {
+        let msg = ServerMessage::Login {
             old_login: self.login.clone(),
             text: msg,
             new_login: login,
             recipient: recipient
         };
 
-        self.server.try_send(msg);
+        self.server.try_send(msg).unwrap();
     }
 }
 
-/// Handler for ws::Message message
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         let msg = match msg {
@@ -81,7 +111,13 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
         };
 
         match msg {
-            ws::Message::Ping(msg) => ctx.pong(&msg),
+            ws::Message::Ping(msg) => {
+                self.hb = Instant::now();
+                ctx.pong(&msg);
+            }
+            ws::Message::Pong(_) => {
+                self.hb = Instant::now();
+            }
             ws::Message::Text(text) => {
                 let pair: Vec<&str>  = text.split(" ").collect();
 
@@ -91,28 +127,19 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
                         self.handle_login(ctx, login)
                     },
                     _ => {
-                        let msg = serde_json::json!({
-                            "author": self.login,
-                            "text": text
+                        self.server.do_send(ServerMessage::TextMsg {
+                            author: self.login.to_string(),
+                            text: text
                         });
-                        self.server.do_send(ServerMsg::TextMsg(msg.to_string()));
-                        ctx.text(text)
                     }
                 }
             },
-            ws::Message::Binary(bin) => ctx.binary(bin),
-            ws::Message::Close(data) => {
-                let msg = serde_json::json!({
-                    "author": "Server",
-                    "text": format!("User {} has left!", self.login)
-                }).to_string();
-
-                let server_msg = ServerMsg::Leave {
+            ws::Message::Close(_) => {
+                let server_msg = ServerMessage::Leave {
                     login: self.login.clone(),
-                    text: msg
                 };
 
-                self.server.try_send(server_msg);
+                self.server.try_send(server_msg).unwrap();
             }
             _ => (),
         }
