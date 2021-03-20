@@ -38,6 +38,7 @@ async function showSignInForm() {
       // console.log('msg = ', msg);
       if (msg.data == 'Login is set') {
         successSignIn();
+        signInBtn.removeEventListener('click', signInBtnClickHandler);
       } else if (msg.data == 'Login exists!') {
         showSignInErr();
       }
@@ -45,10 +46,11 @@ async function showSignInForm() {
 
     gSocket.addEventListener('message', socketMsgHandler);
 
-    signInBtn.addEventListener('click', async () => {
+    async function signInBtnClickHandler() {
       gSocket.send("/login " + loginInput.value);
-      // await tryToSignIn();
-    })
+    }
+
+    signInBtn.addEventListener('click', signInBtnClickHandler);
   })
 }
 
@@ -103,12 +105,24 @@ function setMsgInput() {
   await setMsgInput();
 })();
 
+async function leaveCommand() {
+  sendMsg('/leave');
+  await createSocket();
+  await showSignInForm();
+}
+
 function onSendMsgBtn() {
-  sendMsg(msgTextArea.value);
+  const msg = msgTextArea.value;
+  if (msg.startsWith('/leave')) {
+    leaveCommand();
+  } else {
+    sendMsg(msgTextArea.value);
+  }
   msgTextArea.value = '';
 }
 
 document.getElementById('msg-text-area-send-btn').addEventListener('click', onSendMsgBtn);
+document.getElementById('leave-btn').addEventListener('click', leaveCommand);
 
 function sendMsg(msg) {
   gSocket.send(msg);

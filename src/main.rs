@@ -20,24 +20,6 @@ struct Client {
     server: Addr<Server>
 }
 
-impl Client {
-    fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
-        ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
-            if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
-                println!("Websocket Client heartbeat failed, disconnecting!");
-
-                let msg = ServerMessage::Leave { login: act.login.clone() };
-                act.server.do_send(msg);
-
-                ctx.stop();
-                return;
-            }
-
-            ctx.ping(b"");
-        });
-    }
-}
-
 impl Actor for Client {
     type Context = ws::WebsocketContext<Self>;
 
@@ -98,6 +80,44 @@ impl Client {
 
         self.server.try_send(msg).unwrap();
     }
+
+    fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
+        let pair: Vec<&str>  = text.split(" ").collect();
+
+        match pair[0] {
+            "/login" => {
+                let login = pair[1];
+                self.handle_login(ctx, login)
+            },
+            "/leave" => {
+                self.server.try_send(ServerMessage::Leave { login: self.login.clone() }).unwrap();
+                ctx.stop();
+                ctx.close(None);
+            }
+            _ => {
+                self.server.do_send(ServerMessage::TextMsg {
+                    author: self.login.to_string(),
+                    text: text
+                });
+            }
+        }
+    }
+
+    fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
+        ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
+            if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
+                println!("Websocket Client heartbeat failed, disconnecting!");
+
+                let msg = ServerMessage::Leave { login: act.login.clone() };
+                act.server.do_send(msg);
+                
+                ctx.stop();
+                return;
+            }
+
+            ctx.ping(b"");
+        });
+    }
 }
 
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
@@ -119,22 +139,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
                 self.hb = Instant::now();
             }
             ws::Message::Text(text) => {
-                let pair: Vec<&str>  = text.split(" ").collect();
-
-                match pair[0] {
-                    "/login" => {
-                        let login = pair[1];
-                        self.handle_login(ctx, login)
-                    },
-                    _ => {
-                        self.server.do_send(ServerMessage::TextMsg {
-                            author: self.login.to_string(),
-                            text: text
-                        });
-                    }
-                }
+                self.handle_text(text, ctx);
             },
             ws::Message::Close(_) => {
+                println!("CLOSE!");
+
                 let server_msg = ServerMessage::Leave {
                     login: self.login.clone(),
                 };
