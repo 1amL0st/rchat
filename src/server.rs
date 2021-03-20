@@ -18,16 +18,14 @@ pub enum ClientMessage {
 pub enum ServerMessage {
     TextMsg(String),
     Login(String, Recipient<ClientMessage>),
-    Leaved(String),
+    Leave { login: String, text: String },
 }
 
 pub enum ServerResponse {
     Success,
 
-    LoginSuccess,
     LoginFailed(String),
 
-    Leaved,
     UnkownCommand
 }
 
@@ -52,6 +50,14 @@ impl Server {
     pub fn new() -> Self {
         Self {
             users: HashMap::new()
+        }
+    }
+
+    fn send_msg_to_all_users(&self, msg_text: String) {
+        for (_, recipient) in &self.users {
+            if let Err(err) = recipient.do_send(ClientMessage::Text(msg_text.clone())) {
+                panic!("Server error in process of send text message {}", err);
+            }
         }
     }
 }
@@ -84,12 +90,19 @@ impl Handler<ServerMessage> for Server {
                 }
             }
             ServerMessage::TextMsg(text) => {
-                for (_, recipient) in &self.users {
-                    if let Err(err) = recipient.do_send(ClientMessage::Text(text.clone())) {
-                        panic!("Server error in process of send text message {}", err);
-                    }
-                }
+                self.send_msg_to_all_users(text);
+                // for (_, recipient) in &self.users {
+                //     if let Err(err) = recipient.do_send(ClientMessage::Text(text.clone())) {
+                //         panic!("Server error in process of send text message {}", err);
+                //     }
+                // }
                 ServerResponse::Success                
+            }
+            ServerMessage::Leave {login, text: msgText} => {
+                println!("Server handle: Leave message login = {}", login);
+                self.users.remove(&login);
+                self.send_msg_to_all_users(msgText);
+                ServerResponse::Success
             }
             _ => ServerResponse::UnkownCommand
         }

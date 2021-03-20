@@ -84,8 +84,17 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
             },
             ws::Message::Binary(bin) => ctx.binary(bin),
             ws::Message::Close(data) => {
-                // println!("data = {:?}", data);
-                // println!("Connection is closed!")
+                let msg = serde_json::json!({
+                    "author": "Server",
+                    "text": format!("User {} has left!", self.login)
+                }).to_string();
+
+                let server_msg = ServerMsg::Leave {
+                    login: self.login.clone(),
+                    text: msg
+                };
+
+                self.server.try_send(server_msg);
             }
             _ => (),
         }
