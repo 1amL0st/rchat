@@ -1269,6 +1269,7 @@ dependencies = [
  "actix-files",
  "actix-web",
  "actix-web-actors",
+ "serde_json",
 ]
 
 [[package]]
