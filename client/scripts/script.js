@@ -1,4 +1,4 @@
-import { inboxAddMessage, inboxNewMsg } from './inbox.js';
+import { inboxAddMessage, inboxNewMsg, clearInbox } from './inbox.js';
 
 let gSocket = null;
 let msgTextArea = document.getElementById('msg-textarea');
@@ -39,7 +39,7 @@ async function showSignInForm() {
       if (msg.data == 'Login is set') {
         successSignIn();
         signInBtn.removeEventListener('click', signInBtnClickHandler);
-      } else if (msg.data == 'Login exists!') {
+      } else if (msg.data == 'Login exists') {
         showSignInErr();
       }
     }
@@ -106,6 +106,7 @@ function setMsgInput() {
 })();
 
 async function leaveCommand() {
+  clearInbox();
   sendMsg('/leave');
   await createSocket();
   await showSignInForm();
