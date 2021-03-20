@@ -48,7 +48,6 @@ pub struct Login {
 
 impl Handler<Login> for Server {
     type Result = MessageResult<Login>;
-
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
         let new_login = msg.new_login;
         let recipient = msg.recipient;

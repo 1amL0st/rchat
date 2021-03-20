@@ -111,21 +111,6 @@ impl Client {
                     fut::ready(())
                 })
                 .wait(ctx),
-            "/list_users" => self
-                .server
-                .send(server::ListUsers)
-                .into_actor(self)
-                .then(|res, _, ctx| {
-                    match res {
-                        Ok(users) => {
-                            let msg = serde_json::json!({ "users": users }).to_string();
-                            ctx.text(msg);
-                        }
-                        _ => println!("Something is wrong"),
-                    }
-                    fut::ready(())
-                })
-                .wait(ctx),
             _ => {
                 self.server
                     .try_send(TextMsg {
