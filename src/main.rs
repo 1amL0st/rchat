@@ -7,6 +7,7 @@ use actix_web_actors::ws;
 
 mod message;
 mod server;
+
 use server::{ClientMessage, Leave, Login, Server, TextMsg};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -95,6 +96,21 @@ impl Client {
             "/leave" => {
                 self.server.try_send(Leave(self.login.clone())).unwrap();
             }
+            "/list_users" => self
+                .server
+                .send(server::ListUsers)
+                .into_actor(self)
+                .then(|res, _, ctx| {
+                    match res {
+                        Ok(users) => {
+                            let msg = serde_json::json!({ "users": users }).to_string();
+                            ctx.text(msg);
+                        }
+                        _ => println!("Something is wrong"),
+                    }
+                    fut::ready(())
+                })
+                .wait(ctx),
             "/list_users" => self
                 .server
                 .send(server::ListUsers)
