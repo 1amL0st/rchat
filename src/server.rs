@@ -17,7 +17,7 @@ pub enum ClientMessage {
 #[rtype(result = "ServerResponse")]
 pub enum ServerMessage {
     TextMsg(String),
-    Login(String, Recipient<ClientMessage>),
+    Login { new_login: String, recipient: Recipient<ClientMessage>, text: String, old_login: String },
     Leave { login: String, text: String },
 }
 
@@ -79,23 +79,22 @@ impl Handler<ServerMessage> for Server {
 
     fn handle(&mut self, msg: ServerMessage, _: &mut Context<Self>) -> Self::Result {
         match msg {
-            ServerMessage::Login(login, recipient) => {
-                if self.users.contains_key(&login) {
+            ServerMessage::Login { old_login, text, new_login, recipient } => {
+                if self.users.contains_key(&new_login) {
                     recipient.do_send(ClientMessage::LoginFail).unwrap();
                     ServerResponse::LoginFailed("Login exists!".to_string())
                 } else {
-                    recipient.do_send(ClientMessage::LoginSuccess(login.clone())).unwrap();
-                    self.users.insert(login, recipient);
+                    self.users.remove(&old_login);
+
+                    recipient.do_send(ClientMessage::LoginSuccess(new_login.clone())).unwrap();
+                    
+                    self.users.insert(new_login, recipient);
+                    self.send_msg_to_all_users(text);
                     ServerResponse::Success
                 }
             }
             ServerMessage::TextMsg(text) => {
                 self.send_msg_to_all_users(text);
-                // for (_, recipient) in &self.users {
-                //     if let Err(err) = recipient.do_send(ClientMessage::Text(text.clone())) {
-                //         panic!("Server error in process of send text message {}", err);
-                //     }
-                // }
                 ServerResponse::Success                
             }
             ServerMessage::Leave {login, text: msgText} => {

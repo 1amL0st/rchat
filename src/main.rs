@@ -46,7 +46,25 @@ impl Client {
         let login = login.to_string();
         let recipient = ctx.address().recipient();
 
-        let msg = ServerMsg::Login(login, recipient);
+        let msg = if self.login == "" {
+            serde_json::json!({
+                "author": "Server",
+                "text": format!("User {} joined!", login)
+            }).to_string()
+        } else {
+            serde_json::json!({
+                "author": "Server",
+                "text": format!("User {} has change its name to {}!", self.login, login)
+            }).to_string()
+        };
+
+        let msg = ServerMsg::Login {
+            old_login: self.login.clone(),
+            text: msg,
+            new_login: login,
+            recipient: recipient
+        };
+
         self.server.try_send(msg);
     }
 }
@@ -106,7 +124,7 @@ async fn start_ws_connection(
     stream: web::Payload,
     server: web::Data<Addr<Server>>
 ) -> Result<HttpResponse, actix_web::Error> {
-    let client = Client::new(server.get_ref().clone(), String::from("Client"));
+    let client = Client::new(server.get_ref().clone(), String::from(""));
     let resp = ws::start(client, &req, stream);
     resp
 }
