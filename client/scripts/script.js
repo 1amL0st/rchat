@@ -94,10 +94,6 @@ function setMsgInput() {
       e.preventDefault();
     }
   })
-
-  let login = document.getElementById('user-name-p').innerHTML;
-  let msg = `<b>${login}</b> Here your journey starts!`;
-  inboxAddMessage('LostRay', msg);
 }
 
 (async function(){
