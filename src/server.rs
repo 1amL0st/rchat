@@ -9,7 +9,7 @@ use super::message;
 #[rtype(result = "usize")]
 pub enum ClientMessage {
     Text(String),
-    Login(String),
+    Login(String)
 }
 
 #[derive(Debug, Clone)]
@@ -39,16 +39,16 @@ impl Actor for Server {
 
 #[derive(Message)]
 #[rtype(result = "bool")]
-pub struct Login {
+pub struct Login  {
     pub new_login: String,
     pub recipient: Recipient<ClientMessage>,
     pub text: String,
-    pub old_login: String,
+    pub old_login: String
 }
 
 impl Handler<Login> for Server {
     type Result = MessageResult<Login>;
-
+    
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
         let new_login = msg.new_login;
         let recipient = msg.recipient;
@@ -58,9 +58,7 @@ impl Handler<Login> for Server {
         if self.users.contains_key(&new_login) {
             MessageResult(false)
         } else {
-            recipient
-                .try_send(ClientMessage::Login(new_login.clone()))
-                .unwrap();
+            recipient.try_send(ClientMessage::Login(new_login.clone())).unwrap();
 
             self.users.remove(&old_login);
             self.users.insert(new_login, recipient);
@@ -76,7 +74,7 @@ impl Handler<Login> for Server {
 #[rtype(result = "()")]
 pub struct TextMsg {
     pub author: String,
-    pub text: String,
+    pub text: String
 }
 
 impl Handler<TextMsg> for Server {
@@ -99,10 +97,12 @@ impl Handler<Leave> for Server {
         println!("Login leave = {}", msg.0);
         self.users.remove(&msg.0);
 
-        let msg_text =
-            message::user_text_message("Server".to_string(), format!("User {} has left!", msg.0));
+        let msg_text = message::user_text_message(
+            "Server".to_string(),
+            format!("User {} has left!", msg.0)
+        );
 
-        self.send_msg_to_all_users(msg_text);
+        self.send_msg_to_all_users(msg_text);        
     }
 }
 

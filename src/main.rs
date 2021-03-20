@@ -7,6 +7,7 @@ use actix_web_actors::ws;
 
 mod message;
 mod server;
+
 use server::{ClientMessage, Leave, Login, Server, TextMsg};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -34,7 +35,7 @@ impl Handler<ClientMessage> for Client {
     fn handle(&mut self, msg: ClientMessage, ctx: &mut Self::Context) -> Self::Result {
         match msg {
             ClientMessage::Text(text) => ctx.text(text),
-            ClientMessage::Login(login) => self.login = login,
+            ClientMessage::Login(login) => self.login = login
         }
         0
     }
@@ -57,7 +58,7 @@ impl Client {
         } else {
             message::user_text_message(
                 "Server".to_string(),
-                format!("User {} has changed its name to {}!", self.login, login),
+                format!("User {} has changed its name to {}!", self.login, login)
             )
         };
 
@@ -65,7 +66,7 @@ impl Client {
             old_login: self.login.clone(),
             text: msg,
             new_login: login.to_string(),
-            recipient: recipient,
+            recipient: recipient
         };
 
         self.server
@@ -95,6 +96,24 @@ impl Client {
             "/leave" => {
                 self.server.try_send(Leave(self.login.clone())).unwrap();
             }
+            "/list_users" => {
+                self.server
+                    .send(server::ListUsers)
+                    .into_actor(self)
+                    .then(|res, _, ctx| {
+                        match res {
+                            Ok(users) => {
+                                let msg = serde_json::json!({
+                                    "users": users
+                                }).to_string();
+                                ctx.text(msg);
+                            }
+                            _ => println!("Something is wrong"),
+                        }
+                        fut::ready(())
+                    })
+                    .wait(ctx)
+            }
             "/list_users" => self
                 .server
                 .send(server::ListUsers)
@@ -111,12 +130,10 @@ impl Client {
                 })
                 .wait(ctx),
             _ => {
-                self.server
-                    .try_send(TextMsg {
-                        author: self.login.to_string(),
-                        text: text,
-                    })
-                    .unwrap();
+                self.server.try_send(TextMsg {
+                    author: self.login.to_string(),
+                     text: text
+                }).unwrap();
             }
         }
     }
