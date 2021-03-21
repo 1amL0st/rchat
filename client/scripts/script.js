@@ -70,12 +70,10 @@ async function displayUserList(jsonMsg) {
 
   for (const user of jsonMsg.users) {
     const userEntry = document.createElement('div');
-
     userEntry.innerHTML = user;
+    
     userEntry.classList.add('user-entry');
-    // userEntry.appendChild('')
     userList.appendChild(userEntry)
-    // console.log('User ', user);
   }
 }
 

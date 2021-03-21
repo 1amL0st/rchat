@@ -28,6 +28,13 @@ export async function showSignInForm(gSocket) {
       resolve();
     }
 
+    loginInput.addEventListener('keydown', (e) => {
+      if (!e.shiftKey && e.code == 'Enter') {
+        signInBtn.click();
+        e.preventDefault();
+      }
+    })
+
     function socketMsgHandler(msg) {
       if (msg.data == 'Login is set') {
         successSignIn();
