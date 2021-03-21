@@ -1,0 +1,9 @@
+.user-list {
+  min-width: fit-content;
+  height: 100%;
+  margin: 0 16px;
+}
+
+.user-entry {
+  min-width: fit-content;
+}

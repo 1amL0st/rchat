@@ -7,14 +7,14 @@ use super::message;
 
 #[derive(Message)]
 #[rtype(result = "usize")]
-pub enum ClientMessage {
+pub enum SessionMessage {
     Text(String),
     Login(String),
 }
 
 #[derive(Debug, Clone)]
 pub struct Server {
-    users: HashMap<String, Recipient<ClientMessage>>,
+    users: HashMap<String, Recipient<SessionMessage>>,
 }
 
 impl Server {
@@ -26,7 +26,7 @@ impl Server {
 
     fn send_msg_to_all_users(&self, msg_text: String) {
         for (_, recipient) in &self.users {
-            if let Err(err) = recipient.do_send(ClientMessage::Text(msg_text.clone())) {
+            if let Err(err) = recipient.do_send(SessionMessage::Text(msg_text.clone())) {
                 panic!("Server error in process of sending text message {}", err);
             }
         }
@@ -41,7 +41,7 @@ impl Actor for Server {
 #[rtype(result = "bool")]
 pub struct Login {
     pub new_login: String,
-    pub recipient: Recipient<ClientMessage>,
+    pub recipient: Recipient<SessionMessage>,
     pub text: String,
     pub old_login: String,
 }
@@ -58,7 +58,7 @@ impl Handler<Login> for Server {
             MessageResult(false)
         } else {
             recipient
-                .try_send(ClientMessage::Login(new_login.clone()))
+                .try_send(SessionMessage::Login(new_login.clone()))
                 .unwrap();
 
             self.users.remove(&old_login);
@@ -82,7 +82,7 @@ impl Handler<TextMsg> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: TextMsg, _: &mut Self::Context) -> Self::Result {
-        let text = message::user_text_message(msg.author, msg.text);
+        let text = message::make_text_message(msg.author, msg.text);
         self.send_msg_to_all_users(text);
     }
 }
@@ -99,7 +99,7 @@ impl Handler<Leave> for Server {
         self.users.remove(&msg.0);
 
         let msg_text =
-            message::user_text_message("Server".to_string(), format!("User {} has left!", msg.0));
+            message::make_join_notify_message(format!("User {} has left!", msg.0));
 
         self.send_msg_to_all_users(msg_text);
     }

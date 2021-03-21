@@ -1,70 +1,10 @@
-import { inboxAddMessage, inboxNewMsg, clearInbox } from './inbox.js';
+import { Inbox } from './inbox.js';
+import { showSignInForm } from './signInForm.js';
+
+const gInbox = new Inbox();
 
 let gSocket = null;
 let msgTextArea = document.getElementById('msg-textarea');
-
-function hideSignInForm() {
-  let window = document.getElementById('signin-window');
-  window.classList.add(["popup-window--hidden"])
-
-  let p = document.getElementById('sign-in-err');
-  p.style.visibility = "hidden";
-}
-
-function showSignInErr() {
-  let p = document.getElementById('sign-in-err');
-  p.style.visibility = "visible";
-}
-
-async function showSignInForm() {
-  return new Promise((resolve, reject) => {
-    let window = document.getElementById('signin-window');
-    window.classList.remove(["popup-window--hidden"])
-
-    let loginInput = document.getElementsByClassName('login-form__input')[0];
-    loginInput.focus();
-
-    let signInBtn = document.getElementsByClassName('login-form__sign-in')[0];
-
-    function successSignIn() {
-      gSocket.removeEventListener('message', socketMsgHandler);
-      gSocket.addEventListener('message', onSocketNewMsg);
-      document.getElementById('user-name-p').innerHTML = loginInput.value;
-      hideSignInForm();
-      resolve();
-    }
-
-    function socketMsgHandler(msg) {
-      // console.log('msg = ', msg);
-      if (msg.data == 'Login is set') {
-        successSignIn();
-        signInBtn.removeEventListener('click', signInBtnClickHandler);
-      } else if (msg.data == 'Login exists') {
-        showSignInErr();
-      }
-    }
-
-    gSocket.addEventListener('message', socketMsgHandler);
-
-    async function signInBtnClickHandler() {
-      gSocket.send("/login " + loginInput.value);
-    }
-
-    signInBtn.addEventListener('click', signInBtnClickHandler);
-  })
-}
-
-function sendBtnClickHandler() {
-  gSocket.send("/login " + msgTextArea.value);
-}
-
-async function onSocketNewMsg(e) {
-  console.log('onSocketNewMsg = ', e.data);
-  const text = e.data;
-  if (text[0] == '{') {
-    inboxNewMsg(text);
-  }
-}
 
 async function createSocket() {
   return new Promise((resolve, reject) => {
@@ -98,18 +38,67 @@ function setMsgInput() {
   })
 }
 
-(async function(){
+async function onSocketNewMsg(e) {
+  console.log('onSocketNewMsg = ', e.data);
+
+  if (e.data[0] == '{') {
+    const json = JSON.parse(e.data);
+
+    if (json.type === 'TextMsg') {
+      gInbox.onNewMsg(e.data);
+    }
+    else if (json.type == 'JoinNotify') {
+      gInbox.onNewMsg(e.data);
+      gSocket.send('/list_users');
+    }
+    else if (json.type === 'UserList') {
+      displayUserList(json);
+      // console.log('Get some data json!', json);
+    }
+  }
+}
+
+async function displayUserList(jsonMsg) {
+  const userList = document.getElementById('user-list');
+  userList.innerHTML = '';
+
+  let users = jsonMsg.users;
+  console.log('users = ', users);
+
+  for (const user of jsonMsg.users) {
+    const userEntry = document.createElement('div');
+
+    userEntry.innerHTML = user;
+    userEntry.classList.add('user-entry');
+    // userEntry.appendChild('')
+    userList.appendChild(userEntry)
+    // console.log('User ', user);
+  }
+}
+
+async function start() {
   await createSocket();
-  // gSocket.addEventListener('message', onSocketNewMsg);
-  await showSignInForm();
+  await showSignInForm(gSocket);
+  gSocket.addEventListener('message', onSocketNewMsg);
   await setMsgInput();
+
+  gSocket.send('/list_users');
+}
+
+(async function(){
+  start();
 })();
 
 async function leaveCommand() {
-  clearInbox();
+  gInbox.clear();
   sendMsg('/leave');
-  await createSocket();
-  await showSignInForm();
+
+  // TODO: Maybe i should avoid full page reload
+  location.reload();
+
+  // await createSocket();
+  // await showSignInForm(gSocket);
+  // await setMsgInput();
 }
 
 function onSendMsgBtn() {

@@ -1,7 +1,5 @@
 export function createMessageElement(msgText) {
-  console.log('MsgText = ', msgText);
   msgText = msgText.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
-  console.log('MsgText = ', msgText);
   const msgJSON = JSON.parse(msgText);
 
   const msg = document.createElement('div');
@@ -18,7 +16,6 @@ export function createMessageElement(msgText) {
   `
 
   msg.classList.add('message');
-  // msg.innerHTML = `${msgJSON.author}: ${msgJSON.text}`;
 
   return msg;
 }
