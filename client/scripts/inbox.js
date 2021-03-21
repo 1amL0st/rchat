@@ -1,22 +1,19 @@
 import { createMessageElement} from './message.js'
 
-export async function inboxNewMsg(rawMsgText) {
-  let inbox = document.getElementById('inbox-msgs');
-  let msgElement = createMessageElement(rawMsgText);
-  inbox.appendChild(msgElement);
+export function Inbox() {
+  this.inboxElement = document.getElementById('inbox-msgs');
 
-  console.log('Scroll heighti = ', inbox.scrollHeight);
-  inbox.scroll(0, inbox.scrollHeight);
-}
+  this.onNewMsg = (rawMsgText) => {
+    console.log('onNewMsg = ', rawMsgText);
+    
+    let inbox = this.inboxElement;
+    let msgElement = createMessageElement(rawMsgText);
+    inbox.appendChild(msgElement);
 
-export function clearInbox() {
-  document.getElementById('inbox-msgs').innerHTML = '';
-}
+    inbox.scroll(0, inbox.scrollHeight);
+  }
 
-export function inboxAddMessage(author, text) {
-  const msg = JSON.stringify({
-    author: author,
-    text: text
-  })
-  inboxNewMsg(msg)
+  this.clear = () => {
+    this.inboxElement.innerHTML = '';
+  }
 }

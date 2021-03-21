@@ -8,12 +8,12 @@ use actix_web_actors::ws;
 mod message;
 mod server;
 
-use server::{ClientMessage, Leave, Login, Server, TextMsg};
+use server::{Leave, Login, Server, SessionMessage, TextMsg};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 
-struct Client {
+struct Session {
     hb: Instant,
 
     login: String,
@@ -21,7 +21,7 @@ struct Client {
     server: Addr<Server>,
 }
 
-impl Actor for Client {
+impl Actor for Session {
     type Context = ws::WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
@@ -29,21 +29,21 @@ impl Actor for Client {
     }
 }
 
-impl Handler<ClientMessage> for Client {
+impl Handler<SessionMessage> for Session {
     type Result = usize;
 
-    fn handle(&mut self, msg: ClientMessage, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: SessionMessage, ctx: &mut Self::Context) -> Self::Result {
         match msg {
-            ClientMessage::Text(text) => ctx.text(text),
-            ClientMessage::Login(login) => self.login = login,
+            SessionMessage::Text(text) => ctx.text(text),
+            SessionMessage::Login(login) => self.login = login,
         }
         0
     }
 }
 
-impl Client {
+impl Session {
     fn new(server: Addr<Server>, name: String) -> Self {
-        Client {
+        Session {
             server: server,
             login: name,
             hb: Instant::now(),
@@ -54,9 +54,9 @@ impl Client {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            message::user_text_message("Server".to_string(), format!("User {} joined!", login))
+            message::make_join_notify_message(format!("User {} joined!", login))
         } else {
-            message::user_text_message(
+            message::make_text_message(
                 "Server".to_string(),
                 format!("User {} has changed its name to {}!", self.login, login),
             )
@@ -103,7 +103,7 @@ impl Client {
                 .then(|res, _, ctx| {
                     match res {
                         Ok(users) => {
-                            let msg = serde_json::json!({ "users": users }).to_string();
+                            let msg = message::make_user_list(&users);
                             ctx.text(msg);
                         }
                         _ => println!("Something is wrong"),
@@ -135,7 +135,7 @@ impl Client {
     }
 }
 
-impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         let msg = match msg {
             Err(_) => {
@@ -169,7 +169,7 @@ async fn start_ws_connection(
     stream: web::Payload,
     server: web::Data<Addr<Server>>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let client = Client::new(server.get_ref().clone(), String::from(""));
+    let client = Session::new(server.get_ref().clone(), String::from(""));
     let resp = ws::start(client, &req, stream);
     resp
 }
