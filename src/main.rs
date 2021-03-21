@@ -8,7 +8,7 @@ use actix_web_actors::ws;
 mod message;
 mod server;
 
-use server::{Leave, Login, Server, SessionMessage, TextMsg};
+use server::{CurrentRoom, JoinRoom, Leave, Login, Server, SessionMessage, TextMsg};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -17,6 +17,7 @@ struct Session {
     hb: Instant,
 
     login: String,
+    room_id: usize,
 
     server: Addr<Server>,
 }
@@ -52,6 +53,7 @@ impl Handler<SessionMessage> for Session {
 impl Session {
     fn new(server: Addr<Server>, name: String) -> Self {
         Session {
+            room_id: 0,
             server: server,
             login: name,
             hb: Instant::now(),
@@ -62,9 +64,9 @@ impl Session {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            message::make_join_notify_message(format!("User {} joined!", login))
+            message::make_join_notify_msg(format!("User {} joined!", login))
         } else {
-            message::make_text_message(
+            message::make_text_msg(
                 "Server".to_string(),
                 format!("User {} has changed its name to {}!", self.login, login),
             )
@@ -80,34 +82,88 @@ impl Session {
         self.server.try_send(login_msg).unwrap();
     }
 
+    fn handle_cmd_list_users(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
+        self.server
+            .send(server::ListUsers{
+                room_id: self.room_id
+            })
+            .into_actor(self)
+            .then(|res, _, ctx| {
+                match res {
+                    Ok(users) => {
+                        let msg = message::make_user_list_msg(&users);
+                        ctx.text(msg);
+                    }
+                    _ => println!("Something is wrong"),
+                }
+                fut::ready(())
+            })
+            .wait(ctx)
+    }
+
+    fn handle_cmd_current_room(&mut self, ctx: &mut ws::WebsocketContext<Self>) {
+        self.server
+            .send(CurrentRoom {
+                room_id: self.room_id
+            })
+            .into_actor(self)
+            .then(|res, _, ctx| {
+                match res {
+                    Ok(room_name) => {
+                        let msg = message::make_current_room_msg(room_name);
+                        ctx.text(msg);
+                    }
+                    _ => println!("Something is wrong"),
+                }
+                fut::ready(())
+            })
+            .wait(ctx)
+    }
+
+    fn handle_cmd_join_room(&mut self, ctx: &mut ws::WebsocketContext<Self>, room_name: String) {
+        self.server
+            .send(JoinRoom {
+                room: room_name,
+                login: self.login.clone()
+            })
+            .into_actor(self)
+            .then(|res, _, ctx| {
+                if let Ok(result) = res {
+                    match result {
+                        Ok(room_id) => {
+                            // let msg = message::make_current_room_msg(room_name);
+                            println!("ROOM_ID = {}", room_id);
+                            ctx.text("Join to room!");
+                        },
+                        Err(err) => ctx.text(err)
+                    }
+                } else {
+                    panic!("Something went wrong!")
+                }
+                
+                fut::ready(())
+            })
+            .wait(ctx)
+    }
+
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
         let pair: Vec<&str> = text.split(" ").collect();
-
         match pair[0] {
+            "/join" => self.handle_cmd_join_room(ctx, pair[1].to_string()), // NOTE: What is pair[1] doesn't exist
+            "/current_room" => {
+                self.handle_cmd_current_room(ctx);
+            }
             "/login" => {
                 let login = &text[6..];
                 self.handle_login(ctx, login)
             }
-            "/list_users" => self
-                .server
-                .send(server::ListUsers)
-                .into_actor(self)
-                .then(|res, _, ctx| {
-                    match res {
-                        Ok(users) => {
-                            let msg = message::make_user_list(&users);
-                            ctx.text(msg);
-                        }
-                        _ => println!("Something is wrong"),
-                    }
-                    fut::ready(())
-                })
-                .wait(ctx),
+            "/list_users" => self.handle_cmd_list_users(text, ctx),
             _ => {
                 self.server
                     .try_send(TextMsg {
                         author: self.login.to_string(),
                         text: text,
+                        room_id: self.room_id,
                     })
                     .unwrap();
             }
@@ -117,7 +173,10 @@ impl Session {
     fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
-                act.server.do_send(Leave(act.login.clone()));
+                act.server.do_send(Leave { 
+                    login: act.login.clone(),
+                    room_id: act.room_id 
+                });
 
                 ctx.stop();
                 return;
@@ -150,7 +209,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
             }
             ws::Message::Close(_) => {
                 if self.login != "" {
-                    self.server.try_send(Leave(self.login.clone())).unwrap();
+                    self.server.try_send(Leave {
+                        login: self.login.clone(),
+                        room_id: self.room_id
+                    }).unwrap();
                 }
             }
             _ => (),

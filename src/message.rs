@@ -1,4 +1,4 @@
-pub fn make_text_message(author: String, text: String) -> String {
+pub fn make_text_msg(author: String, text: String) -> String {
     serde_json::json!({
         "type": "TextMsg",
         "author": author,
@@ -7,7 +7,7 @@ pub fn make_text_message(author: String, text: String) -> String {
     .to_string()
 }
 
-pub fn make_leave_notify_message(text: String) -> String {
+pub fn make_leave_notify_msg(text: String) -> String {
     serde_json::json!({
         "type": "LeaveNotify",
         "author": "Server",
@@ -16,7 +16,7 @@ pub fn make_leave_notify_message(text: String) -> String {
     .to_string()
 }
 
-pub fn make_join_notify_message(text: String) -> String {
+pub fn make_join_notify_msg(text: String) -> String {
     serde_json::json!({
         "type": "JoinNotify",
         "author": "Server",
@@ -25,10 +25,18 @@ pub fn make_join_notify_message(text: String) -> String {
     .to_string()
 }
 
-pub fn make_user_list(users: &Vec<String>) -> String {
+pub fn make_user_list_msg(users: &Vec<String>) -> String {
     serde_json::json!({
         "type": "UserList",
         "users": users
+    })
+    .to_string()
+}
+
+pub fn make_current_room_msg(room: String) -> String {
+    serde_json::json!({
+        "type": "CurRoom",
+        "name": room
     })
     .to_string()
 }
