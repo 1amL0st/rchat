@@ -6,8 +6,9 @@ function hideSignInForm() {
   p.style.visibility = "hidden";
 }
 
-function showSignInErr() {
+function showSignInErr(errText) {
   let p = document.getElementById('sign-in-err');
+  p.innerHTML = errText;
   p.style.visibility = "visible";
 }
 
@@ -36,11 +37,12 @@ export async function showSignInForm(gSocket) {
     })
 
     function socketMsgHandler(msg) {
+      console.log('SocketMsgHandler = ', msg.data);
       if (msg.data == 'Login is set') {
         successSignIn();
         signInBtn.removeEventListener('click', signInBtnClickHandler);
-      } else if (msg.data == 'Login exists') {
-        showSignInErr();
+      } else {
+        showSignInErr(msg.data);
       }
     }
 

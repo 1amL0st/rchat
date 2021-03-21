@@ -1,6 +1,9 @@
 import { Inbox } from './inbox.js';
 import { showSignInForm } from './signInForm.js';
+import { displayUserList } from './userList.js';
+import { MsgTextArea } from './msgTextArea.js';
 
+const gMsgTextArea = new MsgTextArea(onSendMsg);
 const gInbox = new Inbox();
 
 let gSocket = null;
@@ -23,17 +26,6 @@ async function createSocket() {
 
     gSocket.onerror = function(e) {
       reject('Some error happened!');
-    }
-  })
-}
-
-function setMsgInput() {
-  msgTextArea.focus();
-  
-  msgTextArea.addEventListener('keydown', (e) => {
-    if (!e.shiftKey && e.code == 'Enter') {
-      onSendMsgBtn();
-      e.preventDefault();
     }
   })
 }
@@ -61,49 +53,7 @@ async function onSocketNewMsg(e) {
   }
 }
 
-async function displayUserList(jsonMsg) {
-  const userList = document.getElementById('user-list');
-  userList.innerHTML = '';
-
-  let users = jsonMsg.users;
-  console.log('users = ', users);
-
-  for (const user of jsonMsg.users) {
-    const userEntry = document.createElement('div');
-    userEntry.innerHTML = user;
-    
-    userEntry.classList.add('user-entry');
-    userList.appendChild(userEntry)
-  }
-}
-
-async function start() {
-  await createSocket();
-  await showSignInForm(gSocket);
-  gSocket.addEventListener('message', onSocketNewMsg);
-  await setMsgInput();
-
-  gSocket.send('/list_users');
-}
-
-(async function(){
-  start();
-})();
-
-async function leaveCommand() {
-  gInbox.clear();
-  sendMsg('/leave');
-
-  // TODO: Maybe i should avoid full page reload
-  location.reload();
-
-  // await createSocket();
-  // await showSignInForm(gSocket);
-  // await setMsgInput();
-}
-
-function onSendMsgBtn() {
-  const msg = msgTextArea.value;
+function onSendMsg(msg) {
   if (msg.startsWith('/leave')) {
     leaveCommand();
   } else {
@@ -112,7 +62,23 @@ function onSendMsgBtn() {
   msgTextArea.value = '';
 }
 
-document.getElementById('msg-text-area-send-btn').addEventListener('click', onSendMsgBtn);
+async function start() {
+  await createSocket();
+  await showSignInForm(gSocket);
+  gSocket.send('/list_users');
+  gSocket.addEventListener('message', onSocketNewMsg);
+}
+
+(async function(){
+  start();
+})();
+
+async function leaveCommand() {
+  // gInbox.clear();
+  // sendMsg('/leave');
+  location.reload();
+}
+
 document.getElementById('leave-btn').addEventListener('click', leaveCommand);
 
 function sendMsg(msg) {

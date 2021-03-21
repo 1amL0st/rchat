@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>gchat</title>
+    <title>rchat</title>
 
     <script src="scripts/script.js" type="module"></script>
     <link rel="stylesheet" href="styles/style.css">
@@ -12,7 +12,7 @@
     <div id="signin-window" class="popup-window popup-window--hidden">
       <div class="popup-window__content flex-column login-form">
         <input type="text" class="input login-form__input" placeholder="Enter login">
-        <p id="sign-in-err" class="error-msg login-form__error">This name already exist...</p>
+        <p id="sign-in-err" class="error-msg login-form__error"></p>
         <button class="button login-form__sign-in">Sign in</button>
       </div>
     </div>
@@ -33,8 +33,13 @@
           </div>
         </div>
 
-        <div id="user-list" class="user-list">
-          <div class="user-entry">First user</div>
+        <div class="user-list">
+          <div class="user-list__header">Users</div>
+          <div id="user-list" class="user-list__list">
+            <div class="user-entry">First user</div>
+            <div class="user-entry">Long long long long user long long long long long</div>
+          </div>
+          
         </div>
 
       </main>
