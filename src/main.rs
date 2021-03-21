@@ -90,12 +90,8 @@ impl Session {
 
         match pair[0] {
             "/login" => {
-                let login = pair[1];
+                let login = &text[6..];
                 self.handle_login(ctx, login)
-            }
-            "/leave" => {
-                // self.server.try_send(Leave(self.login.clone())).unwrap();
-                // ctx.stop();
             }
             "/list_users" => self
                 .server
