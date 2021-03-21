@@ -94,7 +94,8 @@ impl Session {
                 self.handle_login(ctx, login)
             }
             "/leave" => {
-                self.server.try_send(Leave(self.login.clone())).unwrap();
+                // self.server.try_send(Leave(self.login.clone())).unwrap();
+                // ctx.stop();
             }
             "/list_users" => self
                 .server

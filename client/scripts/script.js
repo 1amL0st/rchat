@@ -44,16 +44,19 @@ async function onSocketNewMsg(e) {
   if (e.data[0] == '{') {
     const json = JSON.parse(e.data);
 
-    if (json.type === 'TextMsg') {
-      gInbox.onNewMsg(e.data);
-    }
-    else if (json.type == 'JoinNotify') {
-      gInbox.onNewMsg(e.data);
-      gSocket.send('/list_users');
-    }
-    else if (json.type === 'UserList') {
-      displayUserList(json);
-      // console.log('Get some data json!', json);
+    switch (json.type) {
+      case "TextMsg":
+        gInbox.onNewMsg(e.data);
+        break;
+      case 'LeaveNotify':
+        gSocket.send('/list_users');
+      case "JoinNotify":
+        gInbox.onNewMsg(e.data);
+        gSocket.send('/list_users');
+        break;
+      case 'UserList':
+        displayUserList(json);
+        break;
     }
   }
 }

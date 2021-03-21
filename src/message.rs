@@ -7,6 +7,15 @@ pub fn make_text_message(author: String, text: String) -> String {
     .to_string()
 }
 
+pub fn make_leave_notify_message(text: String) -> String {
+    serde_json::json!({
+        "type": "LeaveNotify",
+        "author": "Server",
+        "text": text
+    })
+    .to_string()
+}
+
 pub fn make_join_notify_message(text: String) -> String {
     serde_json::json!({
         "type": "JoinNotify",
