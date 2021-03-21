@@ -3,13 +3,15 @@ use std::collections::HashMap;
 use actix::prelude::*;
 use actix::{Actor, Handler};
 
+use crate::Session;
+
 use super::message;
 
 #[derive(Message)]
 #[rtype(result = "usize")]
 pub enum SessionMessage {
     Text(String),
-    Login(String),
+    Login(Result<String, String>),
 }
 
 #[derive(Debug, Clone)]
@@ -49,17 +51,25 @@ pub struct Login {
 impl Handler<Login> for Server {
     type Result = MessageResult<Login>;
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
-        let new_login = msg.new_login;
         let recipient = msg.recipient;
+        let new_login = msg.new_login.trim().to_string();
+
+        if new_login == "" {
+            let msg = SessionMessage::Login(Err("Wrong login format!".to_string()));
+            recipient.try_send(msg).unwrap();
+            return MessageResult(false);
+        }
+
         let old_login = msg.old_login;
         let text = msg.text;
 
         if self.users.contains_key(&new_login) {
+            let msg = SessionMessage::Login(Err("Login exists!".to_string()));
+            recipient.try_send(msg).unwrap();
             MessageResult(false)
         } else {
-            recipient
-                .try_send(SessionMessage::Login(new_login.clone()))
-                .unwrap();
+            let msg = SessionMessage::Login(Ok(new_login.clone()));
+            recipient.try_send(msg).unwrap();
 
             self.users.remove(&old_login);
             self.users.insert(new_login, recipient);
@@ -95,7 +105,6 @@ impl Handler<Leave> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Leave, _: &mut Self::Context) {
-        // println!("Login leave = {}", msg.0);
         self.users.remove(&msg.0);
 
         let msg_text = message::make_leave_notify_message(format!("User {} has left!", msg.0));

@@ -35,7 +35,15 @@ impl Handler<SessionMessage> for Session {
     fn handle(&mut self, msg: SessionMessage, ctx: &mut Self::Context) -> Self::Result {
         match msg {
             SessionMessage::Text(text) => ctx.text(text),
-            SessionMessage::Login(login) => self.login = login,
+            SessionMessage::Login(result) => match result {
+                Ok(login) => {
+                    self.login = login;
+                    ctx.text("Login is set")
+                }
+                Err(err) => {
+                    ctx.text(err);
+                }
+            },
         }
         0
     }
@@ -69,20 +77,7 @@ impl Session {
             recipient: recipient,
         };
 
-        self.server
-            .send(login_msg)
-            .into_actor(self)
-            .then(|res, _, ctx| {
-                if let Ok(login_result) = res {
-                    if login_result {
-                        ctx.text("Login is set")
-                    } else {
-                        ctx.text("Login exists")
-                    }
-                }
-                fut::ready(())
-            })
-            .wait(ctx);
+        self.server.try_send(login_msg).unwrap();
     }
 
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
@@ -154,7 +149,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
                 self.handle_text(text, ctx);
             }
             ws::Message::Close(_) => {
-                self.server.try_send(Leave(self.login.clone())).unwrap();
+                if self.login != "" {
+                    self.server.try_send(Leave(self.login.clone())).unwrap();
+                }
             }
             _ => (),
         }
