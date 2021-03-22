@@ -41,7 +41,8 @@ impl Handler<SessionMessage> for Session {
             SessionMessage::Login(result) => match result {
                 Ok(login) => {
                     self.login = login;
-                    ctx.text("Login is set")
+                    ctx.text("Login is set");
+                    self.handle_cmd_list_rooms(ctx);
                 }
                 Err(err) => {
                     ctx.text(err);
@@ -122,7 +123,12 @@ impl Session {
             .wait(ctx)
     }
 
-    fn handle_cmd_join_room(&mut self, ctx: &mut ws::WebsocketContext<Self>, room_name: String) {
+    fn handle_cmd_join_room(
+        &mut self,
+        ctx: &mut ws::WebsocketContext<Self>,
+        mut room_name: String,
+    ) {
+        room_name = room_name.trim().to_string();
         if self.room_id == 0 && room_name == server::MAIN_ROOM_NAME {
             return;
         }
@@ -142,7 +148,7 @@ impl Session {
                             ctx.text("Join to room!");
 
                             let m = room_name;
-                            let text = format!("You joined room '{}'", m);
+                            let text = format!("You joined room {}", m);
                             ctx.text(message::make_server_msg(text));
                         }
                         Err(err) => ctx.text(err),
@@ -162,7 +168,7 @@ impl Session {
                 cur_room_id: self.room_id,
             })
             .into_actor(self)
-            .then(|res, act, ctx| {
+            .then(|res, _, ctx| {
                 if let Ok(result) = res {
                     let msg = message::make_rooms_list_msg(&result);
                     ctx.text(msg);
@@ -174,22 +180,48 @@ impl Session {
             .wait(ctx);
     }
 
-    fn handle_cmd_create_room(&mut self, ctx: &mut ws::WebsocketContext<Self>, room_name: String) {
+    fn handle_cmd_create_room(
+        &mut self,
+        ctx: &mut ws::WebsocketContext<Self>,
+        mut room_name: String,
+    ) {
+        room_name = room_name.trim().to_string();
+
+        if room_name.trim() == "" {
+            // TODO send error message
+            return;
+        }
+
         self.server
             .send(CreateRoom {
                 cur_room_id: self.room_id,
-                room_name: room_name,
+                room_name: room_name.clone(),
                 login: self.login.clone(),
             })
             .into_actor(self)
-            .then(|res, act, ctx| {
+            .then(move |res, act, ctx| {
                 if let Ok(result) = res {
-                    if let Ok(id) = result {
-                        // TODO: Send a message with result or error if room creatin failed...
-                        act.room_id = id;
+                    match result {
+                        Ok(id) => {
+                            act.room_id = id;
+
+                            let msg = message::make_join_notify_msg(format!(
+                                "You joined room {}",
+                                room_name
+                            ));
+
+                            ctx.text(msg);
+                        }
+                        Err(err) => {
+                            let msg = message::make_server_msg(format!(
+                                "Couldn't create room! Error text {}",
+                                err
+                            ));
+                            ctx.text(msg);
+                        }
                     }
                 } else {
-                    panic!("Something wen wrong!")
+                    panic!("Something went wrong!")
                 }
                 fut::ready(())
             })
@@ -197,21 +229,22 @@ impl Session {
     }
 
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
-        let pair: Vec<&str> = text.split(" ").collect();
-        match pair[0] {
+        let first_word = text.chars().take_while(|c| *c != ' ').collect::<String>();
+        let first_word = first_word.as_str();
+
+        match first_word {
             "/create_room" => {
-                self.handle_cmd_create_room(ctx, pair[1].to_string()) // NOTE: What is pair[1] doesn't exist
+                self.handle_cmd_create_room(ctx, text[12..].to_string());
             }
             "/join" => {
-                self.handle_cmd_join_room(ctx, pair[1].to_string()) // NOTE: What is pair[1] doesn't exist
+                self.handle_cmd_join_room(ctx, text[5..].to_string());
             }
             "/current_room" => {
                 self.handle_cmd_current_room(ctx);
             }
             "/list_rooms" => self.handle_cmd_list_rooms(ctx),
             "/login" => {
-                let login = &text[6..];
-                self.handle_login(ctx, login)
+                self.handle_login(ctx, &text[6..]);
             }
             "/list_users" => self.handle_cmd_list_users(text, ctx),
             _ => {

@@ -61,13 +61,15 @@ impl Server {
         }
     }
 
-    fn send_msg_to_room(&self, msg_text: String, room_id: usize) {
+    fn send_msg_to_room(&self, msg_text: String, room_id: usize, ignore_user: &String) {
         let room = self.rooms.get(&room_id).unwrap();
 
         for user in &room.users {
-            let recipient = self.users.get(user).unwrap();
-            if let Err(err) = recipient.do_send(SessionMessage::Text(msg_text.clone())) {
-                panic!("Server error in process of sending text message {}", err);
+            if user != ignore_user {
+                let recipient = self.users.get(user).unwrap();
+                if let Err(err) = recipient.do_send(SessionMessage::Text(msg_text.clone())) {
+                    panic!("Server error in process of sending text message {}", err);
+                }
             }
         }
     }
@@ -104,11 +106,11 @@ impl Server {
 
         let msg_text = format!("User {} has joined room {}", login, to_room.name);
         let leave_msg = message::make_join_notify_msg(msg_text);
-        self.send_msg_to_room(leave_msg, cur_room_id);
+        self.send_msg_to_room(leave_msg, cur_room_id, login);
 
         // TODO: Don't send this message to user itself...
-        let msg = message::make_join_notify_msg(format!("Someone join!"));
-        self.send_msg_to_room(msg, to_room_id);
+        let msg = message::make_join_notify_msg(format!("{} join!", login));
+        self.send_msg_to_room(msg, to_room_id, login);
     }
 }
 
@@ -131,7 +133,7 @@ impl Handler<Login> for Server {
         let recipient = msg.recipient;
         let new_login = msg.new_login.trim().to_string();
 
-        // Restrict maximum login length
+        // TODO: Restrict maximum login length
         if new_login == "" {
             let msg = SessionMessage::Login(Err("Wrong login format!".to_string()));
             recipient.try_send(msg).unwrap();
@@ -155,9 +157,9 @@ impl Handler<Login> for Server {
                 self.users.remove(&old_login);
             }
 
-            self.users.insert(new_login, recipient);
+            self.users.insert(new_login.clone(), recipient);
 
-            self.send_msg_to_room(text, 0);
+            self.send_msg_to_room(text, 0, &new_login);
 
             MessageResult(true)
         }
@@ -177,7 +179,7 @@ impl Handler<TextMsg> for Server {
 
     fn handle(&mut self, msg: TextMsg, _: &mut Self::Context) -> Self::Result {
         let text = message::make_text_msg(msg.author, msg.text);
-        self.send_msg_to_room(text, msg.room_id);
+        self.send_msg_to_room(text, msg.room_id, &String::new());
     }
 }
 
@@ -197,7 +199,7 @@ impl Handler<Leave> for Server {
 
         self.users.remove(&msg.login);
         let msg_text = message::make_leave_notify_msg(format!("User {} has left!", msg.login));
-        self.send_msg_to_room(msg_text, msg.room_id);
+        self.send_msg_to_room(msg_text, msg.room_id, &String::new());
     }
 }
 

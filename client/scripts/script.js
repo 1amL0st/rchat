@@ -48,6 +48,7 @@ async function onSocketNewMsg(e) {
         gInbox.onNewMsg(e.data);
         gSocket.send('/list_users');
         gSocket.send('/list_rooms');
+        gSocket.send('/current_room');
         break;
       case 'UserList':
         displayUserList(json);
