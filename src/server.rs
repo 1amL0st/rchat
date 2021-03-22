@@ -2,9 +2,10 @@ use std::collections::{HashMap, HashSet};
 
 use actix::prelude::*;
 use actix::{Actor, Handler};
-use message::make_rooms_list_msg;
 
 use super::message;
+
+pub const MAIN_ROOM_NAME: &'static str = "World";
 
 #[derive(Message)]
 #[rtype(result = "usize")]
@@ -13,7 +14,7 @@ pub enum SessionMessage {
     Login(Result<String, String>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Room {
     name: String,
     users: HashSet<String>,
@@ -24,8 +25,6 @@ pub struct Server {
     users: HashMap<String, Recipient<SessionMessage>>,
     rooms: HashMap<usize, Room>,
 }
-
-const MAIN_ROOM_NAME: &'static str = "World";
 
 impl Server {
     pub fn new() -> Self {
@@ -73,9 +72,43 @@ impl Server {
         }
     }
 
+    fn send_to_main_room(&self, msg_text: String) {
+        let room = self.rooms.get(&0).unwrap();
+
+        for user in &room.users {
+            let recipient = self.users.get(user).unwrap();
+            if let Err(err) = recipient.do_send(SessionMessage::Text(msg_text.clone())) {
+                panic!("Server error in process of sending text message {}", err);
+            }
+        }
+    }
+
     fn add_user_to_main_room(&mut self, login: String) {
         let main_room = self.rooms.get_mut(&0).unwrap();
         main_room.users.insert(login);
+    }
+
+    fn get_room_list(&self) -> Vec<String> {
+        self.rooms
+            .iter()
+            .map(|(_, room)| room.name.clone())
+            .collect()
+    }
+
+    fn move_user_to_room(&mut self, to_room_id: usize, cur_room_id: usize, login: &String) {
+        let current_room = self.rooms.get_mut(&cur_room_id).unwrap();
+        current_room.users.remove(login);
+
+        let to_room = self.rooms.get_mut(&to_room_id).unwrap();
+        to_room.users.insert(login.clone());
+
+        let msg_text = format!("User {} has joined room {}", login, to_room.name);
+        let leave_msg = message::make_join_notify_msg(msg_text);
+        self.send_msg_to_room(leave_msg, cur_room_id);
+
+        // TODO: Don't send this message to user itself...
+        let msg = message::make_join_notify_msg(format!("Someone join!"));
+        self.send_msg_to_room(msg, to_room_id);
     }
 }
 
@@ -211,7 +244,7 @@ impl Handler<JoinRoom> for Server {
     type Result = MessageResult<JoinRoom>;
 
     fn handle(&mut self, msg: JoinRoom, _: &mut Context<Self>) -> Self::Result {
-        // Check if user is in main room or try to join main room
+        // Check if user is in main room or trying to join main room
         if msg.cur_room_id != 0 && msg.room_name != MAIN_ROOM_NAME {
             return MessageResult(Err(format!(
                 "You can join other rooms only from {} room!",
@@ -222,32 +255,11 @@ impl Handler<JoinRoom> for Server {
         let keys: Vec<usize> = self.rooms.iter().map(|(key, _)| *key).collect();
 
         for key in &keys {
-            let room = self.rooms.get_mut(key).unwrap();
-            if room.name == msg.room_name {
-                room.users.insert(msg.login.clone());
-
-                let current_room = self.rooms.get_mut(&msg.cur_room_id).unwrap();
-                current_room.users.remove(&msg.login);
-
-                let msg_text = format!("User {} has joined room {}", msg.login, current_room.name);
-                let leave_msg = message::make_leave_notify_msg(msg_text);
-                self.send_msg_to_room(leave_msg, msg.cur_room_id);
-
+            if self.rooms.get(key).unwrap().name == msg.room_name {
+                self.move_user_to_room(*key, msg.cur_room_id, &msg.login);
                 return MessageResult(Ok(*key));
             }
         }
-
-        // for (key, room) in &mut self.rooms {
-        //     if room.name == msg.room_name {
-        //         room.users.insert(msg.login.clone());
-
-        //         let msg_text = format!("User {} has joined room {}", msg.login, msg.cur_room_id);
-        //         let leave_msg = message::make_leave_notify_msg(msg_text);
-        //         self.send_msg_to_room(leave_msg, msg.cur_room_id);
-
-        //         return MessageResult(Ok(*key));
-        //     }
-        // }
 
         MessageResult(Err("Room not found!".to_string()))
     }
@@ -267,12 +279,43 @@ impl Handler<ListRooms> for Server {
             let rooms = vec![String::from(MAIN_ROOM_NAME)];
             MessageResult(rooms)
         } else {
-            let rooms = self
-                .rooms
-                .iter()
-                .map(|(_, room)| room.name.clone())
-                .collect();
-            MessageResult(rooms)
+            MessageResult(self.get_room_list())
         }
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<usize, String>")]
+pub struct CreateRoom {
+    pub cur_room_id: usize,
+    pub room_name: String,
+    pub login: String,
+}
+
+impl Handler<CreateRoom> for Server {
+    type Result = MessageResult<CreateRoom>;
+
+    fn handle(&mut self, msg: CreateRoom, ctx: &mut Self::Context) -> Self::Result {
+        for (_, room) in &self.rooms {
+            if room.name == msg.room_name {
+                return MessageResult(Err("A room with such name already exists!".to_string()));
+            }
+        }
+
+        // NOTE: Might generate same ids
+        let room_id = rand::random::<usize>();
+        self.rooms.insert(
+            room_id,
+            Room {
+                name: msg.room_name,
+                users: HashSet::new(),
+            },
+        );
+
+        self.move_user_to_room(room_id, msg.cur_room_id, &msg.login);
+
+        self.send_to_main_room(message::make_rooms_list_msg(&self.get_room_list()));
+
+        MessageResult(Ok(room_id))
     }
 }

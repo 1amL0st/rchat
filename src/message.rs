@@ -48,3 +48,12 @@ pub fn make_current_room_msg(room: String) -> String {
     })
     .to_string()
 }
+
+pub fn make_server_msg(text: String) -> String {
+    serde_json::json!({
+        "type": "ServerMsg",
+        "author": "Server",
+        "text": text
+    })
+    .to_string()
+}

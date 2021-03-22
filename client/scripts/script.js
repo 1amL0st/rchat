@@ -38,6 +38,7 @@ async function onSocketNewMsg(e) {
     const json = JSON.parse(e.data);
 
     switch (json.type) {
+      case 'ServerMsg':
       case "TextMsg":
         gInbox.onNewMsg(e.data);
         break;
@@ -64,8 +65,10 @@ async function onSocketNewMsg(e) {
     }
   } else {
     if (e.data === 'Join to room!') {
+      gInbox.clear();
       gSocket.send('/current_room');
       gSocket.send('/list_rooms');
+      gSocket.send('/list_users');
     }
     console.log('Some non JSON msg = ', e.data);
   }
@@ -82,7 +85,7 @@ function onSendMsg(msg) {
 
 async function start() {
   await createSocket();
-  // await showSignInForm(gSocket);
+  await showSignInForm(gSocket);
 
   gSocket.send('/list_users');
   gSocket.send('/current_room');

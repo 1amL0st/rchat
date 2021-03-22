@@ -8,7 +8,9 @@ use actix_web_actors::ws;
 mod message;
 mod server;
 
-use server::{CurrentRoom, JoinRoom, Leave, ListRooms, Login, Server, SessionMessage, TextMsg};
+use server::{
+    CreateRoom, CurrentRoom, JoinRoom, Leave, ListRooms, Login, Server, SessionMessage, TextMsg,
+};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -121,10 +123,14 @@ impl Session {
     }
 
     fn handle_cmd_join_room(&mut self, ctx: &mut ws::WebsocketContext<Self>, room_name: String) {
+        if self.room_id == 0 && room_name == server::MAIN_ROOM_NAME {
+            return;
+        }
+
         self.server
             .send(JoinRoom {
                 cur_room_id: self.room_id,
-                room_name,
+                room_name: room_name.clone(),
                 login: self.login.clone(),
             })
             .into_actor(self)
@@ -132,10 +138,12 @@ impl Session {
                 if let Ok(result) = res {
                     match result {
                         Ok(room_id) => {
-                            // let msg = message::make_current_room_msg(room_name);
-                            println!("ROOM_ID = {}", room_id);
                             act.room_id = room_id;
                             ctx.text("Join to room!");
+
+                            let m = room_name;
+                            let text = format!("You joined room '{}'", m);
+                            ctx.text(message::make_server_msg(text));
                         }
                         Err(err) => ctx.text(err),
                     }
@@ -166,10 +174,37 @@ impl Session {
             .wait(ctx);
     }
 
+    fn handle_cmd_create_room(&mut self, ctx: &mut ws::WebsocketContext<Self>, room_name: String) {
+        self.server
+            .send(CreateRoom {
+                cur_room_id: self.room_id,
+                room_name: room_name,
+                login: self.login.clone(),
+            })
+            .into_actor(self)
+            .then(|res, act, ctx| {
+                if let Ok(result) = res {
+                    if let Ok(id) = result {
+                        // TODO: Send a message with result or error if room creatin failed...
+                        act.room_id = id;
+                    }
+                } else {
+                    panic!("Something wen wrong!")
+                }
+                fut::ready(())
+            })
+            .wait(ctx);
+    }
+
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
         let pair: Vec<&str> = text.split(" ").collect();
         match pair[0] {
-            "/join" => self.handle_cmd_join_room(ctx, pair[1].to_string()), // NOTE: What is pair[1] doesn't exist
+            "/create_room" => {
+                self.handle_cmd_create_room(ctx, pair[1].to_string()) // NOTE: What is pair[1] doesn't exist
+            }
+            "/join" => {
+                self.handle_cmd_join_room(ctx, pair[1].to_string()) // NOTE: What is pair[1] doesn't exist
+            }
             "/current_room" => {
                 self.handle_cmd_current_room(ctx);
             }
