@@ -232,29 +232,38 @@ impl Session {
         let first_word = text.chars().take_while(|c| *c != ' ').collect::<String>();
         let first_word = first_word.as_str();
 
-        match first_word {
-            "/create_room" => {
-                self.handle_cmd_create_room(ctx, text[12..].to_string());
-            }
-            "/join" => {
-                self.handle_cmd_join_room(ctx, text[5..].to_string());
-            }
-            "/current_room" => {
-                self.handle_cmd_current_room(ctx);
-            }
-            "/list_rooms" => self.handle_cmd_list_rooms(ctx),
-            "/login" => {
+        println!("login = '{}'", self.login);
+
+        // User that didn't pass registation can only run /login command
+        if self.login == "" {
+            if first_word == "/login" {
                 self.handle_login(ctx, &text[6..]);
             }
-            "/list_users" => self.handle_cmd_list_users(text, ctx),
-            _ => {
-                self.server
-                    .try_send(TextMsg {
-                        author: self.login.to_string(),
-                        text: text,
-                        room_id: self.room_id,
-                    })
-                    .unwrap();
+        } else {
+            match first_word {
+                "/create_room" => {
+                    self.handle_cmd_create_room(ctx, text[12..].to_string());
+                }
+                "/join" => {
+                    self.handle_cmd_join_room(ctx, text[5..].to_string());
+                }
+                "/current_room" => {
+                    self.handle_cmd_current_room(ctx);
+                }
+                "/list_rooms" => self.handle_cmd_list_rooms(ctx),
+                "/login" => {
+                    self.handle_login(ctx, &text[6..]);
+                }
+                "/list_users" => self.handle_cmd_list_users(text, ctx),
+                _ => {
+                    self.server
+                        .try_send(TextMsg {
+                            author: self.login.to_string(),
+                            text: text,
+                            room_id: self.room_id,
+                        })
+                        .unwrap();
+                }
             }
         }
     }

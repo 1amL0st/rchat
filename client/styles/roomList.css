@@ -17,8 +17,12 @@
 
 .room-list__header {
   min-width: max-content;
-  margin-bottom: 16px;
   border-bottom: 1px solid black;
+}
+
+.room-list__create-btn {
+  margin: 16px 0 12px 0;
+  min-width: max-content;
 }
 
 .room-entry {

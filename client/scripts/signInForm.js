@@ -1,4 +1,4 @@
-function hideSignInForm() {
+export function hideSignInForm() {
   let window = document.getElementById('signin-window');
   window.classList.add(["popup-window--hidden"])
 

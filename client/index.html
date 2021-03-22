@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div id="signin-window" class="popup-window popup-window--hidden">
+    <div id="signin-window" class="popup-window">
       <div class="popup-window__content flex-column login-form">
         <input type="text" class="input login-form__input" placeholder="Enter login">
         <p id="sign-in-err" class="error-msg login-form__error"></p>
@@ -27,6 +27,7 @@
 
         <div class="room-list">
           <div class="room-list__header">Rooms</div>
+          <button id="create-room-btn" class="button room-list__create-btn">Create room</button>
           <div id="room-list" class="room-list__list">
             <div class="room-entry">R</div>
             <div class="room-entry">R 1</div>
