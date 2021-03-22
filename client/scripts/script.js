@@ -3,6 +3,7 @@ import { showSignInForm } from './signInForm.js';
 import { displayUserList } from './userList.js';
 import { MsgTextArea } from './msgTextArea.js';
 import { RoomBar } from './roomBar.js';
+import { displayRoomList } from './roomList.js';
 
 const gMsgTextArea = new MsgTextArea(onSendMsg);
 const gInbox = new Inbox();
@@ -45,18 +46,27 @@ async function onSocketNewMsg(e) {
       case "JoinNotify":
         gInbox.onNewMsg(e.data);
         gSocket.send('/list_users');
+        gSocket.send('/list_rooms');
         break;
       case 'UserList':
         displayUserList(json);
         break;
       case 'CurRoom':
+        console.log('curRoom = ', json);
         gRoomBar.onRoomNameMsg(json);
+        break;
+      case 'RoomList':
+        displayRoomList(json, gSocket);
         break;
       default:
         console.warn("UNKNOWN MESSAGE TYPE = ", json.type);
         break;
     }
   } else {
+    if (e.data === 'Join to room!') {
+      gSocket.send('/current_room');
+      gSocket.send('/list_rooms');
+    }
     console.log('Some non JSON msg = ', e.data);
   }
 }
@@ -72,7 +82,7 @@ function onSendMsg(msg) {
 
 async function start() {
   await createSocket();
-  await showSignInForm(gSocket);
+  // await showSignInForm(gSocket);
 
   gSocket.send('/list_users');
   gSocket.send('/current_room');

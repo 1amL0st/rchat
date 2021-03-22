@@ -8,7 +8,7 @@ use actix_web_actors::ws;
 mod message;
 mod server;
 
-use server::{CurrentRoom, JoinRoom, Leave, Login, Server, SessionMessage, TextMsg};
+use server::{CurrentRoom, JoinRoom, Leave, ListRooms, Login, Server, SessionMessage, TextMsg};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -82,10 +82,10 @@ impl Session {
         self.server.try_send(login_msg).unwrap();
     }
 
-    fn handle_cmd_list_users(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
+    fn handle_cmd_list_users(&mut self, _: String, ctx: &mut ws::WebsocketContext<Self>) {
         self.server
-            .send(server::ListUsers{
-                room_id: self.room_id
+            .send(server::ListUsers {
+                room_id: self.room_id,
             })
             .into_actor(self)
             .then(|res, _, ctx| {
@@ -104,7 +104,7 @@ impl Session {
     fn handle_cmd_current_room(&mut self, ctx: &mut ws::WebsocketContext<Self>) {
         self.server
             .send(CurrentRoom {
-                room_id: self.room_id
+                room_id: self.room_id,
             })
             .into_actor(self)
             .then(|res, _, ctx| {
@@ -123,27 +123,47 @@ impl Session {
     fn handle_cmd_join_room(&mut self, ctx: &mut ws::WebsocketContext<Self>, room_name: String) {
         self.server
             .send(JoinRoom {
-                room: room_name,
-                login: self.login.clone()
+                cur_room_id: self.room_id,
+                room_name,
+                login: self.login.clone(),
             })
             .into_actor(self)
-            .then(|res, _, ctx| {
+            .then(|res, act, ctx| {
                 if let Ok(result) = res {
                     match result {
                         Ok(room_id) => {
                             // let msg = message::make_current_room_msg(room_name);
                             println!("ROOM_ID = {}", room_id);
+                            act.room_id = room_id;
                             ctx.text("Join to room!");
-                        },
-                        Err(err) => ctx.text(err)
+                        }
+                        Err(err) => ctx.text(err),
                     }
                 } else {
                     panic!("Something went wrong!")
                 }
-                
+
                 fut::ready(())
             })
             .wait(ctx)
+    }
+
+    fn handle_cmd_list_rooms(&mut self, ctx: &mut ws::WebsocketContext<Self>) {
+        self.server
+            .send(ListRooms {
+                cur_room_id: self.room_id,
+            })
+            .into_actor(self)
+            .then(|res, act, ctx| {
+                if let Ok(result) = res {
+                    let msg = message::make_rooms_list_msg(&result);
+                    ctx.text(msg);
+                } else {
+                    panic!("Something wen wrong!")
+                }
+                fut::ready(())
+            })
+            .wait(ctx);
     }
 
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
@@ -153,6 +173,7 @@ impl Session {
             "/current_room" => {
                 self.handle_cmd_current_room(ctx);
             }
+            "/list_rooms" => self.handle_cmd_list_rooms(ctx),
             "/login" => {
                 let login = &text[6..];
                 self.handle_login(ctx, login)
@@ -173,9 +194,9 @@ impl Session {
     fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
-                act.server.do_send(Leave { 
+                act.server.do_send(Leave {
                     login: act.login.clone(),
-                    room_id: act.room_id 
+                    room_id: act.room_id,
                 });
 
                 ctx.stop();
@@ -209,10 +230,12 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
             }
             ws::Message::Close(_) => {
                 if self.login != "" {
-                    self.server.try_send(Leave {
-                        login: self.login.clone(),
-                        room_id: self.room_id
-                    }).unwrap();
+                    self.server
+                        .try_send(Leave {
+                            login: self.login.clone(),
+                            room_id: self.room_id,
+                        })
+                        .unwrap();
                 }
             }
             _ => (),

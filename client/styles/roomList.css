@@ -1,28 +1,30 @@
-.user-list {
+.room-list {
   height: 100%;
   margin: 0 16px;
 
-  width: fit-content;
-
-  max-width: 15%;
+  width: max-content;
+  max-width: 200px;
 }
 
-.user-list__list {
+.room-list__list {
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  max-width: 100%;
-  overflow-x: hidden;;
+  width: 100%;
+  overflow-x: hidden;
 }
 
-.user-list__header {
+.room-list__header {
+  min-width: max-content;
   margin-bottom: 16px;
   border-bottom: 1px solid black;
 }
 
-.user-entry {
+.room-entry {
   min-width: max-content;
   margin: 4px 0;
   border-bottom: 1px solid black;
+
+  cursor: pointer;
 }

@@ -33,6 +33,14 @@ pub fn make_user_list_msg(users: &Vec<String>) -> String {
     .to_string()
 }
 
+pub fn make_rooms_list_msg(rooms: &Vec<String>) -> String {
+    serde_json::json!({
+        "type": "RoomList",
+        "rooms": rooms
+    })
+    .to_string()
+}
+
 pub fn make_current_room_msg(room: String) -> String {
     serde_json::json!({
         "type": "CurRoom",
