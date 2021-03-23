@@ -14,4 +14,8 @@ export function MsgTextArea(onSend) {
     onSend(this.textAreaElement.value);
     this.textAreaElement.value = '';
   }
+
+  this.focus = function() {
+    this.textAreaElement.focus();
+  }
 }

@@ -62,7 +62,11 @@ impl Server {
     }
 
     fn send_msg_to_room(&self, msg_text: String, room_id: usize, ignore_user: &String) {
-        let room = self.rooms.get(&room_id).unwrap();
+        let room = if let Some(room) = self.rooms.get(&room_id) {
+            room
+        } else {
+            return;
+        };
 
         for user in &room.users {
             if user != ignore_user {
@@ -101,11 +105,17 @@ impl Server {
         let current_room = self.rooms.get_mut(&cur_room_id).unwrap();
         current_room.users.remove(login);
 
+        if current_room.users.len() == 0 && cur_room_id != 0 {
+            self.rooms.remove(&cur_room_id);
+        }
+
         let to_room = self.rooms.get_mut(&to_room_id).unwrap();
         to_room.users.insert(login.clone());
 
-        let msg_text = format!("User {} has joined room {}", login, to_room.name);
-        let leave_msg = message::make_join_notify_msg(msg_text);
+        let leave_msg = message::make_join_notify_msg(format!(
+            "User {} has joined room {}",
+            login, to_room.name
+        ));
         self.send_msg_to_room(leave_msg, cur_room_id, login);
 
         // TODO: Don't send this message to user itself...

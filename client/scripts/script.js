@@ -89,8 +89,10 @@ async function start() {
   await createSocket();
 
   gRoomList = new RoomList(gSocket);
-  await showSignInForm(gSocket);
+
   // hideSignInForm();
+  await showSignInForm(gSocket);
+  gMsgTextArea.focus();
 
   gSocket.send('/list_users');
   gSocket.send('/current_room');
@@ -103,8 +105,6 @@ async function start() {
 })();
 
 async function leaveCommand() {
-  // gInbox.clear();
-  // sendMsg('/leave');
   location.reload();
 }
 

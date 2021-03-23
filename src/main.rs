@@ -232,8 +232,6 @@ impl Session {
         let first_word = text.chars().take_while(|c| *c != ' ').collect::<String>();
         let first_word = first_word.as_str();
 
-        println!("login = '{}'", self.login);
-
         // User that didn't pass registation can only run /login command
         if self.login == "" {
             if first_word == "/login" {
