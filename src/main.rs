@@ -38,16 +38,6 @@ impl Handler<SessionMessage> for Session {
     fn handle(&mut self, msg: SessionMessage, ctx: &mut Self::Context) -> Self::Result {
         match msg {
             SessionMessage::Text(text) => ctx.text(text),
-            SessionMessage::Login(result) => match result {
-                Ok(login) => {
-                    self.login = login;
-                    ctx.text("Login is set");
-                    self.handle_cmd_list_rooms(ctx);
-                }
-                Err(err) => {
-                    ctx.text(err);
-                }
-            },
         }
         0
     }
@@ -63,7 +53,7 @@ impl Session {
         }
     }
 
-    fn handle_login(&mut self, ctx: &mut ws::WebsocketContext<Self>, login: &str) {
+    fn handle_login(&mut self, ctx: &mut ws::WebsocketContext<Self>, login: String) {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
@@ -78,11 +68,30 @@ impl Session {
         let login_msg = Login {
             old_login: self.login.clone(),
             text: msg,
-            new_login: login.to_string(),
+            new_login: login.clone(),
             recipient: recipient,
         };
 
-        self.server.try_send(login_msg).unwrap();
+        self.server
+            .send(login_msg)
+            .into_actor(self)
+            .then(move |res, act, ctx| {
+                if let Ok(result) = res {
+                    match result {
+                        Ok(()) => {
+                            act.login = login.clone();
+                            ctx.text("Login is set");
+                        }
+                        Err(err) => {
+                            ctx.text(err);
+                        }
+                    }
+                } else {
+                    panic!("Something went wrong!");
+                }
+                fut::ready(())
+            })
+            .wait(ctx);
     }
 
     fn handle_cmd_list_users(&mut self, _: String, ctx: &mut ws::WebsocketContext<Self>) {
@@ -188,7 +197,6 @@ impl Session {
         room_name = room_name.trim().to_string();
 
         if room_name.trim() == "" {
-            // TODO send error message
             return;
         }
 
@@ -235,7 +243,7 @@ impl Session {
         // User that didn't pass registation can only run /login command
         if self.login == "" {
             if first_word == "/login" {
-                self.handle_login(ctx, &text[6..]);
+                self.handle_login(ctx, text[7..].to_string());
             }
         } else {
             match first_word {
@@ -250,7 +258,7 @@ impl Session {
                 }
                 "/list_rooms" => self.handle_cmd_list_rooms(ctx),
                 "/login" => {
-                    self.handle_login(ctx, &text[6..]);
+                    self.handle_login(ctx, text[7..].to_string());
                 }
                 "/list_users" => self.handle_cmd_list_users(text, ctx),
                 _ => {

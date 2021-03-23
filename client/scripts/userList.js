@@ -3,7 +3,7 @@ export async function displayUserList(jsonMsg) {
   userList.innerHTML = '';
 
   let users = jsonMsg.users;
-  // console.log('users = ', users);
+  console.log('users = ', users);
 
   for (const user of jsonMsg.users) {
     const userEntry = document.createElement('div');

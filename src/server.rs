@@ -11,7 +11,6 @@ pub const MAIN_ROOM_NAME: &'static str = "World";
 #[rtype(result = "usize")]
 pub enum SessionMessage {
     Text(String),
-    Login(Result<String, String>),
 }
 
 #[derive(Debug, Clone, Default)]
@@ -129,7 +128,7 @@ impl Actor for Server {
 }
 
 #[derive(Message)]
-#[rtype(result = "bool")]
+#[rtype(result = "Result<(), String>")]
 pub struct Login {
     pub new_login: String,
     pub recipient: Recipient<SessionMessage>,
@@ -141,26 +140,22 @@ impl Handler<Login> for Server {
     type Result = MessageResult<Login>;
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
         let recipient = msg.recipient;
-        let new_login = msg.new_login.trim().to_string();
+        let new_login = msg.new_login;
 
-        // TODO: Restrict maximum login length
-        if new_login == "" {
-            let msg = SessionMessage::Login(Err("Wrong login format!".to_string()));
-            recipient.try_send(msg).unwrap();
-            return MessageResult(false);
+        if new_login.chars().count() > 32 {
+            return MessageResult(Err(format!("Your login is too long!")));
+        }
+
+        if new_login.trim() == "" {
+            return MessageResult(Err(format!("Wrong login format!")));
         }
 
         let old_login = msg.old_login;
         let text = msg.text;
 
         if self.users.contains_key(&new_login) {
-            let msg = SessionMessage::Login(Err("Login exists!".to_string()));
-            recipient.try_send(msg).unwrap();
-            MessageResult(false)
+            MessageResult(Err(format!("Login exists!!")))
         } else {
-            let msg = SessionMessage::Login(Ok(new_login.clone()));
-            recipient.try_send(msg).unwrap();
-
             if old_login == "" {
                 self.add_user_to_main_room(new_login.clone());
             } else {
@@ -171,7 +166,7 @@ impl Handler<Login> for Server {
 
             self.send_msg_to_room(text, 0, &new_login);
 
-            MessageResult(true)
+            MessageResult(Ok(()))
         }
     }
 }
@@ -204,6 +199,8 @@ impl Handler<Leave> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Leave, _: &mut Self::Context) {
+        println!("leave hadnler! Login = {}", msg.login);
+
         let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
         cur_room.users.remove(&msg.login);
 

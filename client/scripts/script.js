@@ -96,6 +96,7 @@ async function start() {
 
   gSocket.send('/list_users');
   gSocket.send('/current_room');
+  gSocket.send('/list_rooms');
 
   gSocket.addEventListener('message', onSocketNewMsg);
 }
