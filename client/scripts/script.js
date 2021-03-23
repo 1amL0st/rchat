@@ -99,7 +99,7 @@ async function start() {
   gRoomList = new RoomList(gSocket);
   gSignInForm = new SignInForm(gSocket);
 
-  // gSignInForm.hide();
+  gSignInForm.hide();
   await gSignInForm.signIn(gSocket);
   gMsgTextArea.focus();
 

@@ -1,4 +1,8 @@
 .room-list {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
   height: 100%;
   margin: 0 16px;
 
@@ -15,20 +19,18 @@
   overflow-x: hidden;
 }
 
-.room-list__header {
-  min-width: max-content;
-  border-bottom: 1px solid black;
-}
-
 .room-list__create-btn {
-  margin: 16px 0 12px 0;
+  margin: 0px 0 12px 0;
   min-width: max-content;
 }
 
 .room-entry {
   min-width: max-content;
-  margin: 4px 0;
-  border-bottom: 1px solid black;
+  
+  margin: 1px 0;
+  padding: 4px 0px;
+  background-color: rgba(186, 194, 175, 0.404);
+  width: 100%;
 
   cursor: pointer;
 }

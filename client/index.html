@@ -19,14 +19,13 @@
 
     <div class="app flex-column">
       <header class="header flex-row">
+        <div  id="user-name-p" class="user-name"></div>
         <button id="leave-btn" class="button">Leave</button>
-        <div  id="user-name-p" class="user-name">User name</div>
       </header>
 
       <main class="main flex-row">
 
         <div class="room-list">
-          <div class="room-list__header">Rooms</div>
           <button id="create-room-btn" class="button room-list__create-btn">Create room</button>
           <div id="room-list" class="room-list__list">
             <div class="room-entry">R</div>
@@ -51,8 +50,10 @@
         </div>
 
         <div class="user-list">
-          <div class="user-list__header">Users</div>
-          <div id="user-list" class="user-list__list"></div>
+          <button id="invite-friend" class="button room-list__create-btn">Invite friend</button>
+          <div id="user-list" class="user-list__list">
+            <div class="user-entry">Some</div>
+          </div>
         </div>
 
       </main>

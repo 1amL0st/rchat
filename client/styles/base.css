@@ -11,7 +11,19 @@
 }
 
 .button {
+  background-color: rgba(211, 211, 211, 0.404);
+  color: black;
   
+  outline: none;
+  border-radius: 8px;
+  padding: 8px;
+  border: none;
+
+  cursor: pointer;
+}
+
+.list-header {
+  font-weight: bold;
 }
 
 .input {
@@ -28,7 +40,7 @@
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-color: lightgray;
+  background: linear-gradient(0deg, rgba(160, 180, 233), rgba(186, 194, 175));  
 }
 
 .popup-window--hidden {
@@ -38,7 +50,6 @@
 .popup-window__content {
   background-color: lightgray;
   padding: 16px;
-  border: 1px solid blue;
   box-shadow: 8px 8px 16px black;
 
   position: fixed;

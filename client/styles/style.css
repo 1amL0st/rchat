@@ -23,14 +23,22 @@ body {
   max-height: 100%;
   
   text-align: center;
+
+  background: linear-gradient(0deg, rgba(160, 180, 233, 0.397), rgba(186, 194, 175, 0.404));
 }
 
 * {
   font-size: 14px;
+  font-family: sans-serif;
+  
   box-sizing: border-box;
 }
 
 .app {
-  padding: 0 8px;
+  margin: 5%;
   height: 100%;
+  border-radius: 8px;
+
+  background-color: white;
+  overflow: hidden;
 }

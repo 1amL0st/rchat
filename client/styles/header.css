@@ -2,4 +2,7 @@
   padding: 16px;
   justify-content: space-between;
   width: 100%;
+
+  background-color: rgba(160, 180, 233, 0.397);
+  margin-bottom: 16px;
 }
