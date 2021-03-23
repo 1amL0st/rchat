@@ -206,6 +206,12 @@ impl Handler<Leave> for Server {
         let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
         cur_room.users.remove(&msg.login);
 
+        if msg.room_id != 0 && cur_room.users.len() == 0 {
+            self.rooms.remove(&msg.room_id);
+            let msg_text = message::make_room_list_update_notify();
+            self.send_msg_to_room(msg_text, 0, &msg.login);
+        }
+
         self.users.remove(&msg.login);
         let msg_text = message::make_leave_room_notify_msg(format!("User {} has left!", msg.login));
         self.send_msg_to_room(msg_text, msg.room_id, &String::new());

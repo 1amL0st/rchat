@@ -52,7 +52,11 @@ async function onSocketNewMsg(e) {
         break;
       case 'LeaveRoomNotify':
         gSocket.send('/list_users');
+      case 'RoomListUpdate':
+        gSocket.send('/list_rooms');
+        break;
       case "JoinRoomNotify":
+        gSocket.send('/list_rooms');
       case 'LoginChangeNotify':
         gInbox.onNewMsg(e.data);
         gSocket.send('/list_users');
@@ -61,7 +65,7 @@ async function onSocketNewMsg(e) {
         displayUserList(json);
         break;
       case 'CurRoom':
-        console.log('curRoom = ', json);
+        // console.log('curRoom = ', json);
         gRoomBar.onRoomNameMsg(json);
         break;
       case 'RoomList':
