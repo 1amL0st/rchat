@@ -1,14 +1,15 @@
 import { Inbox } from './inbox.js';
-import { showSignInForm, hideSignInForm } from './signInForm.js';
+import { SignInForm } from './signInForm.js';
 import { displayUserList } from './userList.js';
 import { MsgTextArea } from './msgTextArea.js';
 import { RoomBar } from './roomBar.js';
 import { RoomList } from './roomList.js';
 
 let gRoomList = null;
-const gMsgTextArea = new MsgTextArea(onSendMsg);
-const gInbox = new Inbox();
-const gRoomBar = new RoomBar();
+let gMsgTextArea = new MsgTextArea(onSendMsg);
+let gInbox = new Inbox();
+let gRoomBar = new RoomBar();
+let gSignInForm = null;
 
 let gSocket = null;
 let msgTextArea = document.getElementById('msg-textarea');
@@ -34,6 +35,12 @@ async function createSocket() {
   })
 }
 
+function updateData() {
+  gSocket.send('/list_users');
+  gSocket.send('/list_rooms');
+  gSocket.send('/current_room');
+}
+
 async function onSocketNewMsg(e) {
   if (e.data[0] == '{') {
     const json = JSON.parse(e.data);
@@ -47,9 +54,7 @@ async function onSocketNewMsg(e) {
         gSocket.send('/list_users');
       case "JoinNotify":
         gInbox.onNewMsg(e.data);
-        gSocket.send('/list_users');
-        gSocket.send('/list_rooms');
-        gSocket.send('/current_room');
+        updateData();
         break;
       case 'UserList':
         displayUserList(json);
@@ -68,10 +73,8 @@ async function onSocketNewMsg(e) {
   } else {
     if (e.data === 'Join to room!') {
       gInbox.clear();
-      gSocket.send('/current_room');
-      gSocket.send('/list_rooms');
-      gSocket.send('/list_users');
     }
+    updateData();
     console.log('Some non JSON msg = ', e.data);
   }
 }
@@ -89,9 +92,10 @@ async function start() {
   await createSocket();
 
   gRoomList = new RoomList(gSocket);
+  gSignInForm = new SignInForm(gSocket);
 
-  // hideSignInForm();
-  await showSignInForm(gSocket);
+  // gSignInForm.hide();
+  await gSignInForm.signIn(gSocket);
   gMsgTextArea.focus();
 
   gSocket.send('/list_users');

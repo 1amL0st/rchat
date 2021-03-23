@@ -133,6 +133,7 @@ pub struct Login {
     pub new_login: String,
     pub recipient: Recipient<SessionMessage>,
     pub text: String,
+    pub room_id: usize,
     pub old_login: String,
 }
 
@@ -151,8 +152,6 @@ impl Handler<Login> for Server {
         }
 
         let old_login = msg.old_login;
-        let text = msg.text;
-
         if self.users.contains_key(&new_login) {
             MessageResult(Err(format!("Login exists!!")))
         } else {
@@ -162,9 +161,12 @@ impl Handler<Login> for Server {
                 self.users.remove(&old_login);
             }
 
-            self.users.insert(new_login.clone(), recipient);
+            let room = self.rooms.get_mut(&msg.room_id).unwrap();
+            room.users.remove(&old_login);
+            room.users.insert(new_login.clone());
 
-            self.send_msg_to_room(text, 0, &new_login);
+            self.users.insert(new_login.clone(), recipient);
+            self.send_msg_to_room(msg.text, msg.room_id, &new_login);
 
             MessageResult(Ok(()))
         }
@@ -199,8 +201,6 @@ impl Handler<Leave> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Leave, _: &mut Self::Context) {
-        println!("leave hadnler! Login = {}", msg.login);
-
         let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
         cur_room.users.remove(&msg.login);
 

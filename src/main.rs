@@ -66,6 +66,7 @@ impl Session {
         };
 
         let login_msg = Login {
+            room_id: self.room_id,
             old_login: self.login.clone(),
             text: msg,
             new_login: login.clone(),
