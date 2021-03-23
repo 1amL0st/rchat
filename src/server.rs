@@ -111,14 +111,14 @@ impl Server {
         let to_room = self.rooms.get_mut(&to_room_id).unwrap();
         to_room.users.insert(login.clone());
 
-        let leave_msg = message::make_join_notify_msg(format!(
+        let leave_msg = message::make_join_room_notify_msg(format!(
             "User {} has joined room {}",
             login, to_room.name
         ));
         self.send_msg_to_room(leave_msg, cur_room_id, login);
 
         // TODO: Don't send this message to user itself...
-        let msg = message::make_join_notify_msg(format!("{} join!", login));
+        let msg = message::make_join_room_notify_msg(format!("{} join!", login));
         self.send_msg_to_room(msg, to_room_id, login);
     }
 }
@@ -159,6 +159,9 @@ impl Handler<Login> for Server {
                 self.add_user_to_main_room(new_login.clone());
             } else {
                 self.users.remove(&old_login);
+
+                let msg_text = message::make_login_change_notify_msg(&old_login, &new_login);
+                self.send_msg_to_room(msg_text, msg.room_id, &old_login);
             }
 
             let room = self.rooms.get_mut(&msg.room_id).unwrap();
@@ -166,7 +169,6 @@ impl Handler<Login> for Server {
             room.users.insert(new_login.clone());
 
             self.users.insert(new_login.clone(), recipient);
-            self.send_msg_to_room(msg.text, msg.room_id, &new_login);
 
             MessageResult(Ok(()))
         }
@@ -205,7 +207,7 @@ impl Handler<Leave> for Server {
         cur_room.users.remove(&msg.login);
 
         self.users.remove(&msg.login);
-        let msg_text = message::make_leave_notify_msg(format!("User {} has left!", msg.login));
+        let msg_text = message::make_leave_room_notify_msg(format!("User {} has left!", msg.login));
         self.send_msg_to_room(msg_text, msg.room_id, &String::new());
     }
 }

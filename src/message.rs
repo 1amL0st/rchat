@@ -7,24 +7,6 @@ pub fn make_text_msg(author: String, text: String) -> String {
     .to_string()
 }
 
-pub fn make_leave_notify_msg(text: String) -> String {
-    serde_json::json!({
-        "type": "LeaveNotify",
-        "author": "Server",
-        "text": text
-    })
-    .to_string()
-}
-
-pub fn make_join_notify_msg(text: String) -> String {
-    serde_json::json!({
-        "type": "JoinNotify",
-        "author": "Server",
-        "text": text
-    })
-    .to_string()
-}
-
 pub fn make_user_list_msg(users: &Vec<String>) -> String {
     serde_json::json!({
         "type": "UserList",
@@ -54,6 +36,33 @@ pub fn make_server_msg(text: String) -> String {
         "type": "ServerMsg",
         "author": "Server",
         "text": text
+    })
+    .to_string()
+}
+
+pub fn make_join_room_notify_msg(text: String) -> String {
+    serde_json::json!({
+        "type": "JoinRoomNotify",
+        "author": "Server",
+        "text": text
+    })
+    .to_string()
+}
+
+pub fn make_leave_room_notify_msg(text: String) -> String {
+    serde_json::json!({
+        "type": "LeaveRoomNotify",
+        "author": "Server",
+        "text": text
+    })
+    .to_string()
+}
+
+pub fn make_login_change_notify_msg(old_login: &String, new_login: &String) -> String {
+    serde_json::json!({
+        "type": "LoginChangeNotify",
+        "author": "Server",
+        "text": format!("User {} has changed its name to {}!", old_login, new_login)
     })
     .to_string()
 }

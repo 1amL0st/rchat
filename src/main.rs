@@ -57,7 +57,7 @@ impl Session {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            message::make_join_notify_msg(format!("User {} joined!", login))
+            message::make_join_room_notify_msg(format!("User {} joined!", login))
         } else {
             message::make_text_msg(
                 "Server".to_string(),
@@ -80,8 +80,17 @@ impl Session {
                 if let Ok(result) = res {
                     match result {
                         Ok(()) => {
+                            let old_login = act.login.clone();
                             act.login = login.clone();
+
                             ctx.text("Login is set");
+
+                            if old_login == "" {
+                                ctx.text(message::make_server_msg(format!(
+                                    "Dear {}! Welcome to rchat!",
+                                    login
+                                )));
+                            }
                         }
                         Err(err) => {
                             ctx.text(err);
@@ -214,7 +223,7 @@ impl Session {
                         Ok(id) => {
                             act.room_id = id;
 
-                            let msg = message::make_join_notify_msg(format!(
+                            let msg = message::make_join_room_notify_msg(format!(
                                 "You joined room {}",
                                 room_name
                             ));

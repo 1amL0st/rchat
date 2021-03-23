@@ -50,11 +50,12 @@ async function onSocketNewMsg(e) {
       case "TextMsg":
         gInbox.onNewMsg(e.data);
         break;
-      case 'LeaveNotify':
+      case 'LeaveRoomNotify':
         gSocket.send('/list_users');
-      case "JoinNotify":
+      case "JoinRoomNotify":
+      case 'LoginChangeNotify':
         gInbox.onNewMsg(e.data);
-        updateData();
+        gSocket.send('/list_users');
         break;
       case 'UserList':
         displayUserList(json);
