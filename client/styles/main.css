@@ -39,7 +39,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: rgba(160, 180, 233, 0.397);
+  background-color: var(--main-blue-rgba);
 }
 
 .msg-input__textarea {

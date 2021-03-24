@@ -1,0 +1,22 @@
+.popup-window {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
+  background: linear-gradient(0deg, var(--main-blue-rgba), var(--main-gray-rgba));
+}
+
+.popup-window--hidden {
+  visibility: hidden;
+}
+
+.popup-window__content {
+  background-color: lightgray;
+  padding: 16px;
+  box-shadow: 8px 8px 16px black;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

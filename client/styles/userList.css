@@ -23,9 +23,9 @@
 .user-entry {
   min-width: max-content;
   cursor: pointer;
-  
+
   margin: 1px 0;
   padding: 4px 0px;
-  background-color: rgba(186, 194, 175, 0.404);
+  background-color: var(--main-gray-rgba);
   width: 100%;
 }
