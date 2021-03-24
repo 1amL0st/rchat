@@ -13,6 +13,7 @@ use server::{
 };
 
 use messages::server_msgs as serverMsgs;
+use messages::data_msgs as dataMsgs;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -115,7 +116,7 @@ impl Session {
             .then(|res, _, ctx| {
                 match res {
                     Ok(users) => {
-                        let msg = messages::make_user_list_msg(&users);
+                        let msg = dataMsgs::user_list_msg(&users);
                         ctx.text(msg);
                     }
                     _ => println!("Something went wrong!"),
@@ -134,7 +135,7 @@ impl Session {
             .then(|res, _, ctx| {
                 match res {
                     Ok(room_name) => {
-                        let msg = messages::make_current_room_msg(room_name);
+                        let msg = dataMsgs::current_room_msg(room_name);
                         ctx.text(msg);
                     }
                     _ => println!("Something is wrong"),
@@ -166,8 +167,7 @@ impl Session {
                     match result {
                         Ok(room_id) => {
                             act.room_id = room_id;
-                            ctx.text("Join to room!");
-
+                            
                             let m = room_name;
                             let text = format!("You joined room {}", m);
                             ctx.text(serverMsgs::user_joined_room(text));
@@ -191,7 +191,7 @@ impl Session {
             .into_actor(self)
             .then(|res, _, ctx| {
                 if let Ok(result) = res {
-                    let msg = messages::make_rooms_list_msg(&result);
+                    let msg = dataMsgs::room_list_msg(&result);
                     ctx.text(msg);
                 } else {
                     panic!("Something wenеt wrong!")

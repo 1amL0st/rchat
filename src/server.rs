@@ -5,6 +5,7 @@ use actix::{Actor, Handler};
 
 use super::messages;
 use super::messages::server_msgs as serverMsgs;
+use super::messages::data_msgs as dataMsgs;
 
 pub const MAIN_ROOM_NAME: &'static str = "World";
 pub const MAIN_ROOM_ID: usize = 0;
@@ -338,7 +339,7 @@ impl Handler<CreateRoom> for Server {
         );
 
         self.move_user_to_room(room_id, msg.cur_room_id, &msg.login);
-        self.send_to_main_room(messages::make_rooms_list_msg(&self.get_room_list()));
+        self.send_to_main_room(dataMsgs::room_list_msg(&self.get_room_list()));
         MessageResult(Ok(room_id))
     }
 }

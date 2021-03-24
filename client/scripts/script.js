@@ -41,80 +41,89 @@ function updateData() {
   gSocket.send('/current_room');
 }
 
-async function onSocketNewMsg(e) {
-  if (e.data[0] == '{') {
-    const json = JSON.parse(e.data);
-
-    console.log('JSON MSG = ', json);
-
-    if (json.type === 'ServerMsg') {
-      switch (json.subType) {
-        case 'UserJoinedRoom':
-          console.log('UserJoinedRoom.text = ', json.text);
-          if (json.text.startsWith('You joined room')) {
-            // NOTE: You can just leave 'main' room in the roomList
-            gSocket.send('/current_room');
-            gSocket.send('/list_rooms');
-            gInbox.clear();
-          }
-          // NOTE: You can get new users' login here and just add it to userList
-          gSocket.send('/list_users');
-          break;
-        case 'UserLeftRoom':
-          // NOTE: You can get new users' login here and just add it to userList
-          gSocket.send('/list_users');
-          break;
-        case 'UserConnected':
-          // NOTE: You can get new users' login here and just add it to userList
-          gSocket.send('/list_users');
-          if (json.text === 'Someone connected!') {
-            return;
-          }
-          break;
-        case 'RoomCreationFail':
-          break;
-        case 'SomeoneConnected':
-          gSocket.send('/list_users');
-          break;
-        default:
-          console.log('Unknown msg subtype! Msg = ', json);
-          break;
-      }
-
-      json.author = 'Server';
-      const msg = JSON.stringify(json);
-      gInbox.onNewMsg(msg);
-
-      return;
-    }
-
-    switch (json.type) {
-      case "TextMsg":
-        gInbox.onNewMsg(e.data);
-        break;
-      case 'RoomListUpdate':
+function handleServerMsg(json) {
+  switch (json.subType) {
+    case 'UserJoinedRoom':
+      console.log('UserJoinedRoom.text = ', json.text);
+      if (json.text.startsWith('You joined room')) {
+        // NOTE: You can just leave 'main' room in the roomList
+        gSocket.send('/current_room');
         gSocket.send('/list_rooms');
-        break;
-      case 'LoginChangeNotify':
-        gInbox.onNewMsg(e.data);
-        gSocket.send('/list_users');
-        break;
-      case 'UserList':
-        displayUserList(json);
-        break;
-      case 'CurRoom':
-        // console.log('curRoom = ', json);
-        gRoomBar.onRoomNameMsg(json);
-        break;
-      case 'RoomList':
-        gRoomList.displayRoomList(json, gSocket);
-        break;
-      default:
-        console.warn("UNKNOWN MESSAGE TYPE = ", json.type);
-        break;
-    }
+        gInbox.clear();
+      }
+      // NOTE: You can get new users' login here and just add it to userList
+      gSocket.send('/list_users');
+      break;
+    case 'UserLeftRoom':
+      // NOTE: You can get new users' login here and just add it to userList
+      gSocket.send('/list_users');
+      break;
+    case 'UserConnected':
+      // NOTE: You can get new users' login here and just add it to userList
+      gSocket.send('/list_users');
+      if (json.text === 'Someone connected!') {
+        return;
+      }
+      break;
+    case 'RoomCreationFail':
+      break;
+    case 'SomeoneConnected':
+      gSocket.send('/list_users');
+      break;
+    default:
+      console.log('Unknown msg subtype! Msg = ', json);
+      break;
+  }
+
+  json.author = 'Server';
+  const msg = JSON.stringify(json);
+  gInbox.onNewMsg(msg);
+}
+
+function handleDataMsg(json) {
+  switch (json.subType) {
+    case 'UserList':
+    displayUserList(json);
+    break;
+    case 'CurRoom':
+      // console.log('curRoom = ', json);
+      gRoomBar.onRoomNameMsg(json);
+      break;
+    case 'RoomList':
+      gRoomList.displayRoomList(json, gSocket);
+      break;
+    default:
+      console.warn("Unkown DataMsg subtype! Msg = ", json);
+      break;
+  }
+}
+
+function handleDataChanged(json) {
+  switch (json.subType) {
+    case 'LoginChangeNotify':
+      gSocket.sendMsg('/list_users');
+      break;
+    case 'RoomListUpdate':
+      gSocket.sendMsg('/list_rooms');
+      break;
+    default: 
+      console.warn("Unkown DataChanged subtype! Msg = ", json);
+      break;
+  }
+}
+
+async function onSocketNewMsg(e) {
+  const json = JSON.parse(e.data);
+  console.log('JSON MSG = ', json);
+
+  if (json.type === 'ServerMsg') {
+    handleServerMsg(json);
+  } else if (json.type == 'DataMsg') {
+    handleDataMsg(json);
+  } else if (json.type == 'DataChanged') {
+    handleDataChanged(json);
   } else {
-    console.log('Some non JSON msg = ', e.data);
+    gInbox.onNewMsg(e.data);
   }
 }
 
