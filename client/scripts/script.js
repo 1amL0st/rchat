@@ -53,21 +53,19 @@ function handleServerMsg(json) {
     case 'UserJoinedRoom':
       console.log('UserJoinedRoom.text = ', json.text);
       if (json.text.startsWith('You joined room')) {
+        // NOTE: You can get new users' login here and just add it to userList
         // NOTE: You can just leave 'main' room in the roomList
         gSocket.send('/current_room');
         gSocket.send('/list_rooms');
         gInbox.clear();
       }
-      // NOTE: You can get new users' login here and just add it to userList
       gSocket.send('/list_users');
       break;
     case 'UserLeftRoom':
-      // NOTE: You can get new users' login here and just add it to userList
-      gSocket.send('/list_users');
+      gSocket.send('/list_users'); // NOTE: 
       break;
     case 'UserConnected':
-      // NOTE: You can get new users' login here and just add it to userList
-      gSocket.send('/list_users');
+      gSocket.send('/list_users'); // NOTE:
       if (json.text === 'Someone connected!') {
         return;
       }

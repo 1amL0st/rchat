@@ -120,7 +120,6 @@ impl Server {
         ));
         self.send_msg_to_room(leave_msg, cur_room_id, login);
 
-        // TODO: Don't send this message to user itself...
         let msg = serverMsgs::user_joined_room(format!("User {} joined room!", login));
         self.send_msg_to_room(msg, to_room_id, login);
     }
@@ -216,13 +215,11 @@ impl Handler<Leave> for Server {
 
         if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
             self.rooms.remove(&msg.room_id);
-            // NOTE: I can send message that contains only name of removed room. And remove this room from the roomList on client side
             let msg_text = messages::make_room_list_update_notify();
             self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &msg.login);
         }
 
         self.users.remove(&msg.login);
-        // let msg_text = message::make_leave_room_notify_msg(format!("User {} has left!", msg.login));
         let msg_text = serverMsgs::user_left_room(&msg.login);
         self.send_msg_to_room(msg_text, msg.room_id, &String::new());
     }
@@ -328,8 +325,11 @@ impl Handler<CreateRoom> for Server {
             }
         }
 
-        // TODO: Might generate same ids
-        let room_id = rand::random::<usize>();
+        let mut room_id = rand::random::<usize>();
+        while self.rooms.contains_key(&room_id) {
+            room_id = rand::random::<usize>();
+        }
+
         self.rooms.insert(
             room_id,
             Room {
