@@ -24,6 +24,9 @@ cd rchat
 ```shell
 cargo run
 ```
-4. Open browser and go to localhost:8080
+4. Open browser and go to 
+```shell
+localhost:8080
+```
 
 ## Thanks for any feedback ##
