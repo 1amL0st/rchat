@@ -116,7 +116,7 @@ impl Session {
                         let msg = message::make_user_list_msg(&users);
                         ctx.text(msg);
                     }
-                    _ => println!("Something is wrong"),
+                    _ => println!("Something went wrong!"),
                 }
                 fut::ready(())
             })
@@ -148,7 +148,7 @@ impl Session {
         mut room_name: String,
     ) {
         room_name = room_name.trim().to_string();
-        if self.room_id == 0 && room_name == server::MAIN_ROOM_NAME {
+        if self.room_id == server::MAIN_ROOM_ID && room_name == server::MAIN_ROOM_NAME {
             return;
         }
 
@@ -250,7 +250,7 @@ impl Session {
         let first_word = text.chars().take_while(|c| *c != ' ').collect::<String>();
         let first_word = first_word.as_str();
 
-        // User that didn't pass registation can only run /login command
+        // Check if user choose a login
         if self.login == "" {
             if first_word == "/login" {
                 self.handle_login(ctx, text[7..].to_string());

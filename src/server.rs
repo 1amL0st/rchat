@@ -6,6 +6,7 @@ use actix::{Actor, Handler};
 use super::message;
 
 pub const MAIN_ROOM_NAME: &'static str = "World";
+pub const MAIN_ROOM_ID: usize = 0;
 
 #[derive(Message)]
 #[rtype(result = "usize")]
@@ -30,14 +31,14 @@ impl Server {
         let mut rooms = HashMap::new();
 
         rooms.insert(
-            0,
+            MAIN_ROOM_ID,
             Room {
                 name: String::from(MAIN_ROOM_NAME),
                 users: HashSet::new(),
             },
         );
 
-        // NOTE: This code must be removed
+        // TODO: This code must be removed
         rooms.insert(
             1,
             Room {
@@ -104,7 +105,7 @@ impl Server {
         let current_room = self.rooms.get_mut(&cur_room_id).unwrap();
         current_room.users.remove(login);
 
-        if current_room.users.len() == 0 && cur_room_id != 0 {
+        if current_room.users.len() == 0 && cur_room_id != MAIN_ROOM_ID {
             self.rooms.remove(&cur_room_id);
         }
 
@@ -206,7 +207,7 @@ impl Handler<Leave> for Server {
         let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
         cur_room.users.remove(&msg.login);
 
-        if msg.room_id != 0 && cur_room.users.len() == 0 {
+        if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
             self.rooms.remove(&msg.room_id);
             let msg_text = message::make_room_list_update_notify();
             self.send_msg_to_room(msg_text, 0, &msg.login);
@@ -261,8 +262,7 @@ impl Handler<JoinRoom> for Server {
     type Result = MessageResult<JoinRoom>;
 
     fn handle(&mut self, msg: JoinRoom, _: &mut Context<Self>) -> Self::Result {
-        // Check if user is in main room or trying to join main room
-        if msg.cur_room_id != 0 && msg.room_name != MAIN_ROOM_NAME {
+        if msg.cur_room_id != MAIN_ROOM_ID && msg.room_name != MAIN_ROOM_NAME {
             return MessageResult(Err(format!(
                 "You can join other rooms only from {} room!",
                 MAIN_ROOM_NAME
@@ -292,7 +292,7 @@ impl Handler<ListRooms> for Server {
     type Result = MessageResult<ListRooms>;
 
     fn handle(&mut self, msg: ListRooms, _: &mut Self::Context) -> Self::Result {
-        if msg.cur_room_id != 0 {
+        if msg.cur_room_id != MAIN_ROOM_ID {
             let rooms = vec![String::from(MAIN_ROOM_NAME)];
             MessageResult(rooms)
         } else {
@@ -319,7 +319,7 @@ impl Handler<CreateRoom> for Server {
             }
         }
 
-        // NOTE: Might generate same ids
+        // TODO: Might generate same ids
         let room_id = rand::random::<usize>();
         self.rooms.insert(
             room_id,
