@@ -168,7 +168,7 @@ impl Handler<Login> for Server {
             } else {
                 self.users.remove(&old_login);
 
-                let msg_text = messages::make_login_change_notify_msg(&old_login, &new_login);
+                let msg_text = serverMsgs::user_changed_login(&old_login, &new_login);
                 self.send_msg_to_room(msg_text, msg.room_id, &old_login);
             }
 

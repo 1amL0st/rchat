@@ -86,7 +86,7 @@ impl Session {
                             let old_login = act.login.clone();
                             act.login = login.clone();
 
-                            ctx.text(serverMsgs::logging_success());
+                            ctx.text(serverMsgs::logging_success(&login));
 
                             if old_login == "" {
                                 ctx.text(serverMsgs::user_connected(&format!(
@@ -167,7 +167,7 @@ impl Session {
                     match result {
                         Ok(room_id) => {
                             act.room_id = room_id;
-                            
+
                             let m = room_name;
                             let text = format!("You joined room {}", m);
                             ctx.text(serverMsgs::user_joined_room(text));

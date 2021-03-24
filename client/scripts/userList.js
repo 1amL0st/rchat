@@ -1,15 +1,28 @@
-export async function displayUserList(jsonMsg) {
-  const userList = document.getElementById('user-list');
-  userList.innerHTML = '';
+export function UserList() {
+  this.userListElement = document.getElementById('user-list');
+  this.users = [];
 
-  let users = jsonMsg.users;
-  // console.log('users = ', users);
+  this.show = (users) => {
+    this.userListElement.innerHTML = '';
+    this.users = users;
 
-  for (const user of jsonMsg.users) {
-    const userEntry = document.createElement('div');
-    userEntry.innerHTML = user;
-    
-    userEntry.classList.add('user-entry');
-    userList.appendChild(userEntry)
+    for (const user of users) {
+      const userEntry = document.createElement('div');
+      userEntry.innerHTML = user;
+      
+      userEntry.classList.add('user-entry');
+      this.userListElement.appendChild(userEntry)  
+    }
+  }
+
+  this.userChangedLogin = (oldLogin, newLogin) => {
+    this.users = this.users.map(user => {
+      if (user == oldLogin) {
+        return newLogin;
+      }
+      return user;
+    });
+
+    this.show(this.users);
   }
 }
