@@ -57,6 +57,7 @@ async function onSocketNewMsg(e) {
         break;
       case "JoinRoomNotify":
         gSocket.send('/list_rooms');
+        
       case 'LoginChangeNotify':
         gInbox.onNewMsg(e.data);
         gSocket.send('/list_users');
@@ -76,6 +77,9 @@ async function onSocketNewMsg(e) {
         break;
     }
   } else {
+    if (e.data === 'Someone connected!') {
+      gSocket.send('/list_users');
+    }
     if (e.data === 'Join to room!') {
       gInbox.clear();
     }
@@ -119,7 +123,7 @@ async function start() {
   // });
   // gInbox.onNewMsg(msgText);
 
-  gSignInForm.hide();
+  // gSignInForm.hide();
   await gSignInForm.signIn(gSocket);
   gMsgTextArea.focus();
 

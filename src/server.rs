@@ -146,9 +146,7 @@ impl Handler<Login> for Server {
 
         if new_login.chars().count() > 32 {
             return MessageResult(Err(format!("Your login is too long!")));
-        }
-
-        if new_login.trim() == "" {
+        } else if new_login.trim() == "" {
             return MessageResult(Err(format!("Wrong login format!")));
         }
 
@@ -158,6 +156,7 @@ impl Handler<Login> for Server {
         } else {
             if old_login == "" {
                 self.add_user_to_main_room(new_login.clone());
+                self.send_msg_to_room(format!("Someone connected!"), MAIN_ROOM_ID, &new_login);
             } else {
                 self.users.remove(&old_login);
 
@@ -210,7 +209,7 @@ impl Handler<Leave> for Server {
         if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
             self.rooms.remove(&msg.room_id);
             let msg_text = message::make_room_list_update_notify();
-            self.send_msg_to_room(msg_text, 0, &msg.login);
+            self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &msg.login);
         }
 
         self.users.remove(&msg.login);

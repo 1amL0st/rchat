@@ -27,13 +27,13 @@ export function SignInForm(socket) {
         }
       })
   
-      function socketMsgHandler(msg) {
+      const socketMsgHandler = (msg) => {
         console.log('SocketMsgHandler = ', msg.data);
         if (msg.data == 'Login is set') {
           successSignIn();
           signInBtn.removeEventListener('click', signInBtnClickHandler);
         } else {
-          showSignInErr(msg.data);
+          this.showError(msg.data);
         }
       }
   

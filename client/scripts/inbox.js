@@ -3,11 +3,11 @@ import { createMessageElement} from './message.js'
 export function Inbox() {
   this.inboxElement = document.getElementById('inbox-msgs');
 
-  this.onNewMsg = (jsonMsg) => {
-    console.log('onNewMsg = ', jsonMsg);
+  this.onNewMsg = (rawMsgText) => {
+    console.log('onNewMsg = ', rawMsgText);
     
     let inbox = this.inboxElement;
-    let msgElement = createMessageElement(jsonMsg);
+    let msgElement = createMessageElement(rawMsgText);
     inbox.appendChild(msgElement);
 
     inbox.scroll(0, inbox.scrollHeight);
