@@ -1,15 +1,19 @@
 import { Inbox } from './inbox.js';
 import { SignInForm } from './signInForm.js';
-import { displayUserList } from './userList.js';
+import { UserList } from './userList.js';
 import { MsgTextArea } from './msgTextArea.js';
 import { RoomBar } from './roomBar.js';
 import { RoomList } from './roomList.js';
+import { User } from './user.js';
 
+const gUser = new User();
+let gUserList = new UserList();
 let gRoomList = null;
 let gMsgTextArea = new MsgTextArea(onSendMsg);
 let gInbox = new Inbox();
 let gRoomBar = new RoomBar();
 let gSignInForm = null;
+let gUserLogin = "";
 
 let gSocket = null;
 let msgTextArea = document.getElementById('msg-textarea');
@@ -43,6 +47,9 @@ function updateData() {
 
 function handleServerMsg(json) {
   switch (json.subType) {
+    case 'LoginChangeNotify':
+      gUserList.userChangedLogin(json.oldLogin, json.newLogin);
+      break;
     case 'UserJoinedRoom':
       console.log('UserJoinedRoom.text = ', json.text);
       if (json.text.startsWith('You joined room')) {
@@ -70,8 +77,14 @@ function handleServerMsg(json) {
     case 'SomeoneConnected':
       gSocket.send('/list_users');
       break;
+    case 'LoggingSuccess':
+      gUserList.userChangedLogin(gUserLogin, json.login);
+      gUser.setLogin(json.login);
+      return;
+    case 'LogginFailed':
+      return;
     default:
-      console.log('Unknown msg subtype! Msg = ', json);
+      console.log('Unknown ServerMsg subtype! Msg = ', json);
       break;
   }
 
@@ -83,8 +96,9 @@ function handleServerMsg(json) {
 function handleDataMsg(json) {
   switch (json.subType) {
     case 'UserList':
-    displayUserList(json);
-    break;
+      console.log('json = ', json);
+      gUserList.show(json.users);
+      break;
     case 'CurRoom':
       // console.log('curRoom = ', json);
       gRoomBar.onRoomNameMsg(json);
@@ -98,11 +112,8 @@ function handleDataMsg(json) {
   }
 }
 
-function handleDataChanged(json) {
+function handleDataChanged(rawMsg, json) {
   switch (json.subType) {
-    case 'LoginChangeNotify':
-      gSocket.sendMsg('/list_users');
-      break;
     case 'RoomListUpdate':
       gSocket.sendMsg('/list_rooms');
       break;
@@ -121,7 +132,7 @@ async function onSocketNewMsg(e) {
   } else if (json.type == 'DataMsg') {
     handleDataMsg(json);
   } else if (json.type == 'DataChanged') {
-    handleDataChanged(json);
+    handleDataChanged(e.data, json);
   } else {
     gInbox.onNewMsg(e.data);
   }
@@ -163,7 +174,8 @@ async function start() {
   // gInbox.onNewMsg(msgText);
 
   // gSignInForm.hide();
-  await gSignInForm.signIn(gSocket);
+  const login = await gSignInForm.signIn(gSocket);
+  gUser.setLogin(login);
   gMsgTextArea.focus();
 
   updateData();

@@ -1,7 +1,7 @@
 export function SignInForm(socket) {
   this.socket = socket;
 
-  this.signIn = async function() {
+  this.signIn = async () => {
     return new Promise((resolve, reject) => {
       let gSocket = this.socket;
 
@@ -15,9 +15,8 @@ export function SignInForm(socket) {
   
       const successSignIn = () => {
         gSocket.removeEventListener('message', socketMsgHandler);
-        document.getElementById('user-name-p').innerHTML = loginInput.value;
         this.hide();
-        resolve();
+        resolve(loginInput.value);
       }
   
       loginInput.addEventListener('keydown', (e) => {
@@ -36,11 +35,6 @@ export function SignInForm(socket) {
           signInBtn.removeEventListener('click', signInBtnClickHandler);
         } else {
           this.showError(json.text);
-        }
-        
-        if (msg.data == 'Login is set') {
-        } else {
-          
         }
       }
   

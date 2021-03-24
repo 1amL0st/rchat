@@ -10,16 +10,6 @@ pub fn make_text_msg(author: String, text: String) -> String {
     .to_string()
 }
 
-pub fn make_login_change_notify_msg(old_login: &String, new_login: &String) -> String {
-    serde_json::json!({
-        "type": "DataChanged",
-        "subType": "LoginChangeNotify",
-        "author": "Server",
-        "text": format!("User {} has changed its name to {}!", old_login, new_login)
-    })
-    .to_string()
-}
-
 pub fn make_room_list_update_notify() -> String {
     serde_json::json!({
         "type": "DataChanged",

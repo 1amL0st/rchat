@@ -9,7 +9,7 @@ Simple chat app based on websockets
 ### Backend ###
 1. Rust with Actix framework
 ### Frontend ###
-1. Vanila JS
+1. Vanilla JS
 
 ## How to run it ##
 1. Clone repository: 
