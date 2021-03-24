@@ -11,7 +11,7 @@ export function createMessageElement(msgText) {
     ${msgJSON.author}
   </div>
   <div class="message__text">
-    <p>${text}</p>
+    ${text}
   </div>
   `
 

@@ -1,8 +1,9 @@
 .message {
   display: flex;
   flex-direction: column;
+  
   background-color: lightgray;
-  box-shadow: 4px 4px 8px darkgray;
+  box-shadow: 2px 2px 8px darkgray;
 
   border-radius: 16px 0px 16px 0;
   padding: 8px;

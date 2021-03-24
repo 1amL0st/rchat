@@ -87,7 +87,7 @@ impl Session {
 
                             if old_login == "" {
                                 ctx.text(message::make_server_msg(format!(
-                                    "Dear {}! Welcome to rchat!",
+                                    "{}, welcome to rchat!",
                                     login
                                 )));
                             }

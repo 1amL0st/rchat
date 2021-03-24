@@ -84,6 +84,20 @@ async function onSocketNewMsg(e) {
   }
 }
 
+document.getElementById('invite-friend').addEventListener('click', function () {
+  const dummy = document.createElement('input');
+
+  document.body.appendChild(dummy);
+  dummy.value = window.location.href;
+  dummy.select();
+  document.execCommand('copy');
+  document.body.removeChild(dummy);
+
+  alert("Link copied!")
+
+  gMsgTextArea.focus();
+});
+
 function onSendMsg(msg) {
   if (msg.startsWith('/leave')) {
     leaveCommand();
@@ -99,13 +113,17 @@ async function start() {
   gRoomList = new RoomList(gSocket);
   gSignInForm = new SignInForm(gSocket);
 
+  // const msgText = JSON.stringify({
+  //   'author': 'Server',
+  //   'text': 'Some test message!'
+  // });
+  // gInbox.onNewMsg(msgText);
+
   gSignInForm.hide();
   await gSignInForm.signIn(gSocket);
   gMsgTextArea.focus();
 
-  gSocket.send('/list_users');
-  gSocket.send('/current_room');
-  gSocket.send('/list_rooms');
+  updateData();
 
   gSocket.addEventListener('message', onSocketNewMsg);
 }

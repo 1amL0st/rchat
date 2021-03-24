@@ -11,7 +11,7 @@
 }
 
 .button {
-  background-color: rgba(211, 211, 211, 0.404);
+  background-color: rgba(160, 180, 233, 0.397);
   color: black;
   
   outline: none;
@@ -40,7 +40,8 @@
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(0deg, rgba(160, 180, 233), rgba(186, 194, 175));  
+  background: linear-gradient(0deg, rgba(160, 180, 233), rgba(186, 194, 175));
+  background: linear-gradient(0deg, rgba(160, 180, 233, 0.397), rgba(186, 194, 175, 0.404))
 }
 
 .popup-window--hidden {

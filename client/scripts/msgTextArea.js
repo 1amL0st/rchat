@@ -8,11 +8,12 @@ export function MsgTextArea(onSend) {
     }
   });
 
-  document.getElementById('msg-text-area-send-btn').addEventListener('click', onSendMsgBtn);
+  document.getElementById('msg-text-area-send-btn').addEventListener('click', onSendMsgBtn.bind(this));
 
   function onSendMsgBtn() {
     onSend(this.textAreaElement.value);
     this.textAreaElement.value = '';
+    this.focus();
   }
 
   this.focus = function() {
