@@ -5,12 +5,14 @@ use actix_files::Files;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
-mod message;
+mod messages;
 mod server;
 
 use server::{
     CreateRoom, CurrentRoom, JoinRoom, Leave, ListRooms, Login, Server, SessionMessage, TextMsg,
 };
+
+use messages::server_msgs as serverMsgs;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -57,9 +59,9 @@ impl Session {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            message::make_join_room_notify_msg(format!("User {} joined!", login))
+            serverMsgs::user_joined_room(format!("User {} joined!", login))
         } else {
-            message::make_text_msg(
+            messages::make_text_msg(
                 "Server".to_string(),
                 format!("User {} has changed its name to {}!", self.login, login),
             )
@@ -83,11 +85,11 @@ impl Session {
                             let old_login = act.login.clone();
                             act.login = login.clone();
 
-                            ctx.text("Login is set");
+                            ctx.text(serverMsgs::logging_success());
 
                             if old_login == "" {
-                                ctx.text(message::make_server_msg(format!(
-                                    "{}, welcome to rchat!",
+                                ctx.text(serverMsgs::user_connected(&format!(
+                                    "{}, you're connected! Welcome to rchat!",
                                     login
                                 )));
                             }
@@ -113,7 +115,7 @@ impl Session {
             .then(|res, _, ctx| {
                 match res {
                     Ok(users) => {
-                        let msg = message::make_user_list_msg(&users);
+                        let msg = messages::make_user_list_msg(&users);
                         ctx.text(msg);
                     }
                     _ => println!("Something went wrong!"),
@@ -132,7 +134,7 @@ impl Session {
             .then(|res, _, ctx| {
                 match res {
                     Ok(room_name) => {
-                        let msg = message::make_current_room_msg(room_name);
+                        let msg = messages::make_current_room_msg(room_name);
                         ctx.text(msg);
                     }
                     _ => println!("Something is wrong"),
@@ -168,7 +170,7 @@ impl Session {
 
                             let m = room_name;
                             let text = format!("You joined room {}", m);
-                            ctx.text(message::make_server_msg(text));
+                            ctx.text(serverMsgs::user_joined_room(text));
                         }
                         Err(err) => ctx.text(err),
                     }
@@ -189,10 +191,10 @@ impl Session {
             .into_actor(self)
             .then(|res, _, ctx| {
                 if let Ok(result) = res {
-                    let msg = message::make_rooms_list_msg(&result);
+                    let msg = messages::make_rooms_list_msg(&result);
                     ctx.text(msg);
                 } else {
-                    panic!("Something wen wrong!")
+                    panic!("Something wenеt wrong!")
                 }
                 fut::ready(())
             })
@@ -223,16 +225,15 @@ impl Session {
                         Ok(id) => {
                             act.room_id = id;
 
-                            let msg = message::make_join_room_notify_msg(format!(
+                            let msg = serverMsgs::user_joined_room(format!(
                                 "You joined room {}",
                                 room_name
                             ));
-
                             ctx.text(msg);
                         }
                         Err(err) => {
-                            let msg = message::make_server_msg(format!(
-                                "Couldn't create room! Error text {}",
+                            let msg = serverMsgs::room_creation_fail(format!(
+                                "Couldn't create room! {}",
                                 err
                             ));
                             ctx.text(msg);

@@ -3,7 +3,8 @@ use std::collections::{HashMap, HashSet};
 use actix::prelude::*;
 use actix::{Actor, Handler};
 
-use super::message;
+use super::messages;
+use super::messages::server_msgs as serverMsgs;
 
 pub const MAIN_ROOM_NAME: &'static str = "World";
 pub const MAIN_ROOM_ID: usize = 0;
@@ -112,14 +113,14 @@ impl Server {
         let to_room = self.rooms.get_mut(&to_room_id).unwrap();
         to_room.users.insert(login.clone());
 
-        let leave_msg = message::make_join_room_notify_msg(format!(
+        let leave_msg = serverMsgs::user_left_room_custom_text(&format!(
             "User {} has joined room {}",
             login, to_room.name
         ));
         self.send_msg_to_room(leave_msg, cur_room_id, login);
 
         // TODO: Don't send this message to user itself...
-        let msg = message::make_join_room_notify_msg(format!("{} join!", login));
+        let msg = serverMsgs::user_joined_room(format!("User {} joined room!", login));
         self.send_msg_to_room(msg, to_room_id, login);
     }
 }
@@ -145,22 +146,28 @@ impl Handler<Login> for Server {
         let new_login = msg.new_login;
 
         if new_login.chars().count() > 32 {
-            return MessageResult(Err(format!("Your login is too long!")));
+            return MessageResult(Err(serverMsgs::logging_fail(&format!(
+                "Your login is too long!"
+            ))));
         } else if new_login.trim() == "" {
-            return MessageResult(Err(format!("Wrong login format!")));
+            return MessageResult(Err(serverMsgs::logging_fail(&format!(
+                "Wrong login format!"
+            ))));
         }
 
         let old_login = msg.old_login;
         if self.users.contains_key(&new_login) {
-            MessageResult(Err(format!("Login exists!!")))
+            MessageResult(Err(serverMsgs::logging_fail(&format!("Login exists!!"))))
         } else {
             if old_login == "" {
                 self.add_user_to_main_room(new_login.clone());
-                self.send_msg_to_room(format!("Someone connected!"), MAIN_ROOM_ID, &new_login);
+
+                let msg = serverMsgs::user_connected(&format!("Someone connected!"));
+                self.send_msg_to_room(msg, MAIN_ROOM_ID, &new_login);
             } else {
                 self.users.remove(&old_login);
 
-                let msg_text = message::make_login_change_notify_msg(&old_login, &new_login);
+                let msg_text = messages::make_login_change_notify_msg(&old_login, &new_login);
                 self.send_msg_to_room(msg_text, msg.room_id, &old_login);
             }
 
@@ -187,7 +194,7 @@ impl Handler<TextMsg> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: TextMsg, _: &mut Self::Context) -> Self::Result {
-        let text = message::make_text_msg(msg.author, msg.text);
+        let text = messages::make_text_msg(msg.author, msg.text);
         self.send_msg_to_room(text, msg.room_id, &String::new());
     }
 }
@@ -208,12 +215,14 @@ impl Handler<Leave> for Server {
 
         if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
             self.rooms.remove(&msg.room_id);
-            let msg_text = message::make_room_list_update_notify();
+            // NOTE: I can send message that contains only name of removed room. And remove this room from the roomList on client side
+            let msg_text = messages::make_room_list_update_notify();
             self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &msg.login);
         }
 
         self.users.remove(&msg.login);
-        let msg_text = message::make_leave_room_notify_msg(format!("User {} has left!", msg.login));
+        // let msg_text = message::make_leave_room_notify_msg(format!("User {} has left!", msg.login));
+        let msg_text = serverMsgs::user_left_room(&msg.login);
         self.send_msg_to_room(msg_text, msg.room_id, &String::new());
     }
 }
@@ -329,9 +338,7 @@ impl Handler<CreateRoom> for Server {
         );
 
         self.move_user_to_room(room_id, msg.cur_room_id, &msg.login);
-
-        self.send_to_main_room(message::make_rooms_list_msg(&self.get_room_list()));
-
+        self.send_to_main_room(messages::make_rooms_list_msg(&self.get_room_list()));
         MessageResult(Ok(room_id))
     }
 }

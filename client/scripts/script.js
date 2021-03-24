@@ -45,19 +45,56 @@ async function onSocketNewMsg(e) {
   if (e.data[0] == '{') {
     const json = JSON.parse(e.data);
 
+    console.log('JSON MSG = ', json);
+
+    if (json.type === 'ServerMsg') {
+      switch (json.subType) {
+        case 'UserJoinedRoom':
+          console.log('UserJoinedRoom.text = ', json.text);
+          if (json.text.startsWith('You joined room')) {
+            // NOTE: You can just leave 'main' room in the roomList
+            gSocket.send('/current_room');
+            gSocket.send('/list_rooms');
+            gInbox.clear();
+          }
+          // NOTE: You can get new users' login here and just add it to userList
+          gSocket.send('/list_users');
+          break;
+        case 'UserLeftRoom':
+          // NOTE: You can get new users' login here and just add it to userList
+          gSocket.send('/list_users');
+          break;
+        case 'UserConnected':
+          // NOTE: You can get new users' login here and just add it to userList
+          gSocket.send('/list_users');
+          if (json.text === 'Someone connected!') {
+            return;
+          }
+          break;
+        case 'RoomCreationFail':
+          break;
+        case 'SomeoneConnected':
+          gSocket.send('/list_users');
+          break;
+        default:
+          console.log('Unknown msg subtype! Msg = ', json);
+          break;
+      }
+
+      json.author = 'Server';
+      const msg = JSON.stringify(json);
+      gInbox.onNewMsg(msg);
+
+      return;
+    }
+
     switch (json.type) {
-      case 'ServerMsg':
       case "TextMsg":
         gInbox.onNewMsg(e.data);
         break;
-      case 'LeaveRoomNotify':
-        gSocket.send('/list_users');
       case 'RoomListUpdate':
         gSocket.send('/list_rooms');
         break;
-      case "JoinRoomNotify":
-        gSocket.send('/list_rooms');
-        
       case 'LoginChangeNotify':
         gInbox.onNewMsg(e.data);
         gSocket.send('/list_users');
@@ -77,13 +114,6 @@ async function onSocketNewMsg(e) {
         break;
     }
   } else {
-    if (e.data === 'Someone connected!') {
-      gSocket.send('/list_users');
-    }
-    if (e.data === 'Join to room!') {
-      gInbox.clear();
-    }
-    updateData();
     console.log('Some non JSON msg = ', e.data);
   }
 }
@@ -97,7 +127,7 @@ document.getElementById('invite-friend').addEventListener('click', function () {
   document.execCommand('copy');
   document.body.removeChild(dummy);
 
-  alert("Link copied!")
+  alert("Link copied to clipboard!")
 
   gMsgTextArea.focus();
 });

@@ -28,12 +28,19 @@ export function SignInForm(socket) {
       })
   
       const socketMsgHandler = (msg) => {
+        const json = JSON.parse(msg.data);
         console.log('SocketMsgHandler = ', msg.data);
-        if (msg.data == 'Login is set') {
+
+        if (json.type == 'ServerMsg' && json.subType == 'LoggingSuccess') {
           successSignIn();
           signInBtn.removeEventListener('click', signInBtnClickHandler);
         } else {
-          this.showError(msg.data);
+          this.showError(json.text);
+        }
+        
+        if (msg.data == 'Login is set') {
+        } else {
+          
         }
       }
   

@@ -1,3 +1,5 @@
+pub mod server_msgs;
+
 pub fn make_text_msg(author: String, text: String) -> String {
     serde_json::json!({
         "type": "TextMsg",
@@ -31,33 +33,6 @@ pub fn make_current_room_msg(room: String) -> String {
     .to_string()
 }
 
-pub fn make_server_msg(text: String) -> String {
-    serde_json::json!({
-        "type": "ServerMsg",
-        "author": "Server",
-        "text": text
-    })
-    .to_string()
-}
-
-pub fn make_join_room_notify_msg(text: String) -> String {
-    serde_json::json!({
-        "type": "JoinRoomNotify",
-        "author": "Server",
-        "text": text
-    })
-    .to_string()
-}
-
-pub fn make_leave_room_notify_msg(text: String) -> String {
-    serde_json::json!({
-        "type": "LeaveRoomNotify",
-        "author": "Server",
-        "text": text
-    })
-    .to_string()
-}
-
 pub fn make_login_change_notify_msg(old_login: &String, new_login: &String) -> String {
     serde_json::json!({
         "type": "LoginChangeNotify",
@@ -73,3 +48,4 @@ pub fn make_room_list_update_notify() -> String {
     })
     .to_string()
 }
+
