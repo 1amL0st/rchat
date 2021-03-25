@@ -1,0 +1,31 @@
+@import 'styles/mixins';
+
+.msg-input {
+  @include flex-layout(column, center, center);
+
+  position: relative;
+
+  width: 100%;
+}
+
+.msg-input__textarea {
+  width: 100%;
+  resize: none;
+
+  border: 1px solid rgb(202, 202, 202);
+  border-radius: 8px;
+  padding: 4px;
+
+  &:focus {
+    outline: none;
+    border-color: rgb(133, 133, 133);
+  }
+}
+
+.msg-input .button {
+  width: 100%;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: var(--main-blue-rgb);
+}

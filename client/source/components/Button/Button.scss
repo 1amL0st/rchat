@@ -9,4 +9,8 @@
   border: none;
 
   cursor: pointer;
+
+  &--small {
+    width: 100px;
+  }
 }

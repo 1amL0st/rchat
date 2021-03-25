@@ -1,14 +1,29 @@
+@import 'styles/mixins';
+
 .header {
+  @include flex-layout(row, space-between, center);
+
   box-sizing: border-box;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
   padding: 8px;
   width: 100%;
+  height: 56px;
 
   background-color: rgba(185, 202, 248, 0.397);
-  margin-bottom: 16px;
+}
+
+.leave-modal-window {
+  @include flex-layout(column, center, center);
+
+  height: 100%;
+  width: 100%;
+  
+  background: linear-gradient(0deg, var(--main-blue-rgba), var(--main-gray-rgba));
+
+  .button {
+    margin: 0 32px;
+  }
+
+  &__controls {
+    margin-top: 32px;
+  }
 }

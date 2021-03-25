@@ -1,0 +1,1 @@
+export { SignUpWindow } from './SignUpWindow';

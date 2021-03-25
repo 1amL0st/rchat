@@ -12,6 +12,10 @@ function generateModule() {
   return {
     rules: [
       {
+        test: /\.(png|jpg)$/,
+        loader: 'url-loader'
+      },
+      {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
@@ -49,7 +53,7 @@ function generatePlugins() {
       extensions: ['js', 'jsx'],
       fix: true,
       emitWarning: true,
-      failOnError: !isDev
+      failOnError: false
     })
   ];
 
@@ -72,6 +76,9 @@ function generateConfig(mode) {
       alias: {
         'react-dom': '@hot-loader/react-dom',
         'layouts': path.resolve(__dirname, '../source/layouts/'),
+        'api': path.resolve(__dirname, '../source/api/'),
+        'icons': path.resolve(__dirname, '../source/icons/'),
+        'styles': path.resolve(__dirname, '../source/styles/'),
         'components': path.resolve(__dirname, '../source/components/'),
       }
     },

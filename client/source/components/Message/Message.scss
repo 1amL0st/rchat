@@ -1,0 +1,20 @@
+.message {
+  display: flex;
+  flex-direction: column;
+  
+  background-color: lightgray;
+  box-shadow: 2px 2px 8px darkgray;
+
+  border-radius: 16px 0px 16px 0;
+  padding: 8px;
+
+  text-align: left;
+}
+
+.message__author {
+  font-weight: bold;
+  font-size: 16px;
+  align-self: flex-start;
+
+  margin-bottom: 4px;
+}

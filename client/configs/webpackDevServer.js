@@ -9,6 +9,14 @@ module.exports = function() {
     hot: true,
     proxy: {
       '/': 'https:/localhost:8080',
+      '/ws/': {
+        target: 'ws://localhost:8080',
+        ws: true
+      },
+      '/wss/': {
+        target: 'wss://localhost:8080',
+        ws: true
+      }
     },
   }
 }

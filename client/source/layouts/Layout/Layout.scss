@@ -1,3 +1,10 @@
+@import 'styles/mixins';
+
 .layout {
-  
+  @include flex-layout(column, space-between, center);
+
+  padding: 8px;
+  box-sizing: border-box;
+
+  height: 100%;
 }
