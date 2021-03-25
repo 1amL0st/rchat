@@ -1,5 +1,5 @@
 import { Inbox } from './inbox.js';
-import { SignInForm } from './signInForm.js';
+import { signIn } from './signInForm.js';
 import { UserList } from './userList.js';
 import { MsgTextArea } from './msgTextArea.js';
 import { RoomBar } from './roomBar.js';
@@ -12,7 +12,6 @@ let gRoomList = null;
 let gMsgTextArea = new MsgTextArea(onSendMsg);
 let gInbox = new Inbox();
 let gRoomBar = new RoomBar();
-let gSignInForm = null;
 let gUserLogin = "";
 
 let gSocket = null;
@@ -163,7 +162,6 @@ async function start() {
   await createSocket();
 
   gRoomList = new RoomList(gSocket);
-  gSignInForm = new SignInForm(gSocket);
 
   // const msgText = JSON.stringify({
   //   'author': 'Server',
@@ -172,7 +170,7 @@ async function start() {
   // gInbox.onNewMsg(msgText);
 
   // gSignInForm.hide();
-  const login = await gSignInForm.signIn(gSocket);
+  const login = await signIn(gSocket);
   gUser.setLogin(login);
   gMsgTextArea.focus();
 

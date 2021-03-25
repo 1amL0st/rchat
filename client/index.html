@@ -9,11 +9,16 @@
   </head>
 
   <body>
-    <div id="signin-window" class="popup-window">
-      <div class="popup-window__content flex-column login-form">
-        <input type="text" class="input login-form__input" placeholder="Enter login">
-        <p id="sign-in-err" class="error-msg login-form__error"></p>
-        <button class="button login-form__sign-in">Sign in</button>
+    <div id="popup-window" class="popup-window">
+      <div id="popup-window-content" class="popup-window__content">
+        <div id="create-room-window" class="create-room-window">
+
+        </div>
+        <!-- <div id="signin-window" class="login-form flex-column">
+          <input type="text" class="input login-form__input" placeholder="Enter login">
+          <p id="sign-in-err" class="error-msg login-form__error"></p>
+          <button class="button login-form__sign-in">Sign in</button>
+        </div> -->
       </div>
     </div>
 
@@ -45,7 +50,7 @@
 
           <div class="msg-input flex-row">
             <textarea id="msg-textarea" class="msg-input__textarea" rows="6"></textarea>
-            <button id="msg-text-area-send-btn" class="button">Send</button>
+            <button id="msg-text-area-send-btn" class="button" title="Send"></button>
           </div>
         </div>
 

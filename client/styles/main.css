@@ -36,10 +36,14 @@
 .msg-input .button {
   flex: 1;
 
-  width: 48px;
-  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
-  background-color: var(--main-blue-rgba);
+
+  background-image: url('../icons/send_btn_icon.png');
+  background-repeat: no-repeat;
+  background-size: 60% 60%;
+  background-position: center;
 }
 
 .msg-input__textarea {
