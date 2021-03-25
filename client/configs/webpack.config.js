@@ -29,6 +29,7 @@ function generateModule() {
         use: [
           MiniSCCExtractPlugin.loader,
           'css-loader',
+          'sass-loader'
         ],
       },
     ],
@@ -70,6 +71,8 @@ function generateConfig(mode) {
       extensions: ['.js', '.jsx'],
       alias: {
         'react-dom': '@hot-loader/react-dom',
+        'layouts': path.resolve(__dirname, '../source/layouts/'),
+        'components': path.resolve(__dirname, '../source/components/'),
       }
     },
 

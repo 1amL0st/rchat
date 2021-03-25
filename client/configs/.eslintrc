@@ -14,6 +14,7 @@
     "no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
     "react/jsx-props-no-spreading": "off",
     "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
     "object-curly-newline": ["error", {
       "ImportDeclaration": "never"
     }],
