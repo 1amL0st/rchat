@@ -1,1 +1,4 @@
 /target
+/public/
+
+/client/node_modules/

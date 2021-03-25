@@ -355,7 +355,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(server.clone())
             .service(web::resource("/ws/").to(start_ws_connection))
-            .service(Files::new("/", "./client/").index_file("index.html"))
+            .service(Files::new("/", "./public/").index_file("index.html"))
     })
     .bind("127.0.0.1:8080")?
     .run()
