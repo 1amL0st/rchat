@@ -38,7 +38,7 @@ export const SignUpWindow = ({ loggingComplete }) => {
   }, []);
 
   return (
-    <div className="leave-modal-window">
+    <div className="leave-modal-window__content">
       <input
         ref={loginInputRef}
         type="text"
