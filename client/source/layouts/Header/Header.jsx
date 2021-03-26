@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactModal from 'react-modal';
 
 import { Button } from 'components/Button';
+import { ModalWindow } from 'components/ModalWindow';
 
 import './Header.scss';
 
@@ -26,15 +27,17 @@ export const Header = () => {
         onRequestClose={() => setLeaving(false)}
         ariaHideApp={false}
       >
-        <div>Are you sure you want leave? You'll lose all data!</div>
-        <div className="leave-modal-window__controls">
-          <Button size="small" onClick={onLeaveConfirm}>
-            Yes
-          </Button>
-          <Button size="small" onClick={onLeaveBtnClick}>
-            No
-          </Button>
-        </div>
+        <ModalWindow>
+          <div>Are you sure you want leave? You'll lose all data!</div>
+          <div className="leave-modal-window__controls">
+            <Button size="small" onClick={onLeaveConfirm}>
+              Yes
+            </Button>
+            <Button size="small" onClick={onLeaveBtnClick}>
+              No
+            </Button>
+          </div>
+        </ModalWindow>
       </ReactModal>
       <Button onClick={onLeaveBtnClick}>Leave</Button>
       <div>Login</div>

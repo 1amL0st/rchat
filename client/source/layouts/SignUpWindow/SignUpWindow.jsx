@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Socket } from 'api/Socket';
 
 import { Button } from 'components/Button';
+import { ModalWindow } from 'components/ModalWindow';
 
 import './SignUpWindow.scss';
 
@@ -24,6 +25,13 @@ export const SignUpWindow = ({ loggingComplete }) => {
     Socket.socket.send(req);
   };
 
+  const onLoginInputKeyDown = (e) => {
+    if (!e.shiftKey && e.code === 'Enter') {
+      onSignInBtn();
+      e.preventDefault();
+    }
+  };
+
   const onLoginInputChange = (e) => {
     setLogin(e.target.value);
   };
@@ -38,11 +46,12 @@ export const SignUpWindow = ({ loggingComplete }) => {
   }, []);
 
   return (
-    <div className="leave-modal-window__content">
+    <ModalWindow>
       <input
         ref={loginInputRef}
         type="text"
         placeholder="Enter login"
+        onKeyDown={onLoginInputKeyDown}
         onChange={onLoginInputChange}
       />
       <div className="leave-modal-window__controls">
@@ -50,7 +59,7 @@ export const SignUpWindow = ({ loggingComplete }) => {
           Login
         </Button>
       </div>
-    </div>
+    </ModalWindow>
   );
 };
 

@@ -26,7 +26,7 @@ export const Layout = () => {
 
   return isLogging ? (
     <ReactModal
-      className="leave-modal-window"
+      className="signin-modal-window"
       isOpen
       contentLabel="Hello world"
       shouldCloseOnOverlayClick
