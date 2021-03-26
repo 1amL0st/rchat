@@ -1,5 +1,5 @@
-pub mod server_msgs;
 pub mod data_msgs;
+pub mod server_msgs;
 
 pub fn make_text_msg(author: String, text: String) -> String {
     serde_json::json!({
@@ -17,4 +17,3 @@ pub fn make_room_list_update_notify() -> String {
     })
     .to_string()
 }
-

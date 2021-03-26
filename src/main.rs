@@ -12,8 +12,8 @@ use server::{
     CreateRoom, CurrentRoom, JoinRoom, Leave, ListRooms, Login, Server, SessionMessage, TextMsg,
 };
 
-use messages::server_msgs as serverMsgs;
 use messages::data_msgs as dataMsgs;
+use messages::server_msgs as serverMsgs;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -320,6 +320,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
                 self.hb = Instant::now();
             }
             ws::Message::Text(text) => {
+                println!("Text msg = {}", text);
                 self.handle_text(text, ctx);
             }
             ws::Message::Close(_) => {

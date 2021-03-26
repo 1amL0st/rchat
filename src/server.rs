@@ -4,8 +4,8 @@ use actix::prelude::*;
 use actix::{Actor, Handler};
 
 use super::messages;
-use super::messages::server_msgs as serverMsgs;
 use super::messages::data_msgs as dataMsgs;
+use super::messages::server_msgs as serverMsgs;
 
 pub const MAIN_ROOM_NAME: &'static str = "World";
 pub const MAIN_ROOM_ID: usize = 0;

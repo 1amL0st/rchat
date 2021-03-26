@@ -21,11 +21,11 @@ pub fn logging_fail(err_text: &String) -> String {
     make(err_text, &"LoggingFailed".to_string())
 }
 
-pub fn logging_success(newLogin: &String) -> String {
+pub fn logging_success(new_login: &String) -> String {
     serde_json::json!({
-        "type": "ServerMsg",
+        "author": "Server",
         "subType": "LoggingSuccess",
-        "login": newLogin
+        "login": new_login
     })
     .to_string()
 }
@@ -36,8 +36,8 @@ pub fn room_creation_fail(err_text: String) -> String {
 
 pub fn make(text: &String, sub_type: &String) -> String {
     serde_json::json!({
-        "type": "ServerMsg",
         "subType": sub_type,
+        "author": "Server",
         "text": text
     })
     .to_string()
@@ -45,7 +45,6 @@ pub fn make(text: &String, sub_type: &String) -> String {
 
 pub fn user_changed_login(old_login: &String, new_login: &String) -> String {
     serde_json::json!({
-        "type": "ServerMsg",
         "subType": "LoginChangeNotify",
         "author": "Server",
         "oldLogin": old_login,
