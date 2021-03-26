@@ -17,11 +17,7 @@ const App = () => {
     connectSocket();
   }, []);
 
-  return (
-    <div className="app">
-      {isConnected ? <Layout /> : null}
-    </div>
-  );
+  return <div className="app">{isConnected ? <Layout /> : null}</div>;
 };
 
 export default hot(App);

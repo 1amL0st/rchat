@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactModal from 'react-modal';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
 import { Header } from 'layouts/Header';
@@ -23,10 +24,17 @@ export const Layout = () => {
     </div>
   );
 
-  return (
-    (isLogging) ? (
+  return isLogging ? (
+    <ReactModal
+      className="leave-modal-window"
+      isOpen
+      contentLabel="Hello world"
+      shouldCloseOnOverlayClick
+      ariaHideApp={false}
+    >
       <SignUpWindow loggingComplete={onLoggingSuccess} />
-    )
-      : layout
+    </ReactModal>
+  ) : (
+    layout
   );
 };

@@ -18,7 +18,7 @@ function SocketF() {
     };
 
     this.socket.onerror = () => {
-      reject('Some error happened!');
+      reject(new Error('Some error happened!'));
     };
   });
 }

@@ -11,6 +11,8 @@ export const Button = ({ onClick, children, size }) => {
 
   let sizeClass = '';
   switch (size) {
+    case null:
+      break;
     case 'small':
       sizeClass = 'button--small';
       break;
