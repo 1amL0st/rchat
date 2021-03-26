@@ -44,6 +44,7 @@ function generatePlugins() {
   const plugins = [
     new HTMLWebpackPlugin({
       template: './source/index.html',
+      favicon: './icons/favicon.png',
     }),
     new MiniSCCExtractPlugin({
       filename: 'bundle.css',
