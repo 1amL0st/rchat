@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+
+import { useDispatch } from 'react-redux';
 import ReactModal from 'react-modal';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
@@ -9,10 +11,14 @@ import { Main } from 'layouts/Main';
 import './Layout.scss';
 
 export const Layout = () => {
+  const dispatch = useDispatch();
   const [isLogging, setLogging] = useState(true);
 
   const onLoggingSuccess = (login) => {
-    console.warn("User's login = ", login);
+    dispatch({
+      type: 'UserLogin',
+      userLogin: login,
+    });
     setLogging(false);
   };
 

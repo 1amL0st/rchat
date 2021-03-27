@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+
+import { useSelector } from 'react-redux';
 import ReactModal from 'react-modal';
 
 import { Button } from 'components/Button';
@@ -7,6 +9,9 @@ import { ModalWindow } from 'components/ModalWindow';
 import './Header.scss';
 
 export const Header = () => {
+  const userLogin = useSelector((appStore) => appStore.userLogin);
+  const chatName = useSelector((appStore) => appStore.chatName);
+
   const [leaving, setLeaving] = useState(false);
 
   const onLeaveBtnClick = () => {
@@ -40,7 +45,8 @@ export const Header = () => {
         </ModalWindow>
       </ReactModal>
       <Button onClick={onLeaveBtnClick}>Leave</Button>
-      <div>Login</div>
+      <div>{chatName}</div>
+      <div>{userLogin}</div>
     </div>
   );
 };

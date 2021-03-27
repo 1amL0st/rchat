@@ -11,7 +11,9 @@ export const MsgInput = () => {
   const textAreaRef = useRef();
 
   const onSendBtn = () => {
-    Socket.socket.send(message);
+    if (message.trim() !== 0) {
+      Socket.socket.send(message);
+    }
     setMessage('');
   };
 
