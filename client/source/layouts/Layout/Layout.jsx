@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ReactModal from 'react-modal';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
@@ -12,14 +12,13 @@ import './Layout.scss';
 
 export const Layout = () => {
   const dispatch = useDispatch();
-  const [isLogging, setLogging] = useState(true);
+  const isLogging = useSelector((appStore) => appStore.user.isLogged);
 
   const onLoggingSuccess = (login) => {
     dispatch({
-      type: 'UserLogin',
-      userLogin: login,
+      type: 'SetUserLogin',
+      login,
     });
-    setLogging(false);
   };
 
   const layout = (

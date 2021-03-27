@@ -1,8 +1,12 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useEffect, useState } from 'react';
 
+import { Provider } from 'react-redux';
+import { AppStore } from 'store/store';
+
 import { Layout } from 'layouts/Layout';
 import { Socket } from 'api/Socket';
+import { InitApi } from 'api/Api';
 
 import './App.scss';
 
@@ -13,11 +17,20 @@ const App = () => {
     async function connectSocket() {
       await Socket.connect();
       setConnected(true);
+      InitApi();
     }
     connectSocket();
   }, []);
 
-  return <div className="app">{isConnected ? <Layout /> : null}</div>;
+  return (
+    <div className="app">
+      {isConnected ? (
+        <Provider store={AppStore}>
+          <Layout />
+        </Provider>
+      ) : null}
+    </div>
+  );
 };
 
 export default hot(App);

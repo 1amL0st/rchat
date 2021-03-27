@@ -21,6 +21,14 @@ function SocketF() {
       reject(new Error('Some error happened!'));
     };
   });
+
+  this.getCurrentRoomName = () => {
+    this.socket.send('/current_room');
+  };
+
+  this.getUserList = () => {
+    this.socket.send('/list_users');
+  };
 }
 
 export const Socket = new SocketF();

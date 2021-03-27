@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-
-import { Socket } from 'api/Socket';
+import React, { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 
 import { Message } from 'components/Message';
 
@@ -8,23 +7,10 @@ import './Inbox.scss';
 
 export const Inbox = () => {
   const inboxRef = useRef();
-  const [messages, setMessages] = useState([]);
+  const messages = useSelector((appStore) => appStore.room.messages);
 
   useEffect(() => {
-    const onNewSocketMsg = (e) => {
-      const json = JSON.parse(e.data);
-      json.text = json.text
-        .replace(/\n/g, '\\\\n')
-        .replace(/\r/g, '\\\\r')
-        .replace(/\t/g, '\\\\t');
-      setMessages([...messages, json]);
-      inboxRef.current.scroll(0, inboxRef.current.scrollHeight);
-    };
-
-    Socket.socket.addEventListener('message', onNewSocketMsg);
-    return () => {
-      Socket.socket.removeEventListener('message', onNewSocketMsg);
-    };
+    inboxRef.current.scroll(0, inboxRef.current.scrollHeight);
   }, [messages]);
 
   const messageList = messages.map((msg) => (
