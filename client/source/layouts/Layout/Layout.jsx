@@ -5,7 +5,6 @@ import ReactModal from 'react-modal';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
 import { Header } from 'layouts/Header';
-import { MsgInput } from 'layouts/MsgInput';
 import { Main } from 'layouts/Main';
 
 import './Layout.scss';
@@ -25,7 +24,6 @@ export const Layout = () => {
     <div className="layout">
       <Header />
       <Main />
-      <MsgInput />
     </div>
   );
 

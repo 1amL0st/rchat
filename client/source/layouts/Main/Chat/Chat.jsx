@@ -2,10 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Message } from 'components/Message';
+import { MsgInput } from './MsgInput';
 
-import './Inbox.scss';
+import './Chat.scss';
 
-export const Inbox = () => {
+export const Chat = () => {
   const inboxRef = useRef();
   const messages = useSelector((appStore) => appStore.room.messages);
 
@@ -18,8 +19,11 @@ export const Inbox = () => {
   ));
 
   return (
-    <div className="inbox" ref={inboxRef}>
-      {messageList}
+    <div className="chat">
+      <div className="inbox" ref={inboxRef}>
+        {messageList}
+      </div>
+      <MsgInput />
     </div>
   );
 };

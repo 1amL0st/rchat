@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Inbox } from './Inbox';
+import { Chat } from './Chat';
 import { RoomList } from './RoomList';
 import { UserList } from './UserList';
 
@@ -14,7 +14,7 @@ export const Main = () => {
 
   const screens = [
     <RoomList key={0} />,
-    <Inbox key={1} />,
+    <Chat key={1} />,
     <UserList key={2} />,
   ];
 
