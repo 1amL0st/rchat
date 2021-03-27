@@ -9,7 +9,7 @@ Simple chat app based on websockets
 ### Backend ###
 1. Rust with Actix framework
 ### Frontend ###
-1. React.js + SCSS
+1. React.js + SCSS + Redux
 
 ## How to run it ##
 1. Clone repository: 
