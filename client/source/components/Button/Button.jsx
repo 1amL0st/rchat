@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import './Button.scss';
 
-export const Button = ({ onClick, children, size }) => {
+export const Button = ({ onClick, children, size, className }) => {
   const onClickHandler = () => {
     if (onClick) onClick();
   };
@@ -23,7 +23,7 @@ export const Button = ({ onClick, children, size }) => {
 
   return (
     <button
-      className={classNames('button', sizeClass)}
+      className={classNames('button', sizeClass, className)}
       type="button"
       onClick={onClickHandler}
     >
@@ -33,11 +33,13 @@ export const Button = ({ onClick, children, size }) => {
 };
 
 Button.defaultProps = {
+  className: '',
   onClick: null,
   size: null,
 };
 
 Button.propTypes = {
+  className: PropTypes.string,
   size: PropTypes.string,
   children: PropTypes.string.isRequired,
   onClick: PropTypes.func,

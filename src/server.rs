@@ -41,21 +41,15 @@ impl Server {
         );
 
         // TODO: This code must be removed
-        rooms.insert(
-            1,
-            Room {
-                name: String::from("a"),
-                users: HashSet::new(),
-            },
-        );
-
-        rooms.insert(
-            2,
-            Room {
-                name: String::from("b"),
-                users: HashSet::new(),
-            },
-        );
+        for i in 1..10 {
+            rooms.insert(
+                i,
+                Room {
+                    name: format!("room_{}", i),
+                    users: HashSet::new(),
+                },
+            );
+        }
 
         Self {
             users: HashMap::new(),
@@ -108,6 +102,9 @@ impl Server {
         current_room.users.remove(login);
 
         if current_room.users.len() == 0 && cur_room_id != MAIN_ROOM_ID {
+            let msg_text = serverMsgs::room_destroy(&current_room.name);
+            self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &login);
+
             self.rooms.remove(&cur_room_id);
         }
 
@@ -214,9 +211,10 @@ impl Handler<Leave> for Server {
         cur_room.users.remove(&msg.login);
 
         if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
-            self.rooms.remove(&msg.room_id);
-            let msg_text = messages::make_room_list_update_notify();
+            let msg_text = serverMsgs::room_destroy(&cur_room.name);
             self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &msg.login);
+
+            self.rooms.remove(&msg.room_id);
         }
 
         self.users.remove(&msg.login);

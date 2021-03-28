@@ -36,11 +36,9 @@ body {
   height: 100%;
 }
 
-.ReactModal__Content {
+.ReactModal__Overlay {
   @include flex-layout(column, center, center);
-
   height: 100%;
   width: 100%;
-  
   background: linear-gradient(0deg, var(--main-blue-rgba), var(--main-gray-rgba));
 }

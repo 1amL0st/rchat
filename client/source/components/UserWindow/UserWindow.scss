@@ -1,0 +1,14 @@
+.user-window {
+  &__header {
+    margin: 0;
+  }
+
+  &__close-btn {
+    margin-top: 32px;
+  }
+
+  &__error {
+    margin: 16px;
+    color: red;
+  }
+}

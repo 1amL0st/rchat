@@ -1,7 +1,6 @@
 import { AppStore } from 'store/store';
-import { Socket } from './Socket';
 
-const dataMsgHandler = (msgJson) => {
+function dataMsgHandler(msgJson) {
   switch (msgJson.subType) {
     case 'CurRoom':
       AppStore.dispatch({
@@ -15,38 +14,79 @@ const dataMsgHandler = (msgJson) => {
         users: msgJson.users,
       });
       break;
+    case 'RoomList':
+      AppStore.dispatch({
+        type: 'SetRoomList',
+        rooms: msgJson.rooms,
+      });
+      break;
     default:
       console.warn('Unknown subtype!');
       break;
   }
-};
+}
 
-export const msgHandler = (e) => {
-  const json = JSON.parse(e.data);
-
-  if (json.type === 'DataMsg') {
-    dataMsgHandler(json);
+function serverMsgHandler(msgJson) {
+  switch (msgJson.subType) {
+    case 'RoomDestroyed':
+      AppStore.dispatch({
+        type: 'RemoveRoom',
+        room: msgJson.room,
+      });
+      break;
+    case 'UserLeftRoom':
+      AppStore.dispatch({
+        type: 'RemoveUser',
+        userLogin: msgJson.login,
+      });
+      break;
+    case 'UserConnected':
+      this.getUserList();
+      break;
+    case 'LoginChangeNotify':
+      AppStore.dispatch({
+        type: 'LoginChange',
+        oldLogin: msgJson.oldLogin,
+        newLogin: msgJson.newLogin,
+      });
+      break;
+    case 'LoggingFailed': return;
+    default:
+      console.warn('Unknown server msg handler subType ', msgJson);
+      return;
   }
 
-  if (json.subType === 'LoggingSuccess') {
-    AppStore.dispatch({
-      type: 'LoggingSuccess',
-      login: json.login,
-    });
-
-    Socket.getCurrentRoomName();
-    Socket.getUserList();
-  }
-
-  if (json.author && json.text) {
-    json.text = json.text
-      .replace(/\n/g, '\\\\n')
-      .replace(/\r/g, '\\\\r')
-      .replace(/\t/g, '\\\\t');
-
+  if (msgJson.author && msgJson.text) {
     AppStore.dispatch({
       type: 'AddMsg',
-      message: json,
+      message: msgJson,
     });
   }
-};
+}
+
+export function msgHandler(e) {
+  console.log('e.data = ', e.data);
+  const msgJson = JSON.parse(e.data);
+
+  if (msgJson.type === 'DataMsg') {
+    dataMsgHandler.call(this, msgJson);
+  } else if (msgJson.type === 'ServerMsg' || msgJson.author === 'Server') {
+    serverMsgHandler.call(this, msgJson);
+  } else if (msgJson.author && msgJson.text) {
+    AppStore.dispatch({
+      type: 'AddMsg',
+      message: msgJson,
+    });
+  }
+
+  if (msgJson.subType === 'LoggingSuccess') {
+    AppStore.dispatch({
+      type: 'LoggingSuccess',
+      login: msgJson.login,
+    });
+
+    this.getCurrentRoomName();
+    this.getUserList();
+    this.getRoomList();
+  }
+}

@@ -1,7 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useRef } from 'react';
 
-import { Socket } from 'api/Socket';
+import PropTypes from 'prop-types';
+import ReactModal from 'react-modal';
+
+import { Api } from 'api/Api';
 
 import { Button } from 'components/Button';
 import { ModalWindow } from 'components/ModalWindow';
@@ -11,10 +13,14 @@ import './SignUpWindow.scss';
 export const SignUpWindow = ({ loggingComplete }) => {
   const [login, setLogin] = useState('');
   const loginInputRef = useRef();
+  const [err, setErr] = useState('');
 
-  const onLoginBtn = () => {
-    const req = `/login ${login}`;
-    Socket.socket.send(req);
+  const onLoginBtn = async () => {
+    Api.logging(login)
+      .then((l) => {
+        loggingComplete(l);
+      })
+      .catch((e) => setErr(e));
   };
 
   const onLoginInputKeyDown = (e) => {
@@ -28,39 +34,32 @@ export const SignUpWindow = ({ loggingComplete }) => {
     setLogin(e.target.value);
   };
 
-  useEffect(() => {
-    const onSocketMsg = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'LoggingSuccess') {
-        loggingComplete(json.login);
-      }
-    };
-
-    console.log('This is use effect!');
-    Socket.socket.addEventListener('message', onSocketMsg);
-    loginInputRef.current.focus();
-
-    return () => {
-      Socket.socket.removeEventListener('message', onSocketMsg);
-    };
-  }, [loggingComplete]);
-
   return (
-    <ModalWindow>
-      <input
-        ref={loginInputRef}
-        value={login}
-        type="text"
-        placeholder="Enter login"
-        onKeyDown={onLoginInputKeyDown}
-        onChange={onLoginInputChange}
-      />
-      <div className="signup-window__controls">
-        <Button size="small" onClick={onLoginBtn}>
-          Login
-        </Button>
-      </div>
-    </ModalWindow>
+    <ReactModal
+      isOpen
+      className="signin-modal-window"
+      onAfterOpen={() => loginInputRef.current.focus()}
+      contentLabel="Hello world"
+      shouldCloseOnOverlayClick
+      ariaHideApp={false}
+    >
+      <ModalWindow>
+        <input
+          ref={loginInputRef}
+          value={login}
+          type="text"
+          placeholder="Enter login"
+          onKeyDown={onLoginInputKeyDown}
+          onChange={onLoginInputChange}
+        />
+        <p className="signup-window__error">{err}</p>
+        <div className="signup-window__controls">
+          <Button size="small" onClick={onLoginBtn}>
+            Login
+          </Button>
+        </div>
+      </ModalWindow>
+    </ReactModal>
   );
 };
 

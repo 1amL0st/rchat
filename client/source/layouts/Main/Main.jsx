@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useWindowDimensions } from 'hooks/useWindowDimensions';
+import { useSwipeEvent } from 'hooks/useSwipeEvent';
+
 import { Chat } from './Chat';
 import { RoomList } from './RoomList';
 import { UserList } from './UserList';
@@ -7,65 +10,39 @@ import { UserList } from './UserList';
 import './Main.scss';
 
 export const Main = () => {
-  const lastPos = useRef();
+  const { width: windowWidth } = useWindowDimensions();
+
+  const distance = useSwipeEvent();
+
   const mainRef = useRef();
 
-  const [screenNumber, setScreenNumber] = useState(2);
+  const screenCount = 3;
+  const [screenNumber, setScreenNumber] = useState(0);
 
   const screens = [
-    <RoomList key={0} />,
     <Chat key={1} />,
+    <RoomList key={0} />,
     <UserList key={2} />,
   ];
 
   useEffect(() => {
-    const layout = mainRef.current;
+    if (distance <= -100) {
+      setScreenNumber((screenNumber) => ((screenNumber == 0) ? screenCount - 1 : screenNumber - 1));
+    }
+    if (distance >= 100) {
+      setScreenNumber((screenNumber) => ((screenNumber == screenCount - 1) ? 0 : screenNumber + 1));
+    }
+  }, [distance, setScreenNumber]);
 
-    const swipeStart = (e) => {
-      lastPos.current = {
-        x: e.changedTouches[0].clientX,
-        y: e.changedTouches[0].clientY,
-      };
-      // console.log('swipeStart', e);
-      // console.log('Swipe start!');
-    };
-
-    const swipeStop = (e) => {
-      const [x, y] = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
-      // const move = { x: Math.abs(x - lastPos.current.x), y: Math.abs(y - lastPos.current.y) };
-    };
-
-    const swipeMove = (e) => {
-      const x = e.changedTouches[0].clientX;
-      const y = e.changedTouches[0].clientY;
-
-      const move = {
-        x: Math.abs(x - lastPos.current.x),
-        y: Math.abs(y - lastPos.current.y),
-      };
-
-      if (move.x >= 100) {
-        console.log('Swipe finished!');
-        e.preventDefault();
-        setScreenNumber((screenNumber + 1) % 3);
-      }
-      // console.log('e = ', e);
-      // console.log('%d %d', x, y);
-    };
-
-    layout.addEventListener('touchstart', swipeStart);
-    layout.addEventListener('touchcancel', swipeStop);
-    layout.addEventListener('touchend', swipeStop);
-    layout.addEventListener('touchmove', swipeMove);
-
-    return () => {
-      layout.removeEventListener('touchstart', swipeStart);
-      layout.removeEventListener('touchcancel', swipeStop);
-      layout.removeEventListener('touchend', swipeStop);
-      layout.removeEventListener('touchmove', swipeMove);
-    };
-  });
-
+  if (windowWidth > 800) {
+    return (
+      <main className="main" ref={mainRef}>
+        <RoomList key={0} />
+        <Chat key={1} />
+        <UserList key={2} />
+      </main>
+    );
+  }
   return (
     <main className="main" ref={mainRef}>
       {screens[screenNumber]}

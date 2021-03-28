@@ -1,3 +1,5 @@
-.signup-window__controls {
-  margin-top: 32px;
+.signup-window {
+  &__error {
+    color: red;
+  }
 }

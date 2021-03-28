@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import ReactModal from 'react-modal';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
 import { Header } from 'layouts/Header';
@@ -28,15 +27,7 @@ export const Layout = () => {
   );
 
   return isLogging ? (
-    <ReactModal
-      className="signin-modal-window"
-      isOpen
-      contentLabel="Hello world"
-      shouldCloseOnOverlayClick
-      ariaHideApp={false}
-    >
-      <SignUpWindow loggingComplete={onLoggingSuccess} />
-    </ReactModal>
+    <SignUpWindow loggingComplete={onLoggingSuccess} />
   ) : (
     layout
   );

@@ -172,7 +172,9 @@ impl Session {
                             let text = format!("You joined room {}", m);
                             ctx.text(serverMsgs::user_joined_room(text));
                         }
-                        Err(err) => ctx.text(err),
+                        Err(err) => {
+                            ctx.text(serverMsgs::user_joined_room_fail(&err));
+                        },
                     }
                 } else {
                     panic!("Something went wrong!")
