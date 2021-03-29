@@ -1,42 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-import { UserWindow } from 'components/UserWindow';
 import { Button } from 'components/Button';
 
-import { LeaveWindow } from './LeaveWindow';
 import './Header.scss';
 
 export const Header = () => {
   const userLogin = useSelector((appStore) => appStore.user.login);
   const chatName = useSelector((appStore) => appStore.room.roomName);
 
-  const [leaving, setLeaving] = useState(false);
-  const [userWindow, setUserWindow] = useState(false);
-
-  const onLeaveBtnClick = () => {
-    setLeaving(!leaving);
-  };
-
-  const onCloseUserWindow = () => {
-    console.log('OnCloseUserWindow!');
-    setUserWindow(false);
-  };
-
-  let window = null;
-  if (leaving) {
-    window = <LeaveWindow isOpen={leaving} onClose={onLeaveBtnClick} />;
-  } else if (userWindow) {
-    window = <UserWindow isOpen={userWindow} onClose={onCloseUserWindow} />;
-  }
+  const history = useHistory();
 
   return (
     <header className="header">
-      {window}
-
       <aside>
-        <Button size="small" onClick={onLeaveBtnClick}>
+        <Button size="small" onClick={() => history.push('leave_window')}>
           Leave
         </Button>
       </aside>
@@ -46,7 +26,7 @@ export const Header = () => {
       <aside>
         <Button
           className="header__login"
-          onClick={() => setUserWindow(true)}
+          onClick={() => history.push('/user_window')}
           size="small"
         >
           {userLogin}

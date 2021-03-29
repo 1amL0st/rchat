@@ -1,11 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 
 import ReactModal from 'react-modal';
 import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
 
-export const LeaveWindow = ({ onClose, isOpen }) => {
+export const LeaveWindow = () => {
+  const history = useHistory();
+
   const onYesBtn = () => {
     window.location.reload();
   };
@@ -13,10 +15,10 @@ export const LeaveWindow = ({ onClose, isOpen }) => {
   return (
     <ReactModal
       className="leave-modal-window"
-      isOpen={isOpen}
+      isOpen
       contentLabel="Hello world"
       shouldCloseOnOverlayClick
-      onRequestClose={onClose}
+      onRequestClose={() => history.goBack()}
       ariaHideApp={false}
     >
       <ModalWindow>
@@ -25,16 +27,11 @@ export const LeaveWindow = ({ onClose, isOpen }) => {
           <Button size="small" onClick={onYesBtn}>
             Yes
           </Button>
-          <Button size="small" onClick={onClose}>
+          <Button size="small" onClick={() => history.goBack()}>
             No
           </Button>
         </div>
       </ModalWindow>
     </ReactModal>
   );
-};
-
-LeaveWindow.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool.isRequired,
 };

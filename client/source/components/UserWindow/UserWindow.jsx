@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 
 import ReactModal from 'react-modal';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { Api } from 'api/Api';
 
@@ -11,10 +11,12 @@ import { ModalWindow } from 'components/ModalWindow';
 
 import './UserWindow.scss';
 
-export const UserWindow = ({ onClose }) => {
+export const UserWindow = () => {
   const login = useSelector((appStore) => appStore.user.login);
   const [inputLogin, setInputLogin] = useState(login);
   const [err, setErr] = useState('');
+
+  const history = useHistory();
 
   const onNewLoginApply = () => {
     Api.setNewLogin(inputLogin)
@@ -23,6 +25,8 @@ export const UserWindow = ({ onClose }) => {
       })
       .catch((e) => setErr(e));
   };
+
+  const onClose = () => history.goBack();
 
   return (
     <ReactModal
@@ -56,8 +60,4 @@ export const UserWindow = ({ onClose }) => {
       </ModalWindow>
     </ReactModal>
   );
-};
-
-UserWindow.propTypes = {
-  onClose: PropTypes.func.isRequired,
 };

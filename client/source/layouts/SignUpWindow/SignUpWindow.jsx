@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
-import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 
 import { Api } from 'api/Api';
@@ -11,17 +11,21 @@ import { ModalWindow } from 'components/ModalWindow';
 
 import './SignUpWindow.scss';
 
-export const SignUpWindow = ({ loggingComplete }) => {
+export const SignUpWindow = () => {
   const history = useHistory();
 
   const [login, setLogin] = useState('');
   const loginInputRef = useRef();
   const [err, setErr] = useState('');
 
+  const dispatch = useDispatch();
   const onLoginBtn = async () => {
     Api.logging(login)
       .then((l) => {
-        loggingComplete(l);
+        dispatch({
+          type: 'SetUserLogin',
+          login: l,
+        });
         history.push('/');
       })
       .catch((e) => setErr(e));
@@ -65,8 +69,4 @@ export const SignUpWindow = ({ loggingComplete }) => {
       </ModalWindow>
     </ReactModal>
   );
-};
-
-SignUpWindow.propTypes = {
-  loggingComplete: PropTypes.func.isRequired,
 };
