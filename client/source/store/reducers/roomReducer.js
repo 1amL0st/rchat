@@ -8,7 +8,6 @@ const DEFAULT_STATE = {
 export const roomReducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case 'LoginChange':
-      console.log('NewLogin = ', action);
       return {
         ...state,
         users: state.users.map((login) => (login === action.oldLogin ? action.newLogin : login)),

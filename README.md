@@ -3,7 +3,7 @@ Simple chat app based on websockets
 
 ## Features ##
 1. Rooms
-2. VERY BAD UI design 🙃
+2. Primitve design 🙃
 
 ## Used ##
 ### Backend ###
@@ -20,11 +20,18 @@ git clone https://github.com/1amL0st/rchat
 ```shell
 cd rchat
 ```
-3. Run server:
+3. Build client:
+```shell
+cd client
+yarn install
+yarn build
+cd ..
+```
+4. Run server:
 ```shell
 cargo run
 ```
-4. Open browser and go to 
+5. Open browser and go to 
 ```shell
 localhost:8080
 ```
