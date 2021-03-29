@@ -33,6 +33,11 @@ export const roomReducer = (state = DEFAULT_STATE, action) => {
         ...state,
         rooms: action.rooms,
       };
+    case 'ClearUserList':
+      return {
+        ...state,
+        users: [],
+      };
     case 'SetUserList':
       return {
         ...state,
@@ -42,6 +47,11 @@ export const roomReducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         roomName: action.name,
+      };
+    case 'AddUser':
+      return {
+        ...state,
+        users: [...state.users, action.login],
       };
     case 'AddMsg':
       return {

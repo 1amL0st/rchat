@@ -2,12 +2,10 @@ import React, { useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import ReactModal from 'react-modal';
-
 import { Api } from 'api/Api';
 
 import { Button } from 'components/Button';
-import { ModalWindow } from 'components/ModalWindow';
+import { Window } from 'components/Window';
 
 import './SignUpWindow.scss';
 
@@ -43,30 +41,21 @@ export const SignUpWindow = () => {
   };
 
   return (
-    <ReactModal
-      isOpen
-      className="signin-modal-window"
-      onAfterOpen={() => loginInputRef.current.focus()}
-      contentLabel="Hello world"
-      shouldCloseOnOverlayClick
-      ariaHideApp={false}
-    >
-      <ModalWindow>
-        <input
-          ref={loginInputRef}
-          value={login}
-          type="text"
-          placeholder="Enter login"
-          onKeyDown={onLoginInputKeyDown}
-          onChange={onLoginInputChange}
-        />
-        <p className="signup-window__error">{err}</p>
-        <div className="signup-window__controls">
-          <Button size="small" onClick={onLoginBtn}>
-            Login
-          </Button>
-        </div>
-      </ModalWindow>
-    </ReactModal>
+    <Window className="sign-up-window">
+      <input
+        ref={loginInputRef}
+        value={login}
+        type="text"
+        placeholder="Enter login"
+        onKeyDown={onLoginInputKeyDown}
+        onChange={onLoginInputChange}
+      />
+      <p className="signup-window__error">{err}</p>
+      <div className="signup-window__controls">
+        <Button size="small" onClick={onLoginBtn}>
+          Login
+        </Button>
+      </div>
+    </Window>
   );
 };

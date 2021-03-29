@@ -60,7 +60,7 @@ impl Session {
         let recipient = ctx.address().recipient();
 
         let msg = if self.login == "" {
-            serverMsgs::user_joined_room(format!("User {} joined!", login))
+            serverMsgs::user_joined_room(format!("User {} joined!", login), login.clone())
         } else {
             messages::make_text_msg(
                 "Server".to_string(),
@@ -169,12 +169,13 @@ impl Session {
                             act.room_id = room_id;
 
                             let m = room_name;
-                            let text = format!("You joined room {}", m);
-                            ctx.text(serverMsgs::user_joined_room(text));
+                            // let text = format!("You joined room {}", m);
+                            // ctx.text(serverMsgs::user_joined_room(text, act.login.clone()));
+                            ctx.text(serverMsgs::you_joined_room(&m))
                         }
                         Err(err) => {
                             ctx.text(serverMsgs::user_joined_room_fail(&err));
-                        },
+                        }
                     }
                 } else {
                     panic!("Something went wrong!")
@@ -227,10 +228,11 @@ impl Session {
                         Ok(id) => {
                             act.room_id = id;
 
-                            let msg = serverMsgs::user_joined_room(format!(
-                                "You joined room {}",
-                                room_name
-                            ));
+                            // let msg = serverMsgs::user_joined_room(
+                            // format!("You joined room {}",room_name),
+                            //     act.login.clone()
+                            // );
+                            let msg = serverMsgs::you_joined_room(&room_name);
                             ctx.text(msg);
                         }
                         Err(err) => {

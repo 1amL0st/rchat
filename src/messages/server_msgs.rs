@@ -1,5 +1,20 @@
-pub fn user_joined_room(text: String) -> String {
-    make(&text, &"UserJoinedRoom".to_string())
+pub fn user_joined_room(text: String, login: String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "UserJoinedRoom",
+        "text": text,
+        "login": login,
+    })
+    .to_string()
+}
+
+pub fn you_joined_room(room: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "YouJoinedRoom",
+        "text": format!("You joined room {}", room),
+    })
+    .to_string()
 }
 
 pub fn user_joined_room_fail(err: &String) -> String {
@@ -10,8 +25,14 @@ pub fn user_connected(text: &String) -> String {
     make(text, &"UserConnected".to_string())
 }
 
-pub fn user_left_room_custom_text(text: &String) -> String {
-    make(text, &"UserLeftRoom".to_string())
+pub fn user_left_room_custom_text(text: &String, login: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "UserLeftRoom",
+        "text": text,
+        "login": login
+    })
+    .to_string()
 }
 
 pub fn user_left_room(login: &String) -> String {
@@ -20,7 +41,8 @@ pub fn user_left_room(login: &String) -> String {
         "subType": "UserLeftRoom",
         "text": format!("User {} has left room1", login),
         "login": login,
-    }).to_string()
+    })
+    .to_string()
 }
 
 pub fn logging_fail(err_text: &String) -> String {

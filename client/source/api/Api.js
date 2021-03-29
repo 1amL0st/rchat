@@ -19,6 +19,12 @@ export const InitApi = () => {
     Socket.socket.send('/list_rooms');
   };
 
+  Api.clearUserList = () => {
+    AppStore.dispatch({
+      type: 'ClearUserList',
+    });
+  };
+
   Api.clearInbox = (lastMsg) => {
     AppStore.dispatch({
       type: 'ClearInbox',
@@ -26,22 +32,28 @@ export const InitApi = () => {
     });
   };
 
+  Api.updateAfterJoin = (json) => {
+    Api.clearInbox({
+      author: json.author,
+      text: json.text,
+    });
+
+    Api.getRoomList();
+    Api.getCurrentRoomName();
+
+    Api.clearUserList();
+    Api.getUserList();
+  };
+
   Api.joinRoom = async (room) => new Promise((resolve, reject) => {
     const { socket } = Socket;
 
     const handler = (e) => {
       const json = JSON.parse(e.data);
-      if (
-        json.subType === 'UserJoinedRoom'
-          && json.text.startsWith('You joined')
-      ) {
+      if (json.subType === 'YouJoinedRoom') {
         socket.removeEventListener('message', handler);
-        Api.clearInbox({
-          author: json.author,
-          text: json.text,
-        });
+        Api.updateAfterJoin(json);
         resolve();
-        Api.getRoomList();
       } else {
         socket.removeEventListener('message', handler);
         reject(json.text);
@@ -85,5 +97,23 @@ export const InitApi = () => {
 
     socket.addEventListener('message', handler);
     socket.send(`/login ${login}`);
+  });
+
+  Api.createRoom = async (roomName) => new Promise((resolve, reject) => {
+    const { socket } = Socket;
+
+    const handler = (e) => {
+      const json = JSON.parse(e.data);
+      if (json.subType === 'YouJoinedRoom') {
+        socket.removeEventListener('message', handler);
+        Api.updateAfterJoin(json);
+        resolve();
+      } else {
+        reject(json.text);
+      }
+    };
+
+    socket.addEventListener('message', handler);
+    socket.send(`/create_room ${roomName}`);
   });
 };

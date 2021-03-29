@@ -1,3 +1,10 @@
 .create-room-window {
-  
+
+  &__buttons {
+    margin-top: 16px;
+  }
+
+  &__err {
+    color: red;
+  }
 }

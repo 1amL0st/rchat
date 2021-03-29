@@ -1,4 +1,6 @@
 import React from 'react';
+
+import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { Api } from 'api/Api';
@@ -8,6 +10,7 @@ import './RoomList.scss';
 
 export const RoomList = () => {
   const rooms = useSelector((appStore) => appStore.room.rooms);
+  const history = useHistory();
 
   const onRoomClick = (room) => {
     Api.joinRoom(room)
@@ -20,7 +23,9 @@ export const RoomList = () => {
 
   return (
     <aside className="room-list">
-      <Button size="small">Create room</Button>
+      <Button size="small" onClick={() => history.push('/create_room')}>
+        Create room
+      </Button>
       {rooms.map((room) => (
         <div
           className="room-list__entry"

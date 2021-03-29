@@ -2,17 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'class-names';
 
-import './ModalWindow.scss';
+import './Window.scss';
 
-export const ModalWindow = ({ className, children }) => (
-  <div className={classNames(className, 'modal-window')}>{children}</div>
+export const Window = ({ className, children }) => (
+  <div className={classNames(className, 'window')}>
+    <div className="window__content">{children}</div>
+  </div>
 );
 
-ModalWindow.defaultProps = {
+Window.defaultProps = {
   className: '',
 };
 
-ModalWindow.propTypes = {
+Window.propTypes = {
   className: PropTypes.string,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),

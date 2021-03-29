@@ -1,9 +1,0 @@
-@import 'styles/mixins';
-
-.modal-window {
-  @include flex-layout(column, flex-start, center);
-  
-  background-color: white;
-  padding: 16px;
-  border-radius: 8px;  
-}

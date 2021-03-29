@@ -111,13 +111,14 @@ impl Server {
         let to_room = self.rooms.get_mut(&to_room_id).unwrap();
         to_room.users.insert(login.clone());
 
-        let leave_msg = serverMsgs::user_left_room_custom_text(&format!(
-            "User {} has joined room {}",
-            login, to_room.name
-        ));
+        let leave_msg = serverMsgs::user_left_room_custom_text(
+            &format!("User {} has joined room {}", login, to_room.name),
+            login,
+        );
         self.send_msg_to_room(leave_msg, cur_room_id, login);
 
-        let msg = serverMsgs::user_joined_room(format!("User {} joined room!", login));
+        let msg =
+            serverMsgs::user_joined_room(format!("User {} joined room!", login), login.clone());
         self.send_msg_to_room(msg, to_room_id, login);
     }
 }

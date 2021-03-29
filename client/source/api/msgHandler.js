@@ -52,6 +52,14 @@ function serverMsgHandler(msgJson) {
       break;
     case 'LoggingFailed':
       return;
+    case 'YouJoinedRoom':
+      break;
+    case 'UserJoinedRoom':
+      AppStore.dispatch({
+        type: 'AddUser',
+        login: msgJson.login,
+      });
+      break;
     default:
       console.warn('Unknown server msg handler subType ', msgJson);
       return;
