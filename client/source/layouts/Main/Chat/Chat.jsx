@@ -15,7 +15,7 @@ export const Chat = () => {
   }, [messages]);
 
   const messageList = messages.map((msg) => (
-    <Message key={Math.random() * 1000} author={msg.author} text={msg.text} />
+    <Message key={msg.id} author={msg.author} text={msg.text} />
   ));
 
   return (

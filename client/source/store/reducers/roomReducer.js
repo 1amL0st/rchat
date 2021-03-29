@@ -12,11 +12,16 @@ export const roomReducer = (state = DEFAULT_STATE, action) => {
         ...state,
         users: state.users.map((login) => (login === action.oldLogin ? action.newLogin : login)),
       };
-    case 'ClearInbox':
+    case 'ClearInbox': {
+      const msg = {
+        ...action.lastMsg,
+        id: 0,
+      };
       return {
         ...state,
-        messages: action.lastMsg ? [action.lastMsg] : [],
+        messages: action.lastMsg ? [msg] : [],
       };
+    }
     case 'RemoveRoom':
       return {
         ...state,
@@ -55,7 +60,13 @@ export const roomReducer = (state = DEFAULT_STATE, action) => {
     case 'AddMsg':
       return {
         ...state,
-        messages: [...state.messages, action.message],
+        messages: [
+          ...state.messages,
+          {
+            ...action.message,
+            id: state.messages.length,
+          },
+        ],
       };
     default:
       return state;
