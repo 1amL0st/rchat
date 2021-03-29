@@ -33,7 +33,7 @@ export const UserWindow = ({ onClose }) => {
       ariaHideApp={false}
     >
       <ModalWindow className="user-window">
-        <p className="user-window__header">Header</p>
+        <p className="user-window__header">User</p>
         <p className="user-window__error">{err}</p>
         <div>
           <input

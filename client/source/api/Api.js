@@ -26,61 +26,67 @@ export const InitApi = () => {
     });
   };
 
-  Api.joinRoom = async (room) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  Api.joinRoom = async (room) =>
+    new Promise((resolve, reject) => {
+      const { socket } = Socket;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'UserJoinedRoom' && json.text.startsWith('You joined')) {
-        socket.removeEventListener('message', handler);
-        Api.clearInbox({
-          author: json.author,
-          text: json.text,
-        });
-        resolve();
-        Api.getRoomList();
-      } else {
-        socket.removeEventListener('message', handler);
-        reject(json.text);
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (
+          json.subType === 'UserJoinedRoom' &&
+          json.text.startsWith('You joined')
+        ) {
+          socket.removeEventListener('message', handler);
+          Api.clearInbox({
+            author: json.author,
+            text: json.text,
+          });
+          resolve();
+          Api.getRoomList();
+        } else {
+          socket.removeEventListener('message', handler);
+          reject(json.text);
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/join ${room}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/join ${room}`);
+    });
 
-  Api.setNewLogin = async (login) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  Api.setNewLogin = async (login) =>
+    new Promise((resolve, reject) => {
+      const { socket } = Socket;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'LoggingFailed') {
-        socket.removeEventListener('message', handler);
-        reject(json.text);
-      } else {
-        socket.removeEventListener('message', handler);
-        resolve();
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (json.subType === 'LoggingFailed') {
+          socket.removeEventListener('message', handler);
+          reject(json.text);
+        } else {
+          socket.removeEventListener('message', handler);
+          resolve();
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/login ${login}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/login ${login}`);
+    });
 
-  Api.logging = async (login) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  Api.logging = async (login) =>
+    new Promise((resolve, reject) => {
+      const { socket } = Socket;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'LoggingSuccess') {
-        socket.removeEventListener('message', handler);
-        resolve(json.login);
-      } else {
-        reject(json.text);
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (json.subType === 'LoggingSuccess') {
+          socket.removeEventListener('message', handler);
+          resolve(json.login);
+        } else {
+          reject(json.text);
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/login ${login}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/login ${login}`);
+    });
 };

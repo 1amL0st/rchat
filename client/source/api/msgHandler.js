@@ -50,7 +50,8 @@ function serverMsgHandler(msgJson) {
         newLogin: msgJson.newLogin,
       });
       break;
-    case 'LoggingFailed': return;
+    case 'LoggingFailed':
+      return;
     default:
       console.warn('Unknown server msg handler subType ', msgJson);
       return;

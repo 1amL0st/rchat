@@ -10,10 +10,12 @@ export const RoomList = () => {
   const rooms = useSelector((appStore) => appStore.room.rooms);
 
   const onRoomClick = (room) => {
-    Api.joinRoom(room).then(() => {
-      console.log('You joined room!');
-      Api.getCurrentRoomName();
-    }).catch(() => console.log('Join error!'));
+    Api.joinRoom(room)
+      .then(() => {
+        console.log('You joined room!');
+        Api.getCurrentRoomName();
+      })
+      .catch(() => console.log('Join error!'));
   };
 
   return (

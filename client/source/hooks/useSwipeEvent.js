@@ -1,53 +1,103 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-export function useSwipeEvent() {
-  const [distance, setDistance] = useState(0);
+export function useSwipeEvent(
+  targetHorzOffset,
+  targetVertOffset,
+  onSwipe,
+  elementRef
+) {
+  const isRegistered = useRef(false);
+  const isDown = useRef(false);
   const lastPos = useRef();
 
   useEffect(() => {
-    const layout = window; // mainRef.current;
+    const onTouchStart = (e) => {
+      isRegistered.current = false;
 
-    const swipeStart = (e) => {
       lastPos.current = {
         x: e.changedTouches[0].clientX,
         y: e.changedTouches[0].clientY,
       };
     };
 
-    const swipeStop = () => {
-      // const [x, y] = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
-      // const move = { x: Math.abs(x - lastPos.current.x), y: Math.abs(y - lastPos.current.y) };
+    const doRegisterSwipe = (offset, clientX, clientY) => {
+      if (
+        !isRegistered.current &&
+        (Math.abs(offset.x) > targetHorzOffset ||
+          Math.abs(offset.y) > targetVertOffset)
+      ) {
+        lastPos.current.x = clientX;
+        lastPos.current.y = clientY;
+        isRegistered.current = true;
+        onSwipe(offset);
+      }
     };
 
-    const swipeMove = (e) => {
+    const onTouchMove = (e) => {
+      console.log('e = ', e);
       const x = e.changedTouches[0].clientX;
       const y = e.changedTouches[0].clientY;
 
-      const move = {
+      const offset = {
         x: x - lastPos.current.x,
         y: y - lastPos.current.y,
       };
 
-      setDistance(move.x);
+      doRegisterSwipe(
+        offset,
+        e.changedTouches[0].clientX,
+        e.changedTouches[0].clientY
+      );
+    };
 
-      if (move.x >= -100 || move.x >= 100) {
-        // e.preventDefault();
-        // setScreenNumber((screenNumber + 1) % 3);
+    const onMouseDown = (e) => {
+      isDown.current = true;
+      lastPos.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const onMouseMove = (e) => {
+      if (isDown.current) {
+        const offset = {
+          x: e.clientX - lastPos.current.x,
+          y: e.clientY - lastPos.current.y,
+        };
+
+        doRegisterSwipe(offset, e.clientX, e.clientY);
       }
     };
 
-    layout.addEventListener('touchstart', swipeStart);
-    layout.addEventListener('touchcancel', swipeStop);
-    layout.addEventListener('touchend', swipeStop);
-    layout.addEventListener('touchmove', swipeMove);
+    const onMouseLeave = () => {
+      isRegistered.current = false;
+      isDown.current = false;
+    };
+
+    const onMouseUp = () => {
+      isDown.current = false;
+      isRegistered.current = false;
+    };
+
+    const window = elementRef.current;
+
+    window.addEventListener('touchstart', onTouchStart);
+    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('touchcancel', onMouseUp);
+    window.addEventListener('touchend', onMouseUp);
+
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseleave', onMouseLeave);
 
     return () => {
-      layout.removeEventListener('touchstart', swipeStart);
-      layout.removeEventListener('touchcancel', swipeStop);
-      layout.removeEventListener('touchend', swipeStop);
-      layout.removeEventListener('touchmove', swipeMove);
-    };
-  });
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchcancel', onMouseUp);
+      window.removeEventListener('touchend', onMouseUp);
 
-  return distance;
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
+    };
+  }, [targetHorzOffset, targetVertOffset, onSwipe, elementRef]);
 }

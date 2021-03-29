@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { useWindowDimensions } from 'hooks/useWindowDimensions';
 import { useSwipeEvent } from 'hooks/useSwipeEvent';
@@ -12,34 +12,33 @@ import './Main.scss';
 export const Main = () => {
   const { width: windowWidth } = useWindowDimensions();
 
-  const distance = useSwipeEvent();
+  const swipeOffset = windowWidth / 3;
+  const screenCount = 3;
 
   const mainRef = useRef();
-
-  const screenCount = 3;
-  const [screenNumber, setScreenNumber] = useState(0);
+  const [screenNumber, setScreenNumber] = useState(1);
 
   const screens = [
-    <Chat key={1} />,
     <RoomList key={0} />,
+    <Chat key={1} />,
     <UserList key={2} />,
   ];
 
-  useEffect(() => {
-    if (distance <= -100) {
-      setScreenNumber((screenNumber) => ((screenNumber == 0) ? screenCount - 1 : screenNumber - 1));
+  function onSwipeCallback(distance) {
+    if (distance.x <= -swipeOffset) {
+      setScreenNumber((sn) => (sn === 0 ? screenCount - 1 : sn - 1));
     }
-    if (distance >= 100) {
-      setScreenNumber((screenNumber) => ((screenNumber == screenCount - 1) ? 0 : screenNumber + 1));
+    if (distance.x >= swipeOffset) {
+      setScreenNumber((sn) => (sn === screenCount - 1 ? 0 : sn + 1));
     }
-  }, [distance, setScreenNumber]);
+  }
+
+  useSwipeEvent(swipeOffset, Infinity, onSwipeCallback, mainRef);
 
   if (windowWidth > 800) {
     return (
       <main className="main" ref={mainRef}>
-        <RoomList key={0} />
-        <Chat key={1} />
-        <UserList key={2} />
+        {screens}
       </main>
     );
   }
