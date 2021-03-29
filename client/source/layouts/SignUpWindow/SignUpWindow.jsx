@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
@@ -11,6 +12,8 @@ import { ModalWindow } from 'components/ModalWindow';
 import './SignUpWindow.scss';
 
 export const SignUpWindow = ({ loggingComplete }) => {
+  const history = useHistory();
+
   const [login, setLogin] = useState('');
   const loginInputRef = useRef();
   const [err, setErr] = useState('');
@@ -19,6 +22,7 @@ export const SignUpWindow = ({ loggingComplete }) => {
     Api.logging(login)
       .then((l) => {
         loggingComplete(l);
+        history.push('/');
       })
       .catch((e) => setErr(e));
   };

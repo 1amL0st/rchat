@@ -9,6 +9,7 @@ import { Socket } from 'api/Socket';
 import { InitApi } from 'api/Api';
 
 import './App.scss';
+import { BrowserRouter } from 'react-router-dom';
 
 const App = () => {
   const [isConnected, setConnected] = useState(false);
@@ -26,7 +27,9 @@ const App = () => {
     <div className="app">
       {isConnected ? (
         <Provider store={AppStore}>
-          <Layout />
+          <BrowserRouter>
+            <Layout />
+          </BrowserRouter>
         </Provider>
       ) : null}
     </div>

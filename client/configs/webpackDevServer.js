@@ -8,7 +8,7 @@ module.exports = function() {
     host: '0.0.0.0',
     hot: true,
     proxy: {
-      '/': 'https:/localhost:8080',
+      '/': 'http://localhost:8080',
       '/ws/': {
         target: 'ws://localhost:8080',
         ws: true
@@ -16,7 +16,7 @@ module.exports = function() {
       '/wss/': {
         target: 'wss://localhost:8080',
         ws: true
-      }
+      },
     },
   }
 }

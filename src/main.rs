@@ -359,6 +359,11 @@ async fn main() -> std::io::Result<()> {
             .data(server.clone())
             .service(web::resource("/ws/").to(start_ws_connection))
             .service(Files::new("/", "./public/").index_file("index.html"))
+            .default_service(web::resource("/").route(web::get().to(|req: HttpRequest| {
+                HttpResponse::Found()
+                    .header(actix_web::http::header::LOCATION, "/")
+                    .finish()
+            })))
     })
     .bind("127.0.0.1:8080")?
     .run()
