@@ -76,28 +76,28 @@ export function useSwipeEvent(
       isRegistered.current = false;
     };
 
-    const window = elementRef.current;
+    const element = elementRef.current;
 
-    window.addEventListener('touchstart', onTouchStart);
-    window.addEventListener('touchmove', onTouchMove);
-    window.addEventListener('touchcancel', onMouseUp);
-    window.addEventListener('touchend', onMouseUp);
+    element.addEventListener('touchstart', onTouchStart);
+    element.addEventListener('touchmove', onTouchMove);
+    element.addEventListener('touchcancel', onMouseUp);
+    element.addEventListener('touchend', onMouseUp);
 
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseleave', onMouseLeave);
+    element.addEventListener('mousedown', onMouseDown);
+    element.addEventListener('mouseup', onMouseUp);
+    element.addEventListener('mousemove', onMouseMove);
+    element.addEventListener('mouseleave', onMouseLeave);
 
     return () => {
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchcancel', onMouseUp);
-      window.removeEventListener('touchend', onMouseUp);
+      element.removeEventListener('touchstart', onTouchStart);
+      element.removeEventListener('touchmove', onTouchMove);
+      element.removeEventListener('touchcancel', onMouseUp);
+      element.removeEventListener('touchend', onMouseUp);
 
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseleave', onMouseLeave);
+      element.removeEventListener('mousedown', onMouseDown);
+      element.removeEventListener('mouseup', onMouseUp);
+      element.removeEventListener('mousemove', onMouseMove);
+      element.removeEventListener('mouseleave', onMouseLeave);
     };
   }, [targetHorzOffset, targetVertOffset, onSwipe, elementRef]);
 }

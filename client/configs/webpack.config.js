@@ -82,7 +82,8 @@ function generateConfig(mode) {
         'styles': path.resolve(__dirname, '../source/styles/'),
         'components': path.resolve(__dirname, '../source/components/'),
         'store': path.resolve(__dirname, '../source/store/'),
-        'hooks': path.resolve(__dirname, '../source/hooks/')
+        'hooks': path.resolve(__dirname, '../source/hooks/'),
+        "constants": path.resolve(__dirname, '../source/constants')
       }
     },
 

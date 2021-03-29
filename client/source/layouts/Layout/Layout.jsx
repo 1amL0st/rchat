@@ -6,6 +6,7 @@ import { SignUpWindow } from 'layouts/SignUpWindow';
 import { UserWindow } from 'components/UserWindow';
 import { LeaveWindow } from 'layouts/Header/LeaveWindow';
 import { CreateRoomWindow } from 'components/CreateRoomWinodw';
+import { ROUTES } from 'constants/Routes';
 
 import { Header } from 'layouts/Header';
 import { Main } from 'layouts/Main';
@@ -31,10 +32,10 @@ export const Layout = () => {
       <Route path="/" exact>
         {layout}
       </Route>
-      <Route path="/sign_up" component={SignUpWindow} />
-      <Route path="/user_window" component={UserWindow} />
-      <Route path="/leave_window" component={LeaveWindow} />
-      <Route path="/create_room" component={CreateRoomWindow} />
+      <Route path={ROUTES.SignUp} component={SignUpWindow} />
+      <Route path={ROUTES.UserWindow} component={UserWindow} />
+      <Route path={ROUTES.LeaveWindow} component={LeaveWindow} />
+      <Route path={ROUTES.CreateRoom} component={CreateRoomWindow} />
     </div>
   );
 };

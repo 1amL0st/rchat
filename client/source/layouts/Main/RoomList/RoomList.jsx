@@ -3,6 +3,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import { ROUTES } from 'constants/Routes';
 import { Api } from 'api/Api';
 import { Button } from 'components/Button';
 
@@ -23,7 +24,7 @@ export const RoomList = () => {
 
   return (
     <aside className="room-list">
-      <Button size="small" onClick={() => history.push('/create_room')}>
+      <Button size="small" onClick={() => history.push(ROUTES.CreateRoom)}>
         Create room
       </Button>
       {rooms.map((room) => (
