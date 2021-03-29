@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { Socket } from 'api/Socket';
-
+import { Api } from 'api/Api';
 import { Button } from 'components/Button';
 
 import './MsgInput.scss';
@@ -12,7 +11,7 @@ export const MsgInput = () => {
 
   const onSendBtn = () => {
     if (message.trim() !== 0) {
-      Socket.socket.send(message);
+      Api.sendMsg(message);
     }
     setMessage('');
   };

@@ -1,119 +1,153 @@
-import { Socket } from './Socket';
 import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
 
-export const Api = {};
+export const Api = {
+  socket: null,
 
-export const InitApi = () => {
-  Socket.socket.addEventListener('message', msgHandler.bind(Api));
+  async connect() {
+    return new Promise((resolve, reject) => {
+      const wsURI = `${
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
+          + window.location.host
+      }/ws/`;
+      this.socket = new WebSocket(wsURI);
 
-  Api.getCurrentRoomName = () => {
-    Socket.socket.send('/current_room');
-  };
+      this.socket.onopen = () => {
+        console.log('Socket opened!');
+        this.socket.addEventListener('message', msgHandler.bind(this));
+        resolve();
+      };
 
-  Api.getUserList = () => {
-    Socket.socket.send('/list_users');
-  };
+      this.socket.onclose = () => {
+        console.error('Socket was closed!');
+      };
 
-  Api.getRoomList = () => {
-    Socket.socket.send('/list_rooms');
-  };
+      this.socket.onerror = () => {
+        reject(new Error('Some error happened!'));
+      };
+    });
+  },
 
-  Api.clearUserList = () => {
+  sendMsg(msg) {
+    this.socket.send(msg);
+  },
+
+  getCurrentRoomName() {
+    this.socket.send('/current_room');
+  },
+
+  getUserList() {
+    this.socket.send('/list_users');
+  },
+
+  getRoomList() {
+    this.socket.send('/list_rooms');
+  },
+
+  clearUserList() {
     AppStore.dispatch({
       type: 'ClearUserList',
     });
-  };
+  },
 
-  Api.clearInbox = (lastMsg) => {
+  clearInbox(lastMsg) {
     AppStore.dispatch({
       type: 'ClearInbox',
       lastMsg,
     });
-  };
+  },
 
-  Api.updateAfterJoin = (json) => {
-    Api.clearInbox({
+  updateAfterJoin(json) {
+    this.clearInbox({
       author: json.author,
       text: json.text,
     });
 
-    Api.getRoomList();
-    Api.getCurrentRoomName();
+    this.getRoomList();
+    this.getCurrentRoomName();
 
-    Api.clearUserList();
-    Api.getUserList();
-  };
+    this.clearUserList();
+    this.getUserList();
+  },
 
-  Api.joinRoom = async (room) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  async joinRoom(room) {
+    return new Promise((resolve, reject) => {
+      const { socket } = this;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'YouJoinedRoom') {
-        socket.removeEventListener('message', handler);
-        Api.updateAfterJoin(json);
-        resolve();
-      } else {
-        socket.removeEventListener('message', handler);
-        reject(json.text);
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (json.subType === 'YouJoinedRoom') {
+          socket.removeEventListener('message', handler);
+          this.updateAfterJoin(json);
+          resolve();
+        } else {
+          socket.removeEventListener('message', handler);
+          reject(json.text);
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/join ${room}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/join ${room}`);
+    });
+  },
 
-  Api.setNewLogin = async (login) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  async setNewLogin(login) {
+    return new Promise((resolve, reject) => {
+      const { socket } = this;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'LoggingFailed') {
-        socket.removeEventListener('message', handler);
-        reject(json.text);
-      } else {
-        socket.removeEventListener('message', handler);
-        resolve();
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (json.subType === 'LoggingFailed') {
+          socket.removeEventListener('message', handler);
+          reject(json.text);
+        } else {
+          socket.removeEventListener('message', handler);
+          resolve();
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/login ${login}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/login ${login}`);
+    });
+  },
 
-  Api.logging = async (login) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  async logging(login) {
+    return new Promise((resolve, reject) => {
+      const { socket } = this;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'LoggingSuccess') {
-        socket.removeEventListener('message', handler);
-        resolve(json.login);
-      } else {
-        reject(json.text);
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (json.subType === 'LoggingSuccess') {
+          socket.removeEventListener('message', handler);
+          resolve(json.login);
+        } else {
+          console.log('REJECT!');
+          reject(json.text);
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/login ${login}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/login ${login}`);
+    });
+  },
 
-  Api.createRoom = async (roomName) => new Promise((resolve, reject) => {
-    const { socket } = Socket;
+  async createRoom(roomName) {
+    return new Promise((resolve, reject) => {
+      const { socket } = this;
 
-    const handler = (e) => {
-      const json = JSON.parse(e.data);
-      if (json.subType === 'YouJoinedRoom') {
-        socket.removeEventListener('message', handler);
-        Api.updateAfterJoin(json);
-        resolve();
-      } else {
-        reject(json.text);
-      }
-    };
+      const handler = (e) => {
+        const json = JSON.parse(e.data);
+        if (json.subType === 'YouJoinedRoom') {
+          socket.removeEventListener('message', handler);
+          this.updateAfterJoin(json);
+          resolve();
+        } else {
+          reject(json.text);
+        }
+      };
 
-    socket.addEventListener('message', handler);
-    socket.send(`/create_room ${roomName}`);
-  });
+      socket.addEventListener('message', handler);
+      socket.send(`/create_room ${roomName}`);
+    });
+  },
 };

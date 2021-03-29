@@ -5,8 +5,7 @@ import { Provider } from 'react-redux';
 import { AppStore } from 'store/store';
 
 import { Layout } from 'layouts/Layout';
-import { Socket } from 'api/Socket';
-import { InitApi } from 'api/Api';
+import { Api } from 'api/Api';
 
 import './App.scss';
 import { BrowserRouter } from 'react-router-dom';
@@ -16,9 +15,8 @@ const App = () => {
 
   useEffect(() => {
     async function connectSocket() {
-      await Socket.connect();
+      await Api.connect();
       setConnected(true);
-      InitApi();
     }
     connectSocket();
   }, []);

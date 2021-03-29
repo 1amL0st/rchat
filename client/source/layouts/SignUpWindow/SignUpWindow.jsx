@@ -18,6 +18,7 @@ export const SignUpWindow = () => {
 
   const dispatch = useDispatch();
   const onLoginBtn = async () => {
+    console.log('onLoginBtn = ', Api);
     Api.logging(login)
       .then((l) => {
         dispatch({

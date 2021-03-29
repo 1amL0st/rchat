@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Api } from 'api/Api';
@@ -11,7 +10,6 @@ import { Window } from 'components/Window';
 import './UserWindow.scss';
 
 export const UserWindow = () => {
-  const login = useSelector((appStore) => appStore.user.login);
   const [inputLogin, setInputLogin] = useState('');
   const [err, setErr] = useState('');
 
