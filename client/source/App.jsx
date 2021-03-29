@@ -25,13 +25,13 @@ const App = () => {
 
   return (
     <div className="app">
-      {isConnected ? (
+      {isConnected && (
         <Provider store={AppStore}>
           <BrowserRouter>
             <Layout />
           </BrowserRouter>
         </Provider>
-      ) : null}
+      )}
     </div>
   );
 };

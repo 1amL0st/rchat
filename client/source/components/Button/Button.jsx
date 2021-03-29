@@ -9,16 +9,12 @@ export const Button = ({ onClick, children, size, className }) => {
     if (onClick) onClick();
   };
 
-  let sizeClass = '';
-  switch (size) {
-    case null:
-      break;
-    case 'small':
-      sizeClass = 'button--small';
-      break;
-    default:
-      console.log('Button component gets unkown size! ', size);
-      break;
+  const sizeClass = {
+    small: 'button--small',
+  }[size];
+
+  if (sizeClass === 'undefined') {
+    console.log('Button component gets unkown size! ', size);
   }
 
   return (
@@ -35,7 +31,7 @@ export const Button = ({ onClick, children, size, className }) => {
 Button.defaultProps = {
   className: '',
   onClick: null,
-  size: null,
+  size: 'small',
 };
 
 Button.propTypes = {

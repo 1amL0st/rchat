@@ -5,7 +5,7 @@ import { Route, useHistory } from 'react-router-dom';
 import { SignUpWindow } from 'layouts/SignUpWindow';
 import { UserWindow } from 'components/UserWindow';
 import { LeaveWindow } from 'layouts/Header/LeaveWindow';
-import { CreateRoomWindow } from 'components/CreateRoomWinodw';
+import { CreateRoomWindow } from 'components/CreateRoomWindow';
 import { ROUTES } from 'constants/Routes';
 
 import { Header } from 'layouts/Header';

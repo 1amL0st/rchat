@@ -12,7 +12,7 @@ import './UserWindow.scss';
 
 export const UserWindow = () => {
   const login = useSelector((appStore) => appStore.user.login);
-  const [inputLogin, setInputLogin] = useState(login);
+  const [inputLogin, setInputLogin] = useState('');
   const [err, setErr] = useState('');
 
   const history = useHistory();
