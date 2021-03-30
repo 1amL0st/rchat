@@ -227,11 +227,6 @@ impl Session {
                     match result {
                         Ok(id) => {
                             act.room_id = id;
-
-                            // let msg = serverMsgs::user_joined_room(
-                            // format!("You joined room {}",room_name),
-                            //     act.login.clone()
-                            // );
                             let msg = serverMsgs::you_joined_room(&room_name);
                             ctx.text(msg);
                         }
@@ -324,7 +319,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
                 self.hb = Instant::now();
             }
             ws::Message::Text(text) => {
-                println!("Text msg = {}", text);
                 self.handle_text(text, ctx);
             }
             ws::Message::Close(_) => {
@@ -352,6 +346,11 @@ async fn start_ws_connection(
     resp
 }
 
+async fn p404() -> actix_web::Result<actix_files::NamedFile> {
+    Ok(actix_files::NamedFile::open("./public/index.html")?)
+    // Ok(actix_files::NamedFile::open("static/404.html")?.set_status_code(StatusCode::NOT_FOUND))
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let server = Server::start(Server::new());
@@ -361,11 +360,13 @@ async fn main() -> std::io::Result<()> {
             .data(server.clone())
             .service(web::resource("/ws/").to(start_ws_connection))
             .service(Files::new("/", "./public/").index_file("index.html"))
-            .default_service(web::resource("/").route(web::get().to(|req: HttpRequest| {
-                HttpResponse::Found()
-                    .header(actix_web::http::header::LOCATION, "/")
-                    .finish()
-            })))
+            .default_service(web::resource("/").route(web::get().to(p404)))
+            // .default_service(web::resource("/").route(web::get().to(|req: HttpRequest| {
+            //     actix_files::NamedFile::open("./publi/index.html").unwrap()
+            //     // HttpResponse::Found()
+            //     //     .header(actix_web::http::header::LOCATION, "/")
+            //     //     .finish()
+            // })))
     })
     .bind("127.0.0.1:8080")?
     .run()

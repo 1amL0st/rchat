@@ -1,7 +1,14 @@
-.create-room-window {
+@import 'styles/mixins';
 
+.create-room-window {
   &__buttons {
+    @include flex-layout(row, space-between, center);
     margin-top: 16px;
+  }
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
   }
 
   &__err {

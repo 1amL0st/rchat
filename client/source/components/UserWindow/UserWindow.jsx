@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { Api } from 'api/Api';
 
@@ -12,6 +13,8 @@ import './UserWindow.scss';
 export const UserWindow = () => {
   const [inputLogin, setInputLogin] = useState('');
   const [err, setErr] = useState('');
+
+  const login = useSelector((appStore) => appStore.user.login);
 
   const history = useHistory();
 
@@ -27,7 +30,7 @@ export const UserWindow = () => {
 
   return (
     <Window className="user-window">
-      <p className="user-window__header">User</p>
+      <p className="user-window__header">{login}</p>
       <p className="user-window__error">{err}</p>
       <div>
         <input

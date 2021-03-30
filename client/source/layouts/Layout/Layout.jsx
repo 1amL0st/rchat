@@ -20,17 +20,13 @@ export const Layout = () => {
     history.push('/sign_up');
   }, [history]);
 
-  const layout = (
-    <div className="layout">
-      <Header />
-      <Main />
-    </div>
-  );
-
   return (
     <div className="layout">
       <Route path="/" exact>
-        {layout}
+        <div className="layout">
+          <Header />
+          <Main />
+        </div>
       </Route>
       <Route path={ROUTES.SignUp} component={SignUpWindow} />
       <Route path={ROUTES.UserWindow} component={UserWindow} />
