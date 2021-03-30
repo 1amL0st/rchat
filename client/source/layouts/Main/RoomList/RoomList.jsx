@@ -33,6 +33,7 @@ export const RoomList = () => {
           key={room}
           onClick={() => onRoomClick(room)}
           aria-hidden
+          title={room}
         >
           {room}
         </div>

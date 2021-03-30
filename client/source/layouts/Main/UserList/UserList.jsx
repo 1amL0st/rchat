@@ -13,7 +13,7 @@ export const UserList = () => {
       <Button size="small">Invite friend</Button>
       <div className="user-list__list">
         {users.map((user) => (
-          <div className="user-list__entry" key={user}>
+          <div className="user-list__entry" title={user} key={user}>
             {user}
           </div>
         ))}
