@@ -1,5 +1,6 @@
 @import 'styles/mixins';
 @import 'styles/base';
+@import 'styles/constants';
 
 :root {
   --main-blue-rgba: rgba(160, 180, 233, 0.397);
@@ -21,12 +22,15 @@ body {
   height: 100%;
   margin: 0;
 
-  background: linear-gradient(0deg, var(--main-blue-rgba), var(--main-gray-rgba));
+  background-color: $main-dark-blue-color;
 }
 
 * {
   font-size: 14px;
   font-family: sans-serif;
+  box-sizing: border-box;
+
+  color: #e8eaf0;
 }
 
 #root {

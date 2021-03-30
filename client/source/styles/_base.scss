@@ -1,9 +1,10 @@
 @import 'styles/mixins';
+@import 'styles/constants';
 
 input {
   padding: 6px;
+  color: $main-dark-blue-color;
 }
-
 
 .list {
   @include flex-layout(column, flex-start, center);
@@ -13,14 +14,25 @@ input {
 }
 
 .list-entry {
-  background-color: transparent;
-  width: 100%;
-
   margin: 4px 0;
+
+  height: 48px;
+  width: 200px;
 
   text-align: center;
   cursor: pointer;
 
+  border-radius: 8px;
+
   overflow-x: hidden;
   padding: 4px 0;
+
+  background-color: $main-dark-blue-color;
+}
+
+.list-header {
+  font-weight: bold;
+  font-size: 16px;
+  width: 100%;
+  text-align: left;
 }

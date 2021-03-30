@@ -22,7 +22,8 @@ export const UserList = () => {
 
   return (
     <aside className="user-list">
-      <Button size="small" onClick={onInviteFrined}>Invite friend</Button>
+      {/* <Button size="small" onClick={onInviteFrined}>Invite friend</Button> */}
+      <div className="user-list__header">Users</div>
       <div className="user-list__list">
         {users.map((user) => (
           <div className="user-list__entry" title={user} key={user}>

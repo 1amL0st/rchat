@@ -9,19 +9,12 @@
     margin-bottom: 16px;
   }
 
+  &__header {
+    @extend .list-header;
+  }
+
   &__entry {
     @extend .list-entry;
-    // width: 100%;
-
-    // font-weight: bold;
-    // // background-color: lightblue;
-
-    // margin: 4px 0;
-    // text-align: center;
-    // cursor: pointer;
-
-    // overflow-x: hidden;
-    // padding: 4px 0;
   }
 }
 

@@ -24,9 +24,10 @@ export const RoomList = () => {
 
   return (
     <aside className="room-list">
-      <Button size="small" onClick={() => history.push(ROUTES.CreateRoom)}>
+      {/* <Button size="small" onClick={() => history.push(ROUTES.CreateRoom)}>
         Create room
-      </Button>
+      </Button> */}
+      <div className="room-list__header">Rooms</div>
       {rooms.map((room) => (
         <div
           className="room-list__entry"
