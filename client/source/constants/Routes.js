@@ -3,4 +3,5 @@ export const ROUTES = {
   UserWindow: '/user_window',
   LeaveWindow: '/leave_window',
   CreateRoom: '/create_room',
+  InviteUser: '/invite_user',
 };

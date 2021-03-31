@@ -27,7 +27,7 @@ export const Layout = () => {
     if (isLogged) {
       history.push('/sign_up');
     }
-  }, [history]);
+  }, [history, isLogged]);
 
   return (
     <div className="layout">

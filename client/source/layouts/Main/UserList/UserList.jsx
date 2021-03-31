@@ -1,7 +1,10 @@
 import React from 'react';
+
+import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { IconButton } from 'components/IconButton';
+import { ROUTES } from 'constants/Routes';
 
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 
@@ -9,17 +12,10 @@ import './UserList.scss';
 
 export const UserList = () => {
   const users = useSelector((appStore) => appStore.room.users);
+  const history = useHistory();
 
   const onInviteFrined = () => {
-    const dummy = document.createElement('input');
-
-    document.body.appendChild(dummy);
-    dummy.value = window.location.href;
-    dummy.select();
-    document.execCommand('copy');
-    document.body.removeChild(dummy);
-
-    alert('Link copied to clipboard!');
+    history.push(ROUTES.InviteUser);
   };
 
   return (
