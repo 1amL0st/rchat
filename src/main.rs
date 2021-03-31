@@ -359,6 +359,11 @@ async fn p404() -> actix_web::Result<actix_files::NamedFile> {
 async fn main() -> std::io::Result<()> {
     let server = Server::start(Server::new());
 
+    let port = std::env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse()
+        .expect("PORT must be a number");
+
     HttpServer::new(move || {
         App::new()
             .data(server.clone())
@@ -372,7 +377,7 @@ async fn main() -> std::io::Result<()> {
             //     //     .finish()
             // })))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(("0.0.0.0", port))?
     .run()
     .await
 }
