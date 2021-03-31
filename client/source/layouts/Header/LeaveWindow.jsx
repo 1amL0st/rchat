@@ -14,7 +14,7 @@ export const LeaveWindow = () => {
   return (
     <Window className="leave-window">
       <div>Are you sure you want leave? You'll lose all data!</div>
-      <div className="leave-modal-window__controls">
+      <div className="leave-window__controls">
         <Button size="small" onClick={onYesBtn}>
           Yes
         </Button>
