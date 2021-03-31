@@ -16,10 +16,16 @@
   }
 
   &__login {
-    color: $main-dark-pink-color;
-    // * {
-    //   color: $main-dark-pink-color;
-    // }
+    @include flex-layout(row, center, center);
+
+    &__name {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    &__btn {
+      color: $main-dark-pink-color;
+    }
   }
 }
 

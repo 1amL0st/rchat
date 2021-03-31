@@ -13,7 +13,8 @@ import { Logo } from 'components/Logo';
 import './Header.scss';
 
 export const Header = () => {
-  const chatName = useSelector((appStore) => appStore.room.roomName);
+  const roomName = useSelector((appStore) => appStore.room.roomName);
+  const userLogin = useSelector((appStore) => appStore.user.login);
 
   const history = useHistory();
 
@@ -23,14 +24,17 @@ export const Header = () => {
         <Logo onClick={() => history.push(ROUTES.LeaveWindow)} />
       </aside>
 
-      <div>{chatName}</div>
+      <div>{roomName}</div>
 
       <aside>
-        <IconButton
-          className="header__login"
-          onClick={() => history.push(ROUTES.UserWindow)}
-          icon={Icons.faUserCog}
-        />
+        <div className="header__login">
+          <span className="header__login__name">{userLogin}</span>
+          <IconButton
+            className="header__login__btn"
+            onClick={() => history.push(ROUTES.UserWindow)}
+            icon={Icons.faUserCog}
+          />
+        </div>
       </aside>
     </header>
   );
