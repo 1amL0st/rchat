@@ -1,10 +1,8 @@
 @import 'styles/mixins';
 @import 'styles/constants';
 
-input {
-  padding: 6px;
-  color: $main-dark-blue-color;
-}
+// TODO: Maybe these classes should be renmaed with __
+// list__list, list__entry
 
 .list {
   @include flex-layout(column, flex-start, center);
@@ -13,10 +11,20 @@ input {
   height: 100%;
 }
 
+.list-list {
+  overflow-y: scroll;
+  height: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+    visibility: none;
+  }
+}
+
 .list-entry {
   margin: 4px 0;
 
-  height: 48px;
+  min-height: 48px;
   width: 200px;
 
   text-align: center;
@@ -26,13 +34,18 @@ input {
 
   overflow-x: hidden;
   padding: 4px 0;
+  font-weight: 700;
 
   background-color: $main-dark-blue-color;
 }
 
 .list-header {
+  @include flex-layout(row, space-between, center);
+  
   font-weight: bold;
   font-size: 16px;
   width: 100%;
   text-align: left;
+
+  margin: 8px 0;
 }

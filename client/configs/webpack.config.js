@@ -78,7 +78,7 @@ function generateConfig(mode) {
         'react-dom': '@hot-loader/react-dom',
         'layouts': path.resolve(__dirname, '../source/layouts/'),
         'api': path.resolve(__dirname, '../source/api/'),
-        'icons': path.resolve(__dirname, '../source/icons/'),
+        'icons': path.resolve(__dirname, '../icons/'),
         'styles': path.resolve(__dirname, '../source/styles/'),
         'components': path.resolve(__dirname, '../source/components/'),
         'store': path.resolve(__dirname, '../source/store/'),

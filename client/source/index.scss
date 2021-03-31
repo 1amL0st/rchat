@@ -27,10 +27,11 @@ body {
 
 * {
   font-size: 14px;
-  font-family: sans-serif;
+
+  font-family: sans-serif, 'Roboto';
   box-sizing: border-box;
 
-  color: #e8eaf0;
+  color: $main-text-color;
 }
 
 #root {
@@ -45,4 +46,16 @@ body {
   height: 100%;
   width: 100%;
   background: linear-gradient(0deg, var(--main-blue-rgba), var(--main-gray-rgba));
+}
+
+input {
+  padding: 12px;
+  background-color: $main-dark-color;
+
+  outline: none;
+  border: 1px solid $main-dim-text-color;
+}
+
+input::placeholder {
+  color: $main-placeholder-color;
 }

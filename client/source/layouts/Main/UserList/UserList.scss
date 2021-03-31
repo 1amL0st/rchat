@@ -13,6 +13,10 @@
     @extend .list-header;
   }
 
+  &__list {
+    @extend .list-list;
+  }
+
   &__entry {
     @extend .list-entry;
   }

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { Button } from 'components/Button';
+import { IconButton } from 'components/IconButton';
+
+import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './UserList.scss';
 
@@ -22,8 +24,10 @@ export const UserList = () => {
 
   return (
     <aside className="user-list">
-      {/* <Button size="small" onClick={onInviteFrined}>Invite friend</Button> */}
-      <div className="user-list__header">Users</div>
+      <div className="user-list__header">
+        <span>Users</span>
+        <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />
+      </div>
       <div className="user-list__list">
         {users.map((user) => (
           <div className="user-list__entry" title={user} key={user}>

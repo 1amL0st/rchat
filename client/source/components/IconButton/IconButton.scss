@@ -1,0 +1,15 @@
+@import 'styles/constants';
+
+.icon-button {
+  background: transparent;
+
+  outline: none;
+  border: none;
+  cursor: pointer;
+
+  font-size: 18px;
+
+  * {
+    color: inherit;
+  }
+}

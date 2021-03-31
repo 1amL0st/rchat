@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -36,6 +36,10 @@ export const SignUpWindow = () => {
       e.preventDefault();
     }
   };
+
+  useEffect(() => {
+    loginInputRef.current.focus();
+  }, []);
 
   const onLoginInputChange = (e) => {
     setLogin(e.target.value);

@@ -1,5 +1,15 @@
 import { AppStore } from 'store/store';
 
+function buildMsg(msgJson) {
+  console.log('buildMsg = ', msgJson);
+  const userLogin = AppStore.getState().user.login;
+  return {
+    ...msgJson,
+    isOwn: msgJson.author === userLogin,
+    author: msgJson.author === userLogin ? 'You' : msgJson.author,
+  };
+}
+
 function dataMsgHandler(msgJson) {
   switch (msgJson.subType) {
     case 'CurRoom':
@@ -68,7 +78,7 @@ function serverMsgHandler(msgJson) {
   if (msgJson.author && msgJson.text) {
     AppStore.dispatch({
       type: 'AddMsg',
-      message: msgJson,
+      message: buildMsg(msgJson),
     });
   }
 }
@@ -84,7 +94,7 @@ export function msgHandler(e) {
   } else if (msgJson.author && msgJson.text) {
     AppStore.dispatch({
       type: 'AddMsg',
-      message: msgJson,
+      message: buildMsg(msgJson),
     });
   }
 

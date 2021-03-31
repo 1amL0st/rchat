@@ -15,7 +15,12 @@ export const Chat = () => {
   }, [messages]);
 
   const messageList = messages.map((msg) => (
-    <Message key={msg.id} author={msg.author} text={msg.text} />
+    <Message
+      key={msg.id}
+      author={msg.author}
+      text={msg.text}
+      isOwn={msg.isOwn}
+    />
   ));
 
   return (

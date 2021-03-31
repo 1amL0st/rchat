@@ -1,24 +1,35 @@
+@import 'styles/constants';
+
 .message {
   display: flex;
   flex-direction: column;
-  
-  // background-color: lightgray;
-  border: 1px solid darkgray;
 
-  border-radius: 16px 0px 16px 0;
-  padding: 8px;
+  background-color: $main-dark-blue-color;
+
+  border-radius: 16px 16px 16px 0;
+  padding: 12px 24px;
 
   text-align: left;
 
   &__author {
-    font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
     align-self: flex-start;
   
-    margin-bottom: 4px;
+    margin-bottom: 8px;
   }
 
   &__text {
     white-space: pre-line;    
+    text-align: left;
+    color: #bcc0c9;
+  }
+
+  &--own {
+    background-color: $main-light-pink-color;
+    border-radius: 16px 16px 0 16px;
+
+    .message__text {
+      color: white;
+    }
   }
 }

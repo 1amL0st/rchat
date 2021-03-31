@@ -10,11 +10,16 @@
   height: 56px;
   margin-bottom: 8px;
 
-  // background-color: rgba(185, 202, 248, 0.397);
-
   aside {
     @include flex-layout(row, center, center);
     width: $aside-max-width;
+  }
+
+  &__login {
+    color: $main-dark-pink-color;
+    // * {
+    //   color: $main-dark-pink-color;
+    // }
   }
 }
 

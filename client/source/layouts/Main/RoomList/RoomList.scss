@@ -16,6 +16,10 @@
   &__entry {
     @extend .list-entry;
   }
+
+  &__list {
+    @extend .list-list;
+  }
 }
 
 @media screen and (min-width: $mobile-screen-width) {

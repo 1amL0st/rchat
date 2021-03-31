@@ -5,7 +5,9 @@ import { useSelector } from 'react-redux';
 
 import { ROUTES } from 'constants/Routes';
 import { Api } from 'api/Api';
-import { Button } from 'components/Button';
+import { IconButton } from 'components/IconButton';
+
+import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './RoomList.scss';
 
@@ -24,21 +26,26 @@ export const RoomList = () => {
 
   return (
     <aside className="room-list">
-      {/* <Button size="small" onClick={() => history.push(ROUTES.CreateRoom)}>
-        Create room
-      </Button> */}
-      <div className="room-list__header">Rooms</div>
-      {rooms.map((room) => (
-        <div
-          className="room-list__entry"
-          key={room}
-          onClick={() => onRoomClick(room)}
-          aria-hidden
-          title={room}
-        >
-          {room}
-        </div>
-      ))}
+      <div className="room-list__header">
+        <span>Rooms</span>
+        <IconButton
+          onClick={() => history.push(ROUTES.CreateRoom)}
+          icon={Icons.faPlus}
+        />
+      </div>
+      <div className="room-list__list">
+        {rooms.map((room) => (
+          <div
+            className="room-list__entry"
+            key={room}
+            onClick={() => onRoomClick(room)}
+            aria-hidden
+            title={room}
+          >
+            {room}
+          </div>
+        ))}
+      </div>
     </aside>
   );
 };

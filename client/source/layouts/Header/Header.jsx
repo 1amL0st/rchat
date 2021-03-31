@@ -4,12 +4,15 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ROUTES } from 'constants/Routes';
-import { Button } from 'components/Button';
+
+import { IconButton } from 'components/IconButton';
+import * as Icons from '@fortawesome/free-solid-svg-icons';
+
+import { Logo } from 'components/Logo';
 
 import './Header.scss';
 
 export const Header = () => {
-  const userLogin = useSelector((appStore) => appStore.user.login);
   const chatName = useSelector((appStore) => appStore.room.roomName);
 
   const history = useHistory();
@@ -17,21 +20,24 @@ export const Header = () => {
   return (
     <header className="header">
       <aside>
-        <Button size="small" onClick={() => history.push(ROUTES.LeaveWindow)}>
-          Leave
-        </Button>
+        <Logo onClick={() => history.push(ROUTES.LeaveWindow)} />
       </aside>
 
       <div>{chatName}</div>
 
       <aside>
-        <Button
+        <IconButton
+          className="header__login"
+          onClick={() => history.push(ROUTES.UserWindow)}
+          icon={Icons.faUserCog}
+        />
+        {/* <Icon
           className="header__login"
           onClick={() => history.push(ROUTES.UserWindow)}
           size="small"
         >
           {userLogin}
-        </Button>
+        </Button> */}
       </aside>
     </header>
   );
