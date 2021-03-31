@@ -33,6 +33,14 @@ impl Actor for Session {
     fn started(&mut self, ctx: &mut Self::Context) {
         self.hb(ctx);
     }
+
+    fn stopping(&mut self, ctx: &mut Self::Context) -> Running {
+        self.server.do_send(Leave {
+            login: self.login.clone(),
+            room_id: self.room_id,
+        });
+        Running::Stop
+    }
 }
 
 impl Handler<SessionMessage> for Session {
@@ -169,8 +177,6 @@ impl Session {
                             act.room_id = room_id;
 
                             let m = room_name;
-                            // let text = format!("You joined room {}", m);
-                            // ctx.text(serverMsgs::user_joined_room(text, act.login.clone()));
                             ctx.text(serverMsgs::you_joined_room(&m))
                         }
                         Err(err) => {
@@ -325,15 +331,12 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Session {
             ws::Message::Text(text) => {
                 self.handle_text(text, ctx);
             }
-            ws::Message::Close(_) => {
-                if self.login != "" {
-                    self.server
-                        .try_send(Leave {
-                            login: self.login.clone(),
-                            room_id: self.room_id,
-                        })
-                        .unwrap();
-                }
+            ws::Message::Close(reason) => {
+                ctx.close(reason);
+                ctx.stop();
+            },
+            ws::Message::Continuation(_) => {
+                ctx.stop();
             }
             _ => (),
         }
