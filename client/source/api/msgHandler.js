@@ -1,7 +1,6 @@
 import { AppStore } from 'store/store';
 
 function buildMsg(msgJson) {
-  console.log('buildMsg = ', msgJson);
   const userLogin = AppStore.getState().user.login;
   return {
     ...msgJson,
@@ -89,7 +88,7 @@ export function msgHandler(e) {
 
   if (msgJson.type === 'DataMsg') {
     dataMsgHandler.call(this, msgJson);
-  } else if (msgJson.type === 'ServerMsg' || msgJson.author === 'Server') {
+  } else if (msgJson.author === 'Server') {
     serverMsgHandler.call(this, msgJson);
   } else if (msgJson.author && msgJson.text) {
     AppStore.dispatch({

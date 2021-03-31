@@ -121,6 +121,24 @@ impl Server {
             serverMsgs::user_joined_room(format!("User {} joined room!", login), login.clone());
         self.send_msg_to_room(msg, to_room_id, login);
     }
+
+    fn is_login_valid(&self, new_login: &String) -> Result<(), String> {
+        if new_login.chars().count() > 32 {
+            return Err(serverMsgs::logging_fail(&format!(
+                "Your login is too long!"
+            )));
+        } else if new_login.trim() == "" {
+            return Err(serverMsgs::logging_fail(&format!(
+                "Login must not be empty!"
+            )));
+        } else if new_login.to_ascii_lowercase() == "server" {
+            return Err(serverMsgs::logging_fail(&format!(
+                "Login already exists!"
+            )))
+        }
+
+        Ok(())
+    }
 }
 
 impl Actor for Server {
@@ -141,36 +159,30 @@ impl Handler<Login> for Server {
     type Result = MessageResult<Login>;
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
         let recipient = msg.recipient;
-        let new_login = msg.new_login;
+        let new_login = &msg.new_login;
 
-        if new_login.chars().count() > 32 {
-            return MessageResult(Err(serverMsgs::logging_fail(&format!(
-                "Your login is too long!"
-            ))));
-        } else if new_login.trim() == "" {
-            return MessageResult(Err(serverMsgs::logging_fail(&format!(
-                "Wrong login format!"
-            ))));
+        if let Err(err) = self.is_login_valid(new_login) {
+            return MessageResult(Err(err));
         }
 
-        let old_login = msg.old_login;
-        if self.users.contains_key(&new_login) {
+        let old_login = &msg.old_login;
+        if self.users.contains_key(new_login) {
             MessageResult(Err(serverMsgs::logging_fail(&format!("Login exists!!"))))
         } else {
             if old_login == "" {
                 self.add_user_to_main_room(new_login.clone());
 
                 let msg = serverMsgs::user_connected(&format!("Someone connected!"));
-                self.send_msg_to_room(msg, MAIN_ROOM_ID, &new_login);
+                self.send_msg_to_room(msg, MAIN_ROOM_ID, new_login);
             } else {
-                self.users.remove(&old_login);
+                self.users.remove(old_login);
 
-                let msg_text = serverMsgs::user_changed_login(&old_login, &new_login);
-                self.send_msg_to_room(msg_text, msg.room_id, &old_login);
+                let msg_text = serverMsgs::user_changed_login(&old_login, new_login);
+                self.send_msg_to_room(msg_text, msg.room_id, old_login);
             }
 
             let room = self.rooms.get_mut(&msg.room_id).unwrap();
-            room.users.remove(&old_login);
+            room.users.remove(old_login);
             room.users.insert(new_login.clone());
 
             self.users.insert(new_login.clone(), recipient);
