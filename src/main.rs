@@ -212,6 +212,10 @@ impl Session {
         room_name = room_name.trim().to_string();
 
         if room_name.trim() == "" {
+            let msg = serverMsgs::room_creation_fail(format!(
+                "Room name has wrong format!"
+            ));
+            ctx.text(msg);
             return;
         }
 
