@@ -7,7 +7,8 @@ import './MsgInput.scss';
 
 export const MsgInput = () => {
   const [message, setMessage] = useState('');
-  const textAreaRef = useRef();
+  // NOTE: This pre-focus doesn't work well on mobile
+  // const textAreaRef = useRef();
 
   const onSendBtn = () => {
     if (message.trim() !== 0) {
@@ -24,13 +25,14 @@ export const MsgInput = () => {
   };
 
   useEffect(() => {
-    textAreaRef.current.focus();
+    // Stop prefox, because this isn't a good solution on mobile
+    // textAreaRef.current.focus();
   }, []);
 
   return (
     <div className="msg-input">
       <textarea
-        ref={textAreaRef}
+        // ref={textAreaRef}
         className="msg-input__textarea"
         rows={4}
         value={message}

@@ -12,3 +12,9 @@
 
   background-color: $main-dark-color;
 }
+
+@media screen and (max-width: $mobile-screen-width) {
+  .layout {
+    padding: 0;
+  }
+}

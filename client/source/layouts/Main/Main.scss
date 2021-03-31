@@ -22,3 +22,9 @@
     margin: 0;
   }
 }
+
+@media screen and (max-width: $mobile-screen-width) {
+  .main {
+    padding: 0 4px 2px 4px;
+  }
+}
