@@ -22,8 +22,9 @@
 }
 
 .list-entry {
+  @include flex-layout(row, center, center);
+  
   margin: 4px 0;
-
   min-height: 48px;
   width: 200px;
 

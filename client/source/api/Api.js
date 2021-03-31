@@ -7,8 +7,8 @@ export const Api = {
   async connect() {
     return new Promise((resolve, reject) => {
       const wsURI = `${
-        (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
-        + window.location.host
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+        window.location.host
       }/ws/`;
       this.socket = new WebSocket(wsURI);
 
