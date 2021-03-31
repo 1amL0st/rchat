@@ -31,13 +31,6 @@ export const Header = () => {
           onClick={() => history.push(ROUTES.UserWindow)}
           icon={Icons.faUserCog}
         />
-        {/* <Icon
-          className="header__login"
-          onClick={() => history.push(ROUTES.UserWindow)}
-          size="small"
-        >
-          {userLogin}
-        </Button> */}
       </aside>
     </header>
   );
