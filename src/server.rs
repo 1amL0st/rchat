@@ -112,7 +112,7 @@ impl Server {
         to_room.users.insert(login.clone());
 
         let leave_msg = serverMsgs::user_left_room_custom_text(
-            &format!("User {} has joined room {}", login, to_room.name),
+            &format!("User {} left this room!", login),
             login,
         );
         self.send_msg_to_room(leave_msg, cur_room_id, login);
@@ -223,15 +223,18 @@ impl Handler<Leave> for Server {
         let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
         cur_room.users.remove(&msg.login);
 
+        let cur_room_name = cur_room.name.clone();
         if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
             let msg_text = serverMsgs::room_destroy(&cur_room.name);
             self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &msg.login);
-
             self.rooms.remove(&msg.room_id);
         }
 
         self.users.remove(&msg.login);
-        let msg_text = serverMsgs::user_left_room(&msg.login);
+        let msg_text = serverMsgs::user_left_room_custom_text(
+            &format!("User {} has left room {}", msg.login, cur_room_name),
+            &msg.login,
+        );
         self.send_msg_to_room(msg_text, msg.room_id, &String::new());
     }
 }
