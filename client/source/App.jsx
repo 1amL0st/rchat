@@ -24,24 +24,20 @@ const App = () => {
     connectSocket();
   }, []);
 
-  let content;
   if (isWaitingFor) {
-    content = <WaitingForWindow />;
-  } else if (isErr) {
-    content = <CriticalErrWindow />;
-  } else {
-    content = (
-      <div className="app">
-        {isConnected && (
+    return <WaitingForWindow />;
+  } if (isErr) {
+    return <CriticalErrWindow />;
+  }
+  return (
+    <div className="app">
+      {isConnected && (
         <BrowserRouter>
           <Layout />
         </BrowserRouter>
-        )}
-      </div>
-    );
-  }
-
-  return content;
+      )}
+    </div>
+  );
 };
 
 export default hot(App);

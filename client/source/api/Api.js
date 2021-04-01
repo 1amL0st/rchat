@@ -23,7 +23,7 @@ export const Api = {
   socket: null,
 
   async connect() {
-    return new Promise((resolve, _) => {
+    return new Promise((resolve) => {
       const wsURI = `${
         (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
         + window.location.host
@@ -42,7 +42,7 @@ export const Api = {
         });
       };
 
-      this.socket.onerror = (e) => {
+      this.socket.onerror = () => {
         hideWaitingWindow();
         AppStore.dispatch({
           type: 'SetCriticalErr',
@@ -87,11 +87,14 @@ export const Api = {
     });
   },
 
-  updateAfterJoin(json) {
-    this.clearInbox({
-      author: json.author,
-      text: json.text,
+  clearInboxExceptLast() {
+    AppStore.dispatch({
+      type: 'ClearInboxExceptLast',
     });
+  },
+
+  updateAfterJoin() {
+    this.clearInboxExceptLast();
 
     this.getRoomList();
     this.getCurrentRoomName();
