@@ -10,11 +10,19 @@ export const MsgInput = () => {
   const [message, setMessage] = useState('');
   const textAreaRef = useRef();
 
+  const focus = () => {
+    // This focus doesn't work well on mobile. Do this only for desktop
+    if (window.innerWidth >= METRICS.mobileScreenWidth) {
+      textAreaRef.current.focus();
+    }
+  };
+
   const onSendBtn = () => {
     if (message.trim() !== 0) {
       Api.sendMsg(message);
     }
     setMessage('');
+    focus();
   };
 
   const onTextAreaKeydown = (e) => {
@@ -25,10 +33,7 @@ export const MsgInput = () => {
   };
 
   useEffect(() => {
-    // This focus doesn't work well on mobile. Do this only for desktop
-    if (window.innerWidth >= METRICS.mobileScreenWidth) {
-      textAreaRef.current.focus();
-    }
+    focus();
   }, []);
 
   return (
