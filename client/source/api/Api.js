@@ -1,6 +1,23 @@
 import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
 
+/*
+  NOTE: These two functions... Maybe you shuold place them in separate file...
+*/
+
+function showWaitingWindow(text) {
+  AppStore.dispatch({
+    type: 'ShowWaitingForWindow',
+    waitingText: text,
+  });
+}
+
+function hideWaitingWindow() {
+  AppStore.dispatch({
+    type: 'HideWaitingForWindowF',
+  });
+}
+
 export const Api = {
   socket: null,
 
@@ -11,9 +28,13 @@ export const Api = {
         + window.location.host
       }/ws/`;
 
+      showWaitingWindow('Waiting for connection');
+
       this.socket = new WebSocket(wsURI);
 
+      // TODO: Detect if user is offline
       this.socket.onclose = () => {
+        hideWaitingWindow();
         AppStore.dispatch({
           type: 'SetCriticalErr',
           errText: 'Socket was closed! This is critical error!',
@@ -21,6 +42,7 @@ export const Api = {
       };
 
       this.socket.onerror = (e) => {
+        hideWaitingWindow();
         AppStore.dispatch({
           type: 'SetCriticalErr',
           errText: 'Some error happened!',
@@ -28,6 +50,7 @@ export const Api = {
       };
 
       this.socket.onopen = () => {
+        hideWaitingWindow();
         this.socket.addEventListener('message', msgHandler.bind(this));
         resolve();
       };
@@ -127,7 +150,6 @@ export const Api = {
           socket.removeEventListener('message', handler);
           resolve(json.login);
         } else {
-          console.log('REJECT!');
           reject(json.text);
         }
       };

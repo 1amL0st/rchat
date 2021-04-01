@@ -7,12 +7,14 @@ import { useSelector } from 'react-redux';
 import { Layout } from 'layouts/Layout';
 import { Api } from 'api/Api';
 import { CriticalErrWindow } from 'components/CriticalErrWindow';
+import { WaitingForWindow } from 'components/WaitingForWindow';
 
 import './App.scss';
 
 const App = () => {
   const [isConnected, setConnected] = useState(false);
   const isErr = useSelector((appStore) => appStore.criticalErr.isErr);
+  const isWaitingFor = useSelector((appStore) => appStore.waitingFor.isWaiting);
 
   useEffect(() => {
     async function connectSocket() {
@@ -23,17 +25,23 @@ const App = () => {
   }, []);
 
   let content;
-  if (isErr) {
+  if (isWaitingFor) {
+    content = <WaitingForWindow />;
+  } else if (isErr) {
     content = <CriticalErrWindow />;
   } else {
-    content = isConnected && (
-      <BrowserRouter>
-        <Layout />
-      </BrowserRouter>
+    content = (
+      <div className="app">
+        {isConnected && (
+        <BrowserRouter>
+          <Layout />
+        </BrowserRouter>
+        )}
+      </div>
     );
   }
 
-  return <div className="app">{content}</div>;
+  return content;
 };
 
 export default hot(App);
