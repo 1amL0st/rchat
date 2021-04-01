@@ -1,17 +1,18 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useEffect, useState } from 'react';
 
-import { Provider } from 'react-redux';
-import { AppStore } from 'store/store';
+import { BrowserRouter } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { Layout } from 'layouts/Layout';
 import { Api } from 'api/Api';
+import { CriticalErrWindow } from 'components/CriticalErrWindow';
 
 import './App.scss';
-import { BrowserRouter } from 'react-router-dom';
 
 const App = () => {
   const [isConnected, setConnected] = useState(false);
+  const isErr = useSelector((appStore) => appStore.criticalErr.isErr);
 
   useEffect(() => {
     async function connectSocket() {
@@ -21,17 +22,18 @@ const App = () => {
     connectSocket();
   }, []);
 
-  return (
-    <div className="app">
-      {isConnected && (
-        <Provider store={AppStore}>
-          <BrowserRouter>
-            <Layout />
-          </BrowserRouter>
-        </Provider>
-      )}
-    </div>
-  );
+  let content;
+  if (isErr) {
+    content = <CriticalErrWindow />;
+  } else {
+    content = isConnected && (
+      <BrowserRouter>
+        <Layout />
+      </BrowserRouter>
+    );
+  }
+
+  return <div className="app">{content}</div>;
 };
 
 export default hot(App);

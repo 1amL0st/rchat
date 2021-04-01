@@ -1,0 +1,1 @@
+export { CriticalErrWindow } from './CriticalErrWindow';

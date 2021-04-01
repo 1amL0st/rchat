@@ -5,25 +5,31 @@ export const Api = {
   socket: null,
 
   async connect() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _) => {
       const wsURI = `${
         (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
         + window.location.host
       }/ws/`;
+
       this.socket = new WebSocket(wsURI);
 
+      this.socket.onclose = () => {
+        AppStore.dispatch({
+          type: 'SetCriticalErr',
+          errText: 'Socket was closed! This is critical error!',
+        });
+      };
+
+      this.socket.onerror = (e) => {
+        AppStore.dispatch({
+          type: 'SetCriticalErr',
+          errText: 'Some error happened!',
+        });
+      };
+
       this.socket.onopen = () => {
-        console.log('Socket opened!');
         this.socket.addEventListener('message', msgHandler.bind(this));
         resolve();
-      };
-
-      this.socket.onclose = () => {
-        console.error('Socket was closed!');
-      };
-
-      this.socket.onerror = () => {
-        reject(new Error('Some error happened!'));
       };
     });
   },

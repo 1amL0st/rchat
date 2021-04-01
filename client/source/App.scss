@@ -7,11 +7,12 @@
   width: 100%;
   margin: 1%;
 
-  background-color: var(--main-white-rgb);
+  // background-color: var(--main-white-rgb);
 }
 
 @media screen and (max-width: $mobile-screen-width) {
   .app {
+    border-radius: 0;
     margin: 0%;
   }
 }
