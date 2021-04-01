@@ -39,7 +39,7 @@ export const UserWindow = () => {
           value={inputLogin}
           onChange={(e) => setInputLogin(e.target.value)}
         />
-        <Button size="small" onClick={onNewLoginApply}>
+        <Button size="small" onClick={onNewLoginApply} className="user-window__apply-login">
           Apply
         </Button>
       </div>
