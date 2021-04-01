@@ -15,7 +15,6 @@ export const CreateRoomWindow = () => {
   const onCreateRoomBtn = () => {
     Api.createRoom(roomName)
       .then(() => {
-        console.log('Room created!');
         history.goBack();
       })
       .catch((e) => setErr(e));
