@@ -27,7 +27,9 @@ export const UserList = () => {
       <div className="user-list__list">
         {users.map((user) => (
           <div className="user-list__entry" title={user} key={user}>
-            {user}
+            <div className="user-list__entry__name">
+              {user}
+            </div>
           </div>
         ))}
       </div>

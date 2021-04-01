@@ -40,6 +40,12 @@
   background-color: $main-dark-blue-color;
 }
 
+.list-entry__name {
+  width: $aside-max-width - 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .list-header {
   @include flex-layout(row, space-between, center);
   

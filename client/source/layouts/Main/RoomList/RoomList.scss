@@ -15,6 +15,12 @@
 
   &__entry {
     @extend .list-entry;
+
+    &__name {
+      width: $aside-max-width - 32px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   &__list {

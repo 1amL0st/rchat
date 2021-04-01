@@ -42,7 +42,9 @@ export const RoomList = () => {
             aria-hidden
             title={room}
           >
-            {room}
+            <div className="room-list__entry__name">
+              {room}
+            </div>
           </div>
         ))}
       </div>
