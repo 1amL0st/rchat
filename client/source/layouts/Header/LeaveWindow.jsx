@@ -15,7 +15,11 @@ export const LeaveWindow = () => {
 
   return (
     <Window className="leave-window" onShouldClose={onClose}>
-      <div>Are you sure you want leave? You'll lose all data!</div>
+      <div>
+        Are you sure you want leave?
+        <br />
+        You'll lose all data!
+      </div>
       <div className="leave-window__controls">
         <Button size="small" onClick={onYesBtn}>
           Yes

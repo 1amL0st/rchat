@@ -1,0 +1,47 @@
+@import 'styles/mixins';
+@import 'styles/constants';
+
+.user-panel {
+  @include flex-layout(row, center, center);
+  position: relative;
+
+  &__name {
+    font-weight: bold;
+    text-align: center;
+
+    width: $aside-max-width - 32px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__btn {
+    color: $main-dark-pink-color;
+  }
+
+  &__list {
+    @include flex-layout(column, flex-start, center);
+    position: absolute;
+    top: 100%;
+    right: 0;
+
+    padding: 8px;
+    border-radius: 8px;
+
+    background-color: rgb(156, 61, 61);
+    width: $aside-max-width;
+    z-index: 3;
+
+    &--open {
+      visibility: visible;
+    }
+  }
+
+  .button {
+    margin: 8px 0;
+  }
+
+  &__login {
+    margin-bottom: 16px;
+  }
+}

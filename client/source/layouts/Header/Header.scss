@@ -15,22 +15,8 @@
     width: $aside-max-width;
   }
 
-  &__login {
-    @include flex-layout(row, center, center);
-
-    &__name {
-      font-weight: bold;
-      margin-right: 8px;
-      text-align: center;
-
-      width: $aside-max-width - 32px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    &__btn {
-      color: $main-dark-pink-color;
-    }
+  .user-panel {
+    width: 100%;
   }
 }
 
@@ -39,7 +25,10 @@
     margin: 0 32px;
   }
 
+  text-align: center;
+
   &__controls {
+    @include flex-layout(row, center, center);
     margin-top: 32px;
   }
 }

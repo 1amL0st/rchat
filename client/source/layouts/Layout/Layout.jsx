@@ -20,7 +20,7 @@ export const Layout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (isLogged) {
+    if (!isLogged) {
       history.push('/sign_up');
     }
   }, [history, isLogged]);

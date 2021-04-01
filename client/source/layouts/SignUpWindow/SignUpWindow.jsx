@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Api } from 'api/Api';
 
@@ -11,6 +11,7 @@ import './SignUpWindow.scss';
 
 export const SignUpWindow = () => {
   const history = useHistory();
+  const isLogged = useSelector((appStore) => appStore.user.isLogged);
 
   const [login, setLogin] = useState('');
   const loginInputRef = useRef();
@@ -38,6 +39,9 @@ export const SignUpWindow = () => {
   };
 
   useEffect(() => {
+    if (isLogged) {
+      history.replace('/');
+    }
     loginInputRef.current.focus();
   }, []);
 

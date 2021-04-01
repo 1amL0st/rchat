@@ -88,27 +88,31 @@ impl Session {
             .send(login_msg)
             .into_actor(self)
             .then(move |res, act, ctx| {
-                if let Ok(result) = res {
-                    match result {
-                        Ok(()) => {
-                            let old_login = act.login.clone();
-                            act.login = login.clone();
-
-                            ctx.text(serverMsgs::logging_success(&login));
-
-                            if old_login == "" {
-                                ctx.text(serverMsgs::user_connected(&format!(
-                                    "{}, you're connected! Welcome to rchat!",
-                                    login
-                                )));
+                match res {
+                    Ok(result) => {
+                        match result {
+                            Ok(()) => {
+                                let old_login = act.login.clone();
+                                act.login = login.clone();
+    
+                                ctx.text(serverMsgs::logging_success(&login));
+    
+                                if old_login == "" {
+                                    ctx.text(serverMsgs::user_connected(&format!(
+                                        "{}, you're connected! Welcome to rchat!",
+                                        login
+                                    )));
+                                }
+                            }
+                            Err(err) => {
+                                ctx.text(err);
                             }
                         }
-                        Err(err) => {
-                            ctx.text(err);
-                        }
+                    },
+                    Err(err) => {
+                        println!("Err = {}", err);
+                        panic!("Something went wrong!");
                     }
-                } else {
-                    panic!("Something went wrong!");
                 }
                 fut::ready(())
             })
