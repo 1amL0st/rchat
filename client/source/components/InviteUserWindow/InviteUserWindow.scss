@@ -1,7 +1,11 @@
+@import 'styles/constants';
+
 .invite-user-window {
   &__msg {
     line-height: 32px;
     height: 32px;
+
+    color: $main-success-msg-color;
   }
 
   &__copy-btn {
