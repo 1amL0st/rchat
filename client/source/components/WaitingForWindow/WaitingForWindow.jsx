@@ -7,7 +7,9 @@ import { Window } from 'components/Window';
 import './WaitingForWindow.scss';
 
 export const WaitingForWindow = () => {
-  const waitingForText = useSelector((appStore) => appStore.waitingFor.waitingText);
+  const waitingForText = useSelector(
+    (appStore) => appStore.waitingFor.waitingText,
+  );
 
   console.log('waitingForText', waitingForText);
 

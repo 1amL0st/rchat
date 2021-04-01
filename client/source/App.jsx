@@ -26,7 +26,8 @@ const App = () => {
 
   if (isWaitingFor) {
     return <WaitingForWindow />;
-  } if (isErr) {
+  }
+  if (isErr) {
     return <CriticalErrWindow />;
   }
   return (

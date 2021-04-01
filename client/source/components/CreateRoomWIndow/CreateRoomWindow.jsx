@@ -31,10 +31,18 @@ export const CreateRoomWindow = () => {
       />
       <p className="create-room-window__err">{err}</p>
       <div className="create-room-window__buttons">
-        <Button size="small" onClick={onCreateRoomBtn} className="create-room-window__create-btn">
+        <Button
+          size="small"
+          onClick={onCreateRoomBtn}
+          className="create-room-window__create-btn"
+        >
           Create
         </Button>
-        <Button size="small" onClick={() => history.goBack()} className="create-room-window__cancel_btn">
+        <Button
+          size="small"
+          onClick={() => history.goBack()}
+          className="create-room-window__cancel_btn"
+        >
           Cancel
         </Button>
       </div>

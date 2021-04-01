@@ -27,8 +27,18 @@ export const InviteUserWindow = () => {
     <Window className="invite-user-window">
       <div>This is invite user window</div>
       <p className="invite-user-window__msg">{msg}</p>
-      <Button onClick={onCopyLinkHandler} className="invite-user-window__copy-btn">Copy link</Button>
-      <Button onClick={() => history.goBack()} className="invite-user-window__close">Close</Button>
+      <Button
+        onClick={onCopyLinkHandler}
+        className="invite-user-window__copy-btn"
+      >
+        Copy link
+      </Button>
+      <Button
+        onClick={() => history.goBack()}
+        className="invite-user-window__close"
+      >
+        Close
+      </Button>
     </Window>
   );
 };
