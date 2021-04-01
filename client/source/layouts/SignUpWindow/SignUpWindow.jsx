@@ -47,11 +47,11 @@ export const SignUpWindow = () => {
 
   return (
     <Window className="signup-window">
-      <p className="signup-window__warning">
+      <div className="signup-window__warning">
         Warning
         <br />
         This service is under development, some bugs are possible!
-      </p>
+      </div>
       <p className="signup-window__error">{err}</p>
       <input
         ref={loginInputRef}
