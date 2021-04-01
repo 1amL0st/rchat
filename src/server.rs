@@ -172,7 +172,7 @@ impl Handler<Login> for Server {
             if old_login == "" {
                 self.add_user_to_main_room(new_login.clone());
 
-                let msg = serverMsgs::user_connected(&format!("Someone connected!"));
+                let msg = serverMsgs::user_connected(&format!("{} connected!", new_login));
                 self.send_msg_to_room(msg, MAIN_ROOM_ID, new_login);
             } else {
                 self.users.remove(old_login);

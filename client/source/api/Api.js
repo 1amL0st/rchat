@@ -3,6 +3,7 @@ import { AppStore } from '../store/store';
 
 /*
   NOTE: These two functions... Maybe you shuold place them in separate file...
+        And make two functions for showing|hiding criticalErrWindow...
 */
 
 function showWaitingWindow(text) {
@@ -14,7 +15,7 @@ function showWaitingWindow(text) {
 
 function hideWaitingWindow() {
   AppStore.dispatch({
-    type: 'HideWaitingForWindowF',
+    type: 'HideWaitingForWindow',
   });
 }
 
