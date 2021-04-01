@@ -20,7 +20,7 @@ export const InviteUserWindow = () => {
     document.execCommand('copy');
     document.body.removeChild(dummy);
 
-    setMsg('Linked is copied!');
+    setMsg('Link is copied to clipboard!');
   };
 
   return (
