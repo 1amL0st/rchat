@@ -30,7 +30,7 @@ export const UserWindow = () => {
 
   return (
     <Window className="user-window">
-      <p className="user-window__header">{login}</p>
+      <div className="user-window__header">{login}</div>
       <p className="user-window__error">{err}</p>
       <div>
         <input

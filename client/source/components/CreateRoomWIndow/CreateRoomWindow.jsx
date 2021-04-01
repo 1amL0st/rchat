@@ -28,7 +28,7 @@ export const CreateRoomWindow = () => {
         value={roomName}
         onChange={(e) => setRoomName(e.target.value)}
       />
-      <div className="create-room-window__err">{err}</div>
+      <p className="create-room-window__err">{err}</p>
       <div className="create-room-window__buttons">
         <Button size="small" onClick={onCreateRoomBtn} className="create-room-window__create-btn">
           Create

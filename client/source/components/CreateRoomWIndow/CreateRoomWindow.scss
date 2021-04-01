@@ -13,6 +13,9 @@
   &__err {
     margin: 8px 0;
     color: red;
+    height: 32px;
+    vertical-align: middle;
+    line-height: 32px;
   }
 
   &__create-btn {
