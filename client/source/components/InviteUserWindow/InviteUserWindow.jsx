@@ -23,8 +23,10 @@ export const InviteUserWindow = () => {
     setMsg('Link is copied to clipboard!');
   };
 
+  const onClose = () => history.goBack();
+
   return (
-    <Window className="invite-user-window">
+    <Window className="invite-user-window" onShouldClose={onClose}>
       <div>This is invite user window</div>
       <p className="invite-user-window__msg">{msg}</p>
       <Button
@@ -33,10 +35,7 @@ export const InviteUserWindow = () => {
       >
         Copy link
       </Button>
-      <Button
-        onClick={() => history.goBack()}
-        className="invite-user-window__close"
-      >
+      <Button onClick={onClose} className="invite-user-window__close">
         Close
       </Button>
     </Window>

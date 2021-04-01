@@ -36,12 +36,12 @@ export const UserWindow = () => {
   const onClose = () => history.goBack();
 
   return (
-    <Window className="user-window">
+    <Window className="user-window" onShouldClose={onClose}>
       <div className="user-window__header">{login}</div>
-      <p className={classNames(
-        'user-window__msg',
-        { 'user-window__msg--error': isErr },
-      )}
+      <p
+        className={classNames('user-window__msg', {
+          'user-window__msg--error': isErr,
+        })}
       >
         {msgText}
       </p>

@@ -28,12 +28,14 @@ export const CreateRoomWindow = () => {
     }
   };
 
+  const onClose = () => history.goBack();
+
   useEffect(() => {
     roomNameInputRef.current.focus();
   }, []);
 
   return (
-    <Window className="create-room-window">
+    <Window className="create-room-window" onShouldClose={onClose}>
       <input
         ref={roomNameInputRef}
         maxLength={32}
