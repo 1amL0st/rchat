@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'class-names';
 
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -12,7 +13,9 @@ import './UserWindow.scss';
 
 export const UserWindow = () => {
   const [inputLogin, setInputLogin] = useState('');
-  const [err, setErr] = useState('');
+
+  const [msgText, setMsgText] = useState('');
+  const [isErr, setIsErr] = useState(false);
 
   const login = useSelector((appStore) => appStore.user.login);
 
@@ -21,9 +24,13 @@ export const UserWindow = () => {
   const onNewLoginApply = () => {
     Api.setNewLogin(inputLogin)
       .then(() => {
-        setErr('Login changed!');
+        setMsgText('Login changed!');
+        setIsErr(false);
       })
-      .catch((e) => setErr(e));
+      .catch((e) => {
+        setMsgText(e);
+        setIsErr(true);
+      });
   };
 
   const onClose = () => history.goBack();
@@ -31,7 +38,13 @@ export const UserWindow = () => {
   return (
     <Window className="user-window">
       <div className="user-window__header">{login}</div>
-      <p className="user-window__error">{err}</p>
+      <p className={classNames(
+        'user-window__msg',
+        { 'user-window__msg--error': isErr },
+      )}
+      >
+        {msgText}
+      </p>
       <div>
         <input
           maxLength={32}

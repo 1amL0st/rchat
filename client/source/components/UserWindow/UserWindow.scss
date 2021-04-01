@@ -1,3 +1,5 @@
+@import 'styles/constants';
+
 .user-window {
   &__header {
     margin: 0;
@@ -11,8 +13,12 @@
     margin-left: 16px;
   }
 
-  &__error {
+  &__msg {
     margin: 16px;
-    color: red;
+    color: $main-success-msg-color;
+
+    &--error {
+      color: $main-fail-msg-color;
+    }
   }
 }

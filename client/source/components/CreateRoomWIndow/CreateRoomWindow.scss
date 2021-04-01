@@ -1,4 +1,5 @@
 @import 'styles/mixins';
+@import 'styles/constants';
 
 .create-room-window {
   &__buttons {
@@ -12,7 +13,7 @@
 
   &__err {
     margin: 8px 0;
-    color: red;
+    color: $main-fail-msg-color;
     height: 32px;
     vertical-align: middle;
     line-height: 32px;
