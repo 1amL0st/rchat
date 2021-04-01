@@ -23,6 +23,7 @@ export const CreateRoomWindow = () => {
   return (
     <Window className="create-room-window">
       <input
+        maxLength={32}
         type="text"
         placeholder="Enter room name"
         value={roomName}

@@ -34,6 +34,7 @@ export const UserWindow = () => {
       <p className="user-window__error">{err}</p>
       <div>
         <input
+          maxLength={32}
           type="text"
           placeholder="Input new login"
           value={inputLogin}
