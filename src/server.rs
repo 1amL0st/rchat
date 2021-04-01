@@ -230,12 +230,14 @@ impl Handler<Leave> for Server {
             self.rooms.remove(&msg.room_id);
         }
 
-        self.users.remove(&msg.login);
-        let msg_text = serverMsgs::user_left_room_custom_text(
-            &format!("User {} has left room {}", msg.login, cur_room_name),
-            &msg.login,
-        );
-        self.send_msg_to_room(msg_text, msg.room_id, &String::new());
+        if msg.login != "" {
+            self.users.remove(&msg.login);
+            let msg_text = serverMsgs::user_left_room_custom_text(
+                &format!("User {} has left room {}", msg.login, cur_room_name),
+                &msg.login,
+            );
+            self.send_msg_to_room(msg_text, msg.room_id, &String::new());
+        }
     }
 }
 
