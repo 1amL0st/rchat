@@ -46,7 +46,13 @@ export const SignUpWindow = () => {
   };
 
   return (
-    <Window className="sign-up-window">
+    <Window className="signup-window">
+      <p className="signup-window__warning">
+        Warning
+        <br />
+        This service is under development, some bugs are possible!
+      </p>
+      <p className="signup-window__error">{err}</p>
       <input
         ref={loginInputRef}
         value={login}
@@ -55,7 +61,6 @@ export const SignUpWindow = () => {
         onKeyDown={onLoginInputKeyDown}
         onChange={onLoginInputChange}
       />
-      <p className="signup-window__error">{err}</p>
       <div className="signup-window__controls">
         <Button size="small" onClick={onLoginBtn}>
           Login

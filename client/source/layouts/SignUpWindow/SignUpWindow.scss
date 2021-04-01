@@ -1,5 +1,14 @@
 .signup-window {
+  &__warning {
+    text-align: center;
+    color: lightgreen;
+  }
+
   &__error {
     color: red;
+  }
+
+  input {
+    margin-bottom: 16px;
   }
 }
