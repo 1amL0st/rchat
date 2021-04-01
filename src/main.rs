@@ -217,12 +217,16 @@ impl Session {
     ) {
         room_name = room_name.trim().to_string();
 
-        if room_name.trim() == "" {
+        if room_name == "" {
             let msg = serverMsgs::room_creation_fail(format!(
                 "Room name has wrong format!"
             ));
             ctx.text(msg);
             return;
+        } else if room_name.chars().count() > 32 {
+            ctx.text(serverMsgs::room_creation_fail(format!(
+                "Your room name is too long!"
+            )))
         }
 
         self.server
