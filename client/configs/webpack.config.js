@@ -4,6 +4,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniSCCExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 let isDev = false;
 const outputPath = '../../public/';
@@ -96,6 +97,17 @@ function generateConfig(mode) {
     output: {
       path: path.resolve(__dirname, outputPath),
       filename: 'bundle.js',
+    },
+
+    optimization: {
+      minimize: !isDev,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true
+          }
+        }
+      })],
     },
   };
 }

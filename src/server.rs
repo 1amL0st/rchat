@@ -40,7 +40,7 @@ impl Server {
             },
         );
 
-        // TODO: This code must be removed
+        #[cfg(debug_assertions)]
         for i in 1..10 {
             rooms.insert(
                 i,
