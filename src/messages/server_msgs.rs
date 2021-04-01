@@ -25,22 +25,21 @@ pub fn user_connected(text: &String) -> String {
     make(text, &"UserConnected".to_string())
 }
 
+pub fn failed_to_send_msg(reason: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "FailedToSendMsg",
+        "text": reason
+    })
+    .to_string()
+}
+
 pub fn user_left_room_custom_text(text: &String, login: &String) -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "UserLeftRoom",
         "text": text,
         "login": login
-    })
-    .to_string()
-}
-
-pub fn user_left_room(login: &String) -> String {
-    serde_json::json!({
-        "author": "Server",
-        "subType": "UserLeftRoom",
-        "text": format!("User {} has left room1", login),
-        "login": login,
     })
     .to_string()
 }

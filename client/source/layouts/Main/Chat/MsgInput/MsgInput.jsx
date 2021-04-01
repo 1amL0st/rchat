@@ -45,6 +45,7 @@ export const MsgInput = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={onTextAreaKeydown}
+        maxLength={2048}
       />
       <Button onClick={onSendBtn}>Send</Button>
     </div>

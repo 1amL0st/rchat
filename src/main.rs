@@ -260,6 +260,24 @@ impl Session {
             .wait(ctx);
     }
 
+    fn handle_user_msg(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
+        if text.chars().count() <= 2048 {
+            self.server
+            .try_send(TextMsg {
+                author: self.login.to_string(),
+                text: text,
+                room_id: self.room_id,
+            })
+            .unwrap();
+        } else {
+            ctx.text(
+                serverMsgs::failed_to_send_msg(
+                    &format!("Your message is too long!")
+                )
+            )
+        }
+    }
+
     fn handle_text(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
         let first_word = text.chars().take_while(|c| *c != ' ').collect::<String>();
         let first_word = first_word.as_str();
@@ -285,15 +303,7 @@ impl Session {
                     self.handle_login(ctx, text[7..].to_string());
                 }
                 "/list_users" => self.handle_cmd_list_users(text, ctx),
-                _ => {
-                    self.server
-                        .try_send(TextMsg {
-                            author: self.login.to_string(),
-                            text: text,
-                            room_id: self.room_id,
-                        })
-                        .unwrap();
-                }
+                _ => self.handle_user_msg(text, ctx)
             }
         }
     }

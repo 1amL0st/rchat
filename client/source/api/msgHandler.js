@@ -63,6 +63,8 @@ function serverMsgHandler(msgJson) {
       return;
     case 'YouJoinedRoom':
       break;
+    case 'FailedToSendMsg':
+      break;
     case 'UserJoinedRoom':
       AppStore.dispatch({
         type: 'AddUser',
