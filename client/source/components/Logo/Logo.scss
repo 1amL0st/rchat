@@ -1,7 +1,8 @@
 @import 'styles/mixins';
 
 .logo {
-  @include flex-layout(row, center, center);
+  @include flex-layout(row, flex-start, center);
+  width: 100%;
 
   cursor: pointer;
 

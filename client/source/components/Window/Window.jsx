@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'class-names';
 
@@ -8,7 +8,6 @@ export const Window = ({ className, children, onShouldClose }) => {
   const windowRef = useRef();
 
   const onKeyDown = (e) => {
-    console.log('KEYDOWN');
     if (e.code === 'Escape') {
       if (onShouldClose) onShouldClose();
     }
@@ -16,13 +15,14 @@ export const Window = ({ className, children, onShouldClose }) => {
 
   useEffect(() => {
     windowRef.current.focus();
-  });
+  }, []);
 
   return (
     <div
       className={classNames(className, 'window')}
       onKeyDown={onKeyDown}
-      tabIndex="0"
+      tabIndex="-1"
+      role="button"
       ref={windowRef}
     >
       <div className="window__content">{children}</div>
