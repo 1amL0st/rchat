@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { useWindowDimensions } from 'hooks/useWindowDimensions';
 import { useSwipeEvent } from 'hooks/useSwipeEvent';
 
+import { METRICS } from 'constants/Metrics';
 import { Chat } from './Chat';
 import { RoomList } from './RoomList';
 import { UserList } from './UserList';
@@ -35,7 +36,7 @@ export const Main = () => {
 
   useSwipeEvent(swipeOffset, Infinity, onSwipeCallback, mainRef);
 
-  if (windowWidth > 800) {
+  if (windowWidth > METRICS.mobileScreenWidth) {
     return (
       <main className="main" ref={mainRef}>
         {screens}

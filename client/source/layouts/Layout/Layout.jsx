@@ -20,10 +20,6 @@ export const Layout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    /*
-      NOTE: We need to check if user is logged, because of hot reload rerenders this components
-      This behavior causes go to /sign_up window on every hot reload
-    */
     if (isLogged) {
       history.push('/sign_up');
     }

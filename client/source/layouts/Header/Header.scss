@@ -38,3 +38,13 @@
     margin-top: 32px;
   }
 }
+
+@media screen and (max-width: $mobile-screen-width) {
+  .header {
+    padding: 8px $mobile-horz-padding;
+
+    aside {
+      width: fit-content;
+    }
+  }
+}
