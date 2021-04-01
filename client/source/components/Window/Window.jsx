@@ -4,11 +4,17 @@ import classNames from 'class-names';
 
 import './Window.scss';
 
-export const Window = ({ className, children }) => (
-  <div className={classNames(className, 'window')}>
-    <div className="window__content">{children}</div>
-  </div>
-);
+export const Window = ({ className, children }) => {
+  const onKeydown = () => {
+    console.log('OnKeyDown');
+  };
+
+  return (
+    <div className={classNames(className, 'window')} onKeyDown={onKeydown}>
+      <div className="window__content">{children}</div>
+    </div>
+  );
+};
 
 Window.defaultProps = {
   className: '',

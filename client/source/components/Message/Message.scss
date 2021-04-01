@@ -19,7 +19,12 @@
   }
 
   &__text {
-    white-space: pre-line;    
+    white-space: pre-line;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    
     text-align: left;
     color: #bcc0c9;
   }
