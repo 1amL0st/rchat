@@ -9,11 +9,3 @@ pub fn make_text_msg(author: String, text: String) -> String {
     })
     .to_string()
 }
-
-pub fn make_room_list_update_notify() -> String {
-    serde_json::json!({
-        "type": "DataChanged",
-        "subType": "RoomListUpdate",
-    })
-    .to_string()
-}
