@@ -23,20 +23,21 @@ impl Server {
 
         rooms.insert(
             MAIN_ROOM_ID,
-            Room {
-                name: String::from(MAIN_ROOM_NAME),
-                users: HashSet::new(),
-            },
+            Room::new( String::from(MAIN_ROOM_NAME), HashSet::new(), RoomPrivacy::Public)
         );
 
         #[cfg(debug_assertions)]
         for i in 1..10 {
             rooms.insert(
                 i,
-                Room {
-                    name: format!("room_{}", i),
-                    users: HashSet::new(),
-                },
+                Room::new(format!("room_{}", i), HashSet::new(), RoomPrivacy::Public),
+            );
+        }
+
+        for i in 20..25 {
+            rooms.insert(
+                i,
+                Room::new(format!("Private room {}", i), HashSet::new(), RoomPrivacy::Private),
             );
         }
 
@@ -82,7 +83,13 @@ impl Server {
     fn get_room_list(&self) -> Vec<String> {
         self.rooms
             .iter()
-            .map(|(_, room)| room.name.clone())
+            .filter_map(|(_, room)| {
+                if room.privacy == RoomPrivacy::Public {
+                    Some(room.name.clone())
+                } else {
+                    None
+                }
+            })
             .collect()
     }
 
@@ -339,10 +346,7 @@ impl Handler<CreateRoom> for Server {
 
         self.rooms.insert(
             room_id,
-            Room {
-                name: msg.room_name,
-                users: HashSet::new(),
-            },
+            Room::new(msg.room_name, HashSet::new(), RoomPrivacy::Public)
         );
 
         self.move_user_to_room(room_id, msg.cur_room_id, &msg.login);
