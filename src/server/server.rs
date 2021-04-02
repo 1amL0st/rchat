@@ -3,28 +3,17 @@ use std::collections::{HashMap, HashSet};
 use actix::prelude::*;
 use actix::{Actor, Handler};
 
-use super::messages;
-use super::messages::data_msgs as dataMsgs;
-use super::messages::server_msgs as serverMsgs;
+use crate::messages;
+use crate::messages::data_msgs as dataMsgs;
+use crate::messages::server_msgs as serverMsgs;
 
 pub const MAIN_ROOM_NAME: &'static str = "World";
 pub const MAIN_ROOM_ID: usize = 0;
 
-#[derive(Message)]
-#[rtype(result = "usize")]
-pub enum SessionMessage {
-    Text(String),
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct Room {
-    name: String,
-    users: HashSet<String>,
-}
-
+use super::types::*;
 #[derive(Debug, Clone)]
 pub struct Server {
-    users: HashMap<String, Recipient<SessionMessage>>,
+    users: HashMap<String, User>,
     rooms: HashMap<usize, Room>,
 }
 
@@ -185,7 +174,9 @@ impl Handler<Login> for Server {
             room.users.remove(old_login);
             room.users.insert(new_login.clone());
 
-            self.users.insert(new_login.clone(), recipient);
+            let user = User::new(recipient);
+
+            self.users.insert(new_login.clone(), user);
 
             MessageResult(Ok(()))
         }
