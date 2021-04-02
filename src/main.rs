@@ -315,11 +315,6 @@ impl Session {
     fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
-                act.server.do_send(Leave {
-                    login: act.login.clone(),
-                    room_id: act.room_id,
-                });
-
                 ctx.stop();
                 return;
             }
