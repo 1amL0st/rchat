@@ -1,7 +1,7 @@
-mod msg_handlers;
+mod msgs_handlers;
 mod room;
 mod user;
 
 pub mod server;
-pub use msg_handlers::*;
+pub use msgs_handlers::*;
 pub use server::*;
