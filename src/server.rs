@@ -112,7 +112,7 @@ impl Server {
         to_room.users.insert(login.clone());
 
         let leave_msg = serverMsgs::user_left_room_custom_text(
-            &format!("User {} left this room!", login),
+            &format!("User {} left this room and joined {}!", login, to_room.name),
             login,
         );
         self.send_msg_to_room(leave_msg, cur_room_id, login);
@@ -221,10 +221,6 @@ impl Handler<Leave> for Server {
 
     fn handle(&mut self, msg: Leave, _: &mut Self::Context) {
         let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
-        /*
-            TODO: This is buggy code
-            2021-04-01T17:11:24.081880+00:00 app[web.1]: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value', src/server.rs:223:57
-        */
         cur_room.users.remove(&msg.login);
 
         let cur_room_name = cur_room.name.clone();
