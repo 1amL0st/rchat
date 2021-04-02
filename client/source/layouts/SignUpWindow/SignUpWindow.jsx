@@ -43,7 +43,7 @@ export const SignUpWindow = () => {
       history.replace('/');
     }
     loginInputRef.current.focus();
-  }, []);
+  }, [isLogged, history]);
 
   const onLoginInputChange = (e) => {
     setLogin(e.target.value);

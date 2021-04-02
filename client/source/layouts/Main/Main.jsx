@@ -1,4 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+import { useSelector } from 'react-redux';
 
 import { useWindowDimensions } from 'hooks/useWindowDimensions';
 import { useSwipeEvent } from 'hooks/useSwipeEvent';
@@ -18,6 +20,11 @@ export const Main = () => {
 
   const mainRef = useRef();
   const [screenNumber, setScreenNumber] = useState(1);
+  const currentRoomName = useSelector((appStore) => appStore.room.roomName);
+
+  useEffect(() => {
+    setScreenNumber(1);
+  }, [currentRoomName]);
 
   const screens = [
     <RoomList key={0} />,
@@ -43,6 +50,7 @@ export const Main = () => {
       </main>
     );
   }
+
   return (
     <main className="main" ref={mainRef}>
       {screens[screenNumber]}

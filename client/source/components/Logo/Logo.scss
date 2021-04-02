@@ -2,8 +2,6 @@
 
 .logo {
   @include flex-layout(row, flex-start, center);
-  width: 100%;
-
   cursor: pointer;
 
   &__img {

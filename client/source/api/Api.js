@@ -104,7 +104,7 @@ export const Api = {
   },
 
   async joinRoom(room) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const { socket } = this;
 
       const handler = (e) => {
@@ -115,7 +115,7 @@ export const Api = {
           resolve();
         } else {
           socket.removeEventListener('message', handler);
-          reject(json.text);
+          resolve();
         }
       };
 

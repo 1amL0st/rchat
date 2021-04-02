@@ -13,9 +13,7 @@ import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './UserPanel.scss';
 
-const List = ({
-  onClose,
-}) => {
+const List = ({ onClose }) => {
   const userLogin = useSelector((appStore) => appStore.user.login);
   const history = useHistory();
   const listRef = useRef();

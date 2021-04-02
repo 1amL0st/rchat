@@ -334,7 +334,7 @@ pub struct CreateRoom {
 impl Handler<CreateRoom> for Server {
     type Result = MessageResult<CreateRoom>;
 
-    fn handle(&mut self, msg: CreateRoom, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: CreateRoom, _: &mut Self::Context) -> Self::Result {
         for (_, room) in &self.rooms {
             if room.name == msg.room_name {
                 return MessageResult(Err("A room with such name already exists!".to_string()));
