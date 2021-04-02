@@ -6,9 +6,9 @@ use super::room::*;
 use super::user::*;
 
 use crate::constants::*;
-use crate::session::session::SessionMessage;
+use crate::session::msgs_handler as SessionMessage;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Server {
     pub users: HashMap<String, User>,
     pub rooms: HashMap<usize, Room>,
@@ -61,8 +61,10 @@ impl Server {
 
         for user in &room.users {
             if user != ignore_user {
-                let recipient = self.users.get(user).unwrap();
-                if let Err(err) = recipient.do_send(SessionMessage::Text(msg_text.clone())) {
+                let recipient = &self.users.get(user).unwrap().recipient;
+                if let Err(err) = recipient.try_send(SessionMessage::Text {
+                    text: msg_text.clone(),
+                }) {
                     panic!("Server error in process of sending text message {}", err);
                 }
             }
@@ -73,8 +75,10 @@ impl Server {
         let room = self.rooms.get(&0).unwrap();
 
         for user in &room.users {
-            let recipient = self.users.get(user).unwrap();
-            if let Err(err) = recipient.do_send(SessionMessage::Text(msg_text.clone())) {
+            let recipient = &self.users.get(user).unwrap().recipient;
+            if let Err(err) = recipient.try_send(SessionMessage::Text {
+                text: msg_text.clone(),
+            }) {
                 panic!("Server error in process of sending text message {}", err);
             }
         }

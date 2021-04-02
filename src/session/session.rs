@@ -41,7 +41,7 @@ impl Session {
     }
 
     fn handle_cmd_login(&mut self, ctx: &mut ws::WebsocketContext<Self>, login: String) {
-        let recipient = ctx.address().recipient();
+        let recipient = ctx.address();
 
         let msg = if self.login == "" {
             serverMsgs::user_joined_room(format!("User {} joined!", login), login.clone())
@@ -258,18 +258,25 @@ impl Session {
         login: String,
         guest_login: String,
     ) {
-        let recipient = ctx.address().recipient();
+        let recipient = ctx.address();
 
         self.server
             .send(InviteToDM {
                 login,
-                guest_login,
+                guest_login: guest_login.clone(),
                 recipient,
             })
             .into_actor(self)
-            .then(move |res, _, _| {
+            .then(move |res, _, ctx| {
                 if let Ok(result) = res {
-                    println!("Invite user response = {:?}", result);
+                    if let Ok(result) = result {
+                        println!("Invite user response = {:?}", result);
+                    } else {
+                        ctx.text(serverMsgs::invite_user_to_dm_fail(&format!(
+                            "User {} not found!",
+                            guest_login
+                        )))
+                    }
                 } else {
                     panic!("Something went wrong!")
                 }

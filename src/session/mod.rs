@@ -1,2 +1,2 @@
-pub mod actor_impl;
+pub mod msgs_handler;
 pub mod session;

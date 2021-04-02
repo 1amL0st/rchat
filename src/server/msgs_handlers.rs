@@ -9,7 +9,8 @@ use crate::constants::*;
 use crate::messages;
 use crate::messages::data_msgs as dataMsgs;
 use crate::messages::server_msgs as serverMsgs;
-use crate::session::session::SessionMessage;
+use crate::session::msgs_handler as SessionMessage;
+use crate::session::session::Session;
 
 use super::room::*;
 use super::user::*;
@@ -22,7 +23,7 @@ impl Actor for Server {
 #[rtype(result = "Result<(), String>")]
 pub struct Login {
     pub new_login: String,
-    pub recipient: Recipient<SessionMessage>,
+    pub recipient: Addr<Session>,
     pub text: String,
     pub room_id: usize,
     pub old_login: String,
@@ -237,7 +238,7 @@ impl Handler<CreateRoom> for Server {
 pub struct InviteToDM {
     pub login: String,
     pub guest_login: String,
-    pub recipient: Recipient<SessionMessage>,
+    pub recipient: Addr<Session>,
 }
 
 impl Handler<InviteToDM> for Server {
@@ -247,13 +248,30 @@ impl Handler<InviteToDM> for Server {
         println!("Server invite to dm:");
         println!("msg.target_login = {:?}", msg.guest_login);
 
-        msg.recipient
-            .send(SessionMessage::InviteToDM(msg.guest_login))
+        let guest_user = if let Some(user_login) = self
+            .rooms
+            .get(&MAIN_ROOM_ID)
+            .unwrap()
+            .users
+            .get(&msg.guest_login)
+        {
+            if let Some(user) = self.users.get(user_login) {
+                user
+            } else {
+                return MessageResult(Err("User not found!".to_string()));
+            }
+        } else {
+            return MessageResult(Err("User not found!".to_string()));
+        };
+
+        guest_user
+            .recipient
+            .send(SessionMessage::InviteToDM { inviter: msg.login })
             .into_actor(self)
             .then(move |res, _, _| {
                 match res {
                     Ok(result) => {
-                        println!("Request for recipient result = {}", result);
+                        // println!("Request for recipient result = {}", result);
                     }
                     Err(err) => {
                         println!("Err = {}", err);

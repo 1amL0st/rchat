@@ -89,3 +89,21 @@ pub fn user_changed_login(old_login: &String, new_login: &String) -> String {
     })
     .to_string()
 }
+
+pub fn invite_user_to_dm_fail(err: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "InviteUserToDMFail",
+        "err": err
+    })
+    .to_string()
+}
+
+pub fn invite_user_to_dm_request(inviter: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "InviteToDMRequest",
+        "login": inviter
+    })
+    .to_string()
+}

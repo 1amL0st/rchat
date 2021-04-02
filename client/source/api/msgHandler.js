@@ -61,6 +61,8 @@ function serverMsgHandler(msgJson) {
       break;
     case 'LoggingFailed':
       return;
+    case 'InviteUserToDMFail':
+      return;
     case 'YouJoinedRoom':
       break;
     case 'FailedToSendMsg':
