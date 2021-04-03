@@ -284,10 +284,10 @@ impl Handler<CreateDM> for Server {
             room_id: room_id
         }).unwrap();
 
-        std::thread::sleep(std::time::Duration::from_secs(5));
+        // std::thread::sleep(std::time::Duration::from_secs(5));
 
-        // first_user.addr.try_send(SessionMessage::InviteToDMRoomCreated {}).unwrap();
-        // self.users.get(&msg.second_login).unwrap().addr.try_send(SessionMessage::InviteToDMRoomCreated {}).unwrap();
+        first_user.addr.try_send(SessionMessage::InviteToDMRoomCreated {}).unwrap();
+        self.users.get(&msg.second_login).unwrap().addr.try_send(SessionMessage::InviteToDMRoomCreated {}).unwrap();
 
         MessageResult(0)
     }

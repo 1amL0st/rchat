@@ -1,6 +1,6 @@
+import { MAIN_ROOM_NAME } from 'constants/Api';
 import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
-
 /*
   NOTE: These two functions... Maybe you shuold place them in separate file...
         And make two functions for showing|hiding criticalErrWindow...
@@ -71,15 +71,21 @@ export const Api = {
   },
 
   inviteToDM(login) {
-    const request = `/invite_to_dm ${login}`;
+    const store = AppStore.getState();
+    const userLogin = store.user.login;
+    const { roomName } = store.room;
 
-    AppStore.dispatch({
-      type: 'ShowOutcomingToDMRequest',
-      guestLogin: login,
-    });
+    if (userLogin !== login && roomName === MAIN_ROOM_NAME) {
+      const request = `/invite_to_dm ${login}`;
 
-    console.log('Request = ', request);
-    this.socket.send(request);
+      AppStore.dispatch({
+        type: 'ShowOutcomingToDMRequest',
+        guestLogin: login,
+      });
+
+      console.log('Request = ', request);
+      this.socket.send(request);
+    }
   },
 
   acceptInviteToDM() {

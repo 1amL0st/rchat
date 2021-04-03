@@ -29,18 +29,14 @@ export const IncomingRequestWindow = () => {
   };
 
   return (
-    <div className="incoming-window" isOpen>
-      <div className="incoming-invite-window">
-        User
-        {' '}
-        '
-        {invite.inviterLogin}
-        ''
-        {' '}
-        wants to DM with you
+    <div className="invite-to-dm-window__content incoming-invite-window">
+      <div className="incoming-invite-window__header">
+        {`User'${invite.inviterLogin}'wants to DM with you...`}
       </div>
-      <Button onClick={onAccpectBtn}>Accept</Button>
-      <Button onClick={onRefuseBtn}>Refuse</Button>
+      <div className="incoming-invite-window__buttons">
+        <Button onClick={onAccpectBtn}>Accept</Button>
+        <Button onClick={onRefuseBtn}>Refuse</Button>
+      </div>
     </div>
   );
 };

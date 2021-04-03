@@ -6,21 +6,27 @@ import ReactModal from 'react-modal';
 
 import './ModalWindow.scss';
 
-const customStyles = {
-  overlay: {
-    backgroundColor: 'rgba(29, 36, 55, 0.8)',
-    margin: '0 4px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-  },
+const makeStyles = (priority) => {
+  const priorities = ['Low', 'Middle', 'High'];
+  return {
+    overlay: {
+      backgroundColor: 'rgba(29, 36, 55, 0.8)',
+      margin: '0 4px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: (priorities.indexOf(priority) + 1) * 10,
+    },
+    content: {
+      padding: '8px',
+    },
+  };
 };
 
 export const ModalWindow = ({
   isOpen,
   className,
+  priority,
   children,
 }) => {
   const onRequestClose = () => {
@@ -31,7 +37,7 @@ export const ModalWindow = ({
     <ReactModal
       className={classNames('modal-window', className)}
       ariaHideApp={false}
-      style={customStyles}
+      style={makeStyles(priority)}
       isOpen={isOpen}
       shouldCloseOnOverlayClick
       onAfterOpen={() => {}}
@@ -43,11 +49,13 @@ export const ModalWindow = ({
 };
 
 ModalWindow.defaultProps = {
+  priority: 'Low',
   className: '',
   onShouldClose: null,
 };
 
 ModalWindow.propTypes = {
+  priority: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   className: PropTypes.string,
   onShouldClose: PropTypes.func,

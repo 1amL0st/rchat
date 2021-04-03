@@ -1,9 +1,22 @@
+@import 'styles/mixins';
+
 .invite-to-dm-window {
-  div {
-    font-size: 24px;
+  &__content {
+    @include flex-layout(column, center, center);
+  }
+}
+
+.request-refused-window {
+  &__header {
   }
 
-  .refused {
-    color: red;
+  &__ok-btn {
+    margin-top: 16px;
+  }
+}
+
+.incoming-invite-window {
+  &__buttons {
+    margin-top: 16px;
   }
 }
