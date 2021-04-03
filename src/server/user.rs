@@ -1,20 +1,16 @@
 use actix::prelude::*;
 
-use crate::session::session::{Session, SessionMessage};
+use crate::session::session::{Session};
 
-type UserRecipient = Addr<Session>;
+type UserAddr = Addr<Session>;
 
 #[derive(Clone)]
 pub struct User {
-    pub recipient: UserRecipient,
+    pub addr: UserAddr,
 }
 
 impl User {
-    pub fn new(recipient: UserRecipient) -> User {
-        Self { recipient }
+    pub fn new(recipient: UserAddr) -> User {
+        Self { addr: recipient }
     }
-
-    // pub fn do_send(&self, msg: SessionMessage) -> Result<(), SendError<SessionMessage>> {
-    //     self.recipient.do_send(msg)
-    // }
 }

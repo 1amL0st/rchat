@@ -3,7 +3,10 @@ use actix_web_actors::ws;
 
 use super::session::*;
 use crate::messages::server_msgs as serverMsgs;
-use crate::server::Leave;
+use crate::server::{server};
+use crate::server::msgs_handlers as ServerHandlerMsgs;
+
+use super::session::Inviter;
 
 impl Actor for Session {
     type Context = ws::WebsocketContext<Self>;
@@ -13,7 +16,7 @@ impl Actor for Session {
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
-        self.server.do_send(Leave {
+        self.server.do_send(ServerHandlerMsgs::Leave {
             login: self.login.clone(),
             room_id: self.room_id,
         });
@@ -38,15 +41,94 @@ impl Handler<Text> for Session {
 
 #[derive(Message)]
 #[rtype(result = "()")]
-pub struct InviteToDM {
+pub struct InviteToDMRequest {
     pub inviter: String,
+    pub inviter_addr: Addr<Session>
 }
 
-impl Handler<InviteToDM> for Session {
-    type Result = MessageResult<InviteToDM>;
+impl Handler<InviteToDMRequest> for Session {
+    type Result = MessageResult<InviteToDMRequest>;
 
-    fn handle(&mut self, msg: InviteToDM, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: InviteToDMRequest, ctx: &mut Self::Context) -> Self::Result {
+        println!("inviter = {} gues = {}", msg.inviter, self.login);
         ctx.text(serverMsgs::invite_user_to_dm_request(&msg.inviter));
+        self.invites.push(Inviter {
+            addr: msg.inviter_addr,
+            login: msg.inviter
+        });
+        MessageResult(())
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InviteToDMAccepted {
+    pub guest: String,
+}
+
+impl Handler<InviteToDMAccepted> for Session {
+    type Result = MessageResult<InviteToDMAccepted>;
+
+    fn handle(&mut self, msg: InviteToDMAccepted, ctx: &mut Self::Context) -> Self::Result {
+        println!("inviter = {} guest = {}", self.login,  msg.guest);
+        ctx.text(serverMsgs::invite_user_to_dm_accepted(&msg.guest));
+
+        self.server.try_send( ServerHandlerMsgs::CreateDM {
+            first_login: msg.guest,
+            second_login: self.login.clone()
+        }).unwrap();
+
+        println!("Invite is accepted!");
+        MessageResult(())
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InviteToDMRefused {
+    pub guest: String,
+}
+
+impl Handler<InviteToDMRefused> for Session {
+    type Result = MessageResult<InviteToDMRefused>;
+
+    fn handle(&mut self, msg: InviteToDMRefused, ctx: &mut Self::Context) -> Self::Result {
+        println!("inviter = {} guest = {}", self.login, msg.guest);
+        ctx.text(serverMsgs::invite_user_to_dm_refused(&msg.guest));
+        println!("Invite is refused!");
+        MessageResult(())
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct YouJoinedRoom {
+    pub room_id: usize,
+    pub room_name: String
+}
+
+impl Handler<YouJoinedRoom> for Session {
+    type Result = MessageResult<YouJoinedRoom>;
+
+    fn handle(&mut self, msg: YouJoinedRoom, ctx: &mut Self::Context) -> Self::Result {
+        self.room_id = msg.room_id;
+
+        ctx.text(serverMsgs::you_joined_room(&msg.room_name));
+
+        MessageResult(())
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InviteToDMRoomCreated {
+}
+
+impl Handler<InviteToDMRoomCreated> for Session {
+    type Result = MessageResult<InviteToDMRoomCreated>;
+
+    fn handle(&mut self, msg: InviteToDMRoomCreated, ctx: &mut Self::Context) -> Self::Result {
+        ctx.text(serverMsgs::invite_user_to_dm_room_created());
         MessageResult(())
     }
 }

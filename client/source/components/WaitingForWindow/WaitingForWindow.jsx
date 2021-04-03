@@ -11,8 +11,6 @@ export const WaitingForWindow = () => {
     (appStore) => appStore.waitingFor.waitingText,
   );
 
-  console.log('waitingForText', waitingForText);
-
   return (
     <Window className="waiting-for-window">
       <div className="lds-ripple">

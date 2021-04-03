@@ -61,9 +61,45 @@ function serverMsgHandler(msgJson) {
       break;
     case 'LoggingFailed':
       return;
+    /* InviteToDM|DirectMessages code */
+    case 'InviteToDMRequest':
+      AppStore.dispatch({
+        type: 'ShowIncomingToDMRequest',
+        inviterLogin: msgJson.login,
+      });
+      break;
     case 'InviteUserToDMFail':
+      console.warn('This is working!');
       return;
+    case 'InviteToDMAccepted':
+      AppStore.dispatch({
+        type: 'OutcomingInviteToDMAccepted',
+      });
+      AppStore.dispatch({
+        type: 'ShowWaitingForWindow',
+        waitingText: 'User accepted your DM invite. Server is creating private room for you. Please, wait!',
+      });
+      break;
+    case 'InviteToDMRefused':
+      AppStore.dispatch({
+        type: 'OutcomingInviteToDMRefused',
+      });
+      break;
+    case 'InviteToDMRoomCreated':
+      AppStore.dispatch({
+        type: 'HideInviteToDMWindow',
+      });
+      AppStore.dispatch({
+        type: 'HideWaitingForWindow',
+      });
+      break;
+    /** ****************************** */
     case 'YouJoinedRoom':
+      this.updateAfterJoin();
+
+      this.getCurrentRoomName();
+      this.getUserList();
+      this.getRoomList();
       break;
     case 'FailedToSendMsg':
       break;

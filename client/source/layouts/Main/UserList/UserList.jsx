@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { IconButton } from 'components/IconButton';
 import { ROUTES } from 'constants/Routes';
+import { Api } from 'api/Api';
 
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 
@@ -18,6 +19,12 @@ export const UserList = () => {
     history.push(ROUTES.InviteUser);
   };
 
+  const userList = users.map((user) => (
+    <div className="user-list__entry" title={user} key={user} onClick={() => Api.inviteToDM(user)}>
+      <div className="user-list__entry__name">{user}</div>
+    </div>
+  ));
+
   return (
     <aside className="user-list">
       <div className="user-list__header">
@@ -25,11 +32,7 @@ export const UserList = () => {
         <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />
       </div>
       <div className="user-list__list">
-        {users.map((user) => (
-          <div className="user-list__entry" title={user} key={user}>
-            <div className="user-list__entry__name">{user}</div>
-          </div>
-        ))}
+        {userList}
       </div>
     </aside>
   );

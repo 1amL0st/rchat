@@ -9,8 +9,8 @@ use crate::constants::*;
 use crate::messages;
 use crate::messages::data_msgs as dataMsgs;
 use crate::messages::server_msgs as serverMsgs;
-use crate::session::msgs_handler as SessionMessage;
 use crate::session::session::Session;
+use crate::session::msgs_handler as SessionMessage;
 
 use super::room::*;
 use super::user::*;
@@ -198,7 +198,6 @@ impl Handler<ListRooms> for Server {
         }
     }
 }
-
 #[derive(Message)]
 #[rtype(result = "Result<usize, String>")]
 pub struct CreateRoom {
@@ -217,70 +216,79 @@ impl Handler<CreateRoom> for Server {
             }
         }
 
-        let mut room_id = rand::random::<usize>();
-        while self.rooms.contains_key(&room_id) {
-            room_id = rand::random::<usize>();
-        }
+        // let mut room_id = rand::random::<usize>();
+        // while self.rooms.contains_key(&room_id) {
+        //     room_id = rand::random::<usize>();
+        // }
 
-        self.rooms.insert(
-            room_id,
-            Room::new(msg.room_name, HashSet::new(), RoomPrivacy::Public),
-        );
+        // self.rooms.insert(
+        //     room_id,
+        //     Room::new(msg.room_name, HashSet::new(), RoomPrivacy::Public),
+        // );
+        let (room_id, room) = self.create_room_with_name(msg.room_name, RoomPrivacy::Public);
+        self.rooms.insert(room_id, room);
 
         self.move_user_to_room(room_id, msg.cur_room_id, &msg.login);
         self.send_to_main_room(dataMsgs::room_list_msg(&self.get_room_list()));
         MessageResult(Ok(room_id))
     }
 }
-
 #[derive(Message)]
-#[rtype(result = "Result<usize, String>")]
-pub struct InviteToDM {
+#[rtype(result = "Result<Addr<Session>, String>")] // TODO: can i set result = Addr<Session>?
+pub struct FindUser {
     pub login: String,
-    pub guest_login: String,
-    pub recipient: Addr<Session>,
+    pub addr: Addr<Session>,
 }
 
-impl Handler<InviteToDM> for Server {
-    type Result = MessageResult<InviteToDM>;
+impl Handler<FindUser> for Server {
+    type Result = MessageResult<FindUser>;
 
-    fn handle(&mut self, msg: InviteToDM, ctx: &mut Self::Context) -> Self::Result {
-        println!("Server invite to dm:");
-        println!("msg.target_login = {:?}", msg.guest_login);
-
-        let guest_user = if let Some(user_login) = self
-            .rooms
-            .get(&MAIN_ROOM_ID)
-            .unwrap()
-            .users
-            .get(&msg.guest_login)
-        {
+    fn handle(&mut self, msg: FindUser, ctx: &mut Self::Context) -> Self::Result {
+        if let Some(user_login) = self.rooms.get(&MAIN_ROOM_ID).unwrap().users.get(&msg.login) {
             if let Some(user) = self.users.get(user_login) {
-                user
+                MessageResult(Ok(user.addr.clone()))
             } else {
-                return MessageResult(Err("User not found!".to_string()));
+                MessageResult(Err("User not found!".to_string()))
             }
         } else {
-            return MessageResult(Err("User not found!".to_string()));
-        };
+            MessageResult(Err("User not found!".to_string()))
+        }
+    }
+}
+#[derive(Message)]
+#[rtype(result = "usize")]
+pub struct CreateDM {
+    pub first_login: String,
+    pub second_login: String,
+}
 
-        guest_user
-            .recipient
-            .send(SessionMessage::InviteToDM { inviter: msg.login })
-            .into_actor(self)
-            .then(move |res, _, _| {
-                match res {
-                    Ok(result) => {
-                        // println!("Request for recipient result = {}", result);
-                    }
-                    Err(err) => {
-                        println!("Err = {}", err);
-                        panic!("Something went wrong!");
-                    }
-                }
-                fut::ready(())
-            })
-            .wait(ctx);
-        MessageResult(Ok(1))
+impl Handler<CreateDM> for Server {
+    type Result = MessageResult<CreateDM>;
+
+    fn handle(&mut self, msg: CreateDM, ctx: &mut Self::Context) -> Self::Result {
+        let (room_id, room) = self.create_room_with_name("Private room".to_string(), RoomPrivacy::Private);
+        let room_name = room.name.clone();
+        self.rooms.insert(room_id, room);
+
+        self.move_user_to_room(room_id, MAIN_ROOM_ID, &msg.second_login);
+        let second_user = self.users.get(&msg.second_login).unwrap();
+        second_user.addr.try_send(SessionMessage::YouJoinedRoom {
+            room_name: room_name.clone(),
+            room_id: room_id
+        }).unwrap();
+
+        self.move_user_to_room(room_id, MAIN_ROOM_ID, &msg.first_login);
+        let first_user = self.users.get(&msg.first_login).unwrap();
+        first_user.addr.try_send(SessionMessage::YouJoinedRoom {
+            room_name: room_name.clone(),
+            room_id: room_id
+        }).unwrap();
+
+        std::thread::sleep(std::time::Duration::from_secs(5));
+
+        // first_user.addr.try_send(SessionMessage::InviteToDMRoomCreated {}).unwrap();
+        // self.users.get(&msg.second_login).unwrap().addr.try_send(SessionMessage::InviteToDMRoomCreated {}).unwrap();
+
+        MessageResult(0)
     }
 }

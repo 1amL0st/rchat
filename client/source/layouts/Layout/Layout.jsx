@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { useSelector } from 'react-redux';
+import ReactModal from 'react-modal';
 import { Route, useHistory } from 'react-router-dom';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
@@ -10,6 +11,7 @@ import { CreateRoomWindow } from 'components/CreateRoomWindow';
 import { InviteUserWindow } from 'components/InviteUserWindow';
 import { ROUTES } from 'constants/Routes';
 
+import { InviteToDMWindow } from 'components/InviteToDMWindow';
 import { Header } from 'layouts/Header';
 import { Main } from 'layouts/Main';
 
@@ -17,6 +19,9 @@ import './Layout.scss';
 
 export const Layout = () => {
   const isLogged = useSelector((appStore) => appStore.user.isLogged);
+
+  const invite = useSelector((appStore) => appStore.inviteDM);
+
   const history = useHistory();
 
   useEffect(() => {
@@ -29,6 +34,7 @@ export const Layout = () => {
     <div className="layout">
       <Route path="/" exact>
         <div className="layout">
+          <InviteToDMWindow />
           <Header />
           <Main />
         </div>

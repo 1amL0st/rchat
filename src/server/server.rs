@@ -61,7 +61,7 @@ impl Server {
 
         for user in &room.users {
             if user != ignore_user {
-                let recipient = &self.users.get(user).unwrap().recipient;
+                let recipient = &self.users.get(user).unwrap().addr;
                 if let Err(err) = recipient.try_send(SessionMessage::Text {
                     text: msg_text.clone(),
                 }) {
@@ -75,7 +75,7 @@ impl Server {
         let room = self.rooms.get(&0).unwrap();
 
         for user in &room.users {
-            let recipient = &self.users.get(user).unwrap().recipient;
+            let recipient = &self.users.get(user).unwrap().addr;
             if let Err(err) = recipient.try_send(SessionMessage::Text {
                 text: msg_text.clone(),
             }) {
@@ -109,7 +109,6 @@ impl Server {
         if current_room.users.len() == 0 && cur_room_id != MAIN_ROOM_ID {
             let msg_text = serverMsgs::room_destroy(&current_room.name);
             self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &login);
-
             self.rooms.remove(&cur_room_id);
         }
 
@@ -141,5 +140,13 @@ impl Server {
         }
 
         Ok(())
+    }
+
+    pub fn create_room_with_name(&mut self, room_name: String, privacy: RoomPrivacy) -> (usize, Room) {
+        let mut room_id = rand::random::<usize>();
+        while self.rooms.contains_key(&room_id) {
+            room_id = rand::random::<usize>();
+        }
+        (room_id, Room::new(room_name, HashSet::new(), privacy))
     }
 }

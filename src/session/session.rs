@@ -4,24 +4,23 @@ use actix::*;
 
 use actix_web_actors::ws;
 
-use crate::{
-    messages, server,
-    server::{CreateRoom, CurrentRoom, InviteToDM, JoinRoom, ListRooms, Login, Server, TextMsg},
-};
+use crate::{messages::{self}, server, server::{Server}};
+use crate::server::msgs_handlers::{CreateRoom, CurrentRoom, FindUser, JoinRoom, ListRooms, Login, TextMsg, ListUsers};
 
 use messages::data_msgs as dataMsgs;
 use messages::server_msgs as serverMsgs;
+use super::msgs_handler as sessionsMsgs;
 
 use crate::constants::*;
 
-#[derive(Message)]
-#[rtype(result = "String")]
-pub enum SessionMessage {
-    Text(String),
-    InviteToDM(String),
+pub struct Inviter {
+    pub addr: Addr<Session>,
+    pub login: String
 }
 
 pub struct Session {
+    pub invites: Vec<Inviter>,
+
     pub hb: Instant,
 
     pub login: String,
@@ -33,6 +32,7 @@ pub struct Session {
 impl Session {
     pub fn new(server: Addr<Server>, name: String) -> Self {
         Session {
+            invites: Vec::new(),
             room_id: 0,
             server: server,
             login: name,
@@ -95,7 +95,7 @@ impl Session {
 
     fn handle_cmd_list_users(&mut self, _: String, ctx: &mut ws::WebsocketContext<Self>) {
         self.server
-            .send(server::ListUsers {
+            .send(ListUsers {
                 room_id: self.room_id,
             })
             .into_actor(self)
@@ -153,7 +153,6 @@ impl Session {
                     match result {
                         Ok(room_id) => {
                             act.room_id = room_id;
-
                             let m = room_name;
                             ctx.text(serverMsgs::you_joined_room(&m))
                         }
@@ -252,29 +251,45 @@ impl Session {
         }
     }
 
-    fn handle_cmd_invite_user_to_dm(
+    fn handle_cmd_invite_to_dm_refuse(&mut self) {
+        let inviter = &self.invites[0];
+        inviter.addr.try_send(sessionsMsgs::InviteToDMRefused {
+            guest: self.login.clone()
+        }).unwrap();
+    }
+
+    fn handle_cmd_invite_to_dm_accpet(&mut self) {
+        let inviter = &self.invites[0];
+        inviter.addr.try_send(sessionsMsgs::InviteToDMAccepted {
+            guest: self.login.clone()
+        }).unwrap();
+    }
+
+    fn handle_cmd_invite_to_dm(
         &mut self,
         ctx: &mut ws::WebsocketContext<Self>,
-        login: String,
         guest_login: String,
     ) {
-        let recipient = ctx.address();
-
+        if guest_login == self.login || self.room_id != MAIN_ROOM_ID {
+            return;
+        }
+        
         self.server
-            .send(InviteToDM {
-                login,
-                guest_login: guest_login.clone(),
-                recipient,
+            .send(FindUser {
+                login: guest_login.clone(),
+                addr: ctx.address(),
             })
             .into_actor(self)
-            .then(move |res, _, ctx| {
+            .then(move |res, act, ctx| {
                 if let Ok(result) = res {
-                    if let Ok(result) = result {
-                        println!("Invite user response = {:?}", result);
+                    if let Ok(guest_addr) = result {
+                        guest_addr.try_send(sessionsMsgs::InviteToDMRequest {
+                            inviter: act.login.clone(),
+                            inviter_addr: ctx.address()
+                        }).unwrap();
                     } else {
                         ctx.text(serverMsgs::invite_user_to_dm_fail(&format!(
-                            "User {} not found!",
-                            guest_login
+                            "User {} not found!", guest_login
                         )))
                     }
                 } else {
@@ -310,9 +325,11 @@ impl Session {
                     self.handle_cmd_login(ctx, text[7..].to_string());
                 }
                 "/list_users" => self.handle_cmd_list_users(text, ctx),
-                "/invite_to_dm" => self.handle_cmd_invite_user_to_dm(
+
+                "/invite_to_dm_refuse" => self.handle_cmd_invite_to_dm_refuse(),
+                "/invite_to_dm_accept" => self.handle_cmd_invite_to_dm_accpet(),
+                "/invite_to_dm" => self.handle_cmd_invite_to_dm(
                     ctx,
-                    self.login.clone(),
                     text[14..].to_string(),
                 ),
                 _ => self.handle_user_msg(text, ctx),

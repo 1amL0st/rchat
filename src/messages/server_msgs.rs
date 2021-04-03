@@ -107,3 +107,28 @@ pub fn invite_user_to_dm_request(inviter: &String) -> String {
     })
     .to_string()
 }
+
+pub fn invite_user_to_dm_accepted(guest: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "InviteToDMAccepted",
+        "guest": guest
+    })
+    .to_string()
+}
+
+pub fn invite_user_to_dm_refused(guest: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "InviteToDMRefused",
+        "guest": guest
+    })
+    .to_string()
+}
+
+pub fn invite_user_to_dm_room_created() -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "InviteToDMRoomCreated"
+    }).to_string()
+}

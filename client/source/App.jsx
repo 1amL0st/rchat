@@ -8,6 +8,7 @@ import { Layout } from 'layouts/Layout';
 import { Api } from 'api/Api';
 import { CriticalErrWindow } from 'components/CriticalErrWindow';
 import { WaitingForWindow } from 'components/WaitingForWindow';
+import { ModalWindow } from 'components/ModalWindow';
 
 import './App.scss';
 
@@ -24,14 +25,12 @@ const App = () => {
     connectSocket();
   }, []);
 
-  if (isWaitingFor) {
-    return <WaitingForWindow />;
-  }
   if (isErr) {
     return <CriticalErrWindow />;
   }
   return (
     <div className="app">
+      <ModalWindow isOpen={isWaitingFor}><WaitingForWindow /></ModalWindow>
       {isConnected && (
         <BrowserRouter>
           <Layout />

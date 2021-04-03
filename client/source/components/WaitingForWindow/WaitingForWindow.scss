@@ -1,4 +1,8 @@
 .waiting-for-window {
+  position: relative;
+  text-align: center;
+  z-index: 10;
+
   .lds-ripple {
     display: inline-block;
     position: relative;

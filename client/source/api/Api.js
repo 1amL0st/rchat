@@ -70,6 +70,26 @@ export const Api = {
     this.socket.send('/list_users');
   },
 
+  inviteToDM(login) {
+    const request = `/invite_to_dm ${login}`;
+
+    AppStore.dispatch({
+      type: 'ShowOutcomingToDMRequest',
+      guestLogin: login,
+    });
+
+    console.log('Request = ', request);
+    this.socket.send(request);
+  },
+
+  acceptInviteToDM() {
+    this.socket.send('/invite_to_dm_accept');
+  },
+
+  refuseInviteToDM() {
+    this.socket.send('/invite_to_dm_refuse');
+  },
+
   getRoomList() {
     this.socket.send('/list_rooms');
   },
@@ -111,7 +131,7 @@ export const Api = {
         const json = JSON.parse(e.data);
         if (json.subType === 'YouJoinedRoom') {
           socket.removeEventListener('message', handler);
-          this.updateAfterJoin(json);
+          this.updateAfterJoin();
           resolve();
         } else {
           socket.removeEventListener('message', handler);
