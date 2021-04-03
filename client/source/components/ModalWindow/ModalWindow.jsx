@@ -4,8 +4,6 @@ import classNames from 'class-names';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 
-import './ModalWindow.scss';
-
 const makeStyles = (priority) => {
   const priorities = ['Low', 'Middle', 'High'];
   return {
@@ -18,7 +16,9 @@ const makeStyles = (priority) => {
       zIndex: (priorities.indexOf(priority) + 1) * 10,
     },
     content: {
-      padding: '8px',
+      padding: '16px',
+      borderRadius: '8px',
+      backgroundColor: '#1d2b47',
     },
   };
 };

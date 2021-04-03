@@ -16,6 +16,7 @@ async fn start_ws_connection(
     stream: web::Payload,
     server: web::Data<Addr<Server>>,
 ) -> Result<HttpResponse, actix_web::Error> {
+    // std::thread::sleep(std::time::Duration::from_secs(50));
     let client = Session::new(server.get_ref().clone(), String::from(""));
     let resp = ws::start(client, &req, stream);
     resp

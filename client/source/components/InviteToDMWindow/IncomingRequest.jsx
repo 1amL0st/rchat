@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
 
 import { Api } from 'api/Api';
@@ -29,7 +30,7 @@ export const IncomingRequestWindow = () => {
   };
 
   return (
-    <div className="invite-to-dm-window__content incoming-invite-window">
+    <ModalWindow className="invite-to-dm-window__content incoming-invite-window" isOpen>
       <div className="incoming-invite-window__header">
         {`User'${invite.inviterLogin}'wants to DM with you...`}
       </div>
@@ -37,6 +38,6 @@ export const IncomingRequestWindow = () => {
         <Button onClick={onAccpectBtn}>Accept</Button>
         <Button onClick={onRefuseBtn}>Refuse</Button>
       </div>
-    </div>
+    </ModalWindow>
   );
 };

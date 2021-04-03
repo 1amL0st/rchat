@@ -10,12 +10,9 @@
 
   height: 100%;
   width: 100%;
-  // background: linear-gradient(0deg, var(--main-blue-rgba), var(--main-gray-rgba));
 
   &__content {
     @include flex-layout(column, flex-start, center);
-  
-    background-color: $main-dark-color;
     padding: 16px;
     border-radius: 8px;
   }

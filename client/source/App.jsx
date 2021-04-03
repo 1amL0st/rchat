@@ -30,9 +30,10 @@ const App = () => {
   }
   return (
     <div className="app">
-      <ModalWindow priority="High" isOpen={isWaitingFor}>
+      {/* <ModalWindow priority="High" isOpen={isWaitingFor}>
         <WaitingForWindow />
-      </ModalWindow>
+      </ModalWindow> */}
+      <WaitingForWindow />
       {isConnected && (
         <BrowserRouter>
           <Layout />

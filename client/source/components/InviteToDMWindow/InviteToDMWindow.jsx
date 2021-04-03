@@ -13,31 +13,37 @@ import './InviteToDMWindow.scss';
 export const InviteToDMWindow = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
 
-  let outcomingWindow;
-  if (invite.isAccepted) {
-    outcomingWindow = (
-      <div className="request-accepted">Request is accepted!</div>
-    );
-  } else if (invite.isRefused) {
-    outcomingWindow = <OutcomingRequestRefused />;
-  } else {
-    outcomingWindow = (
-      <ModalWindow priority="High" isOpen>
-        <WaitingForWindow customText="Waiting for user response" />
-      </ModalWindow>
-    );
+  if (!(invite.came && !invite.processed)) {
+    return null;
   }
 
+  if (invite.isIncoming) {
+    return <IncomingRequestWindow />;
+  }
+
+  if (invite.isAccepted) {
+    return (
+      <div className="request-accepted">Request is accepted!</div>
+    );
+  } if (invite.isRefused) {
+    return (
+      <OutcomingRequestRefused />
+    );
+  }
   return (
-    <ModalWindow
-      isOpen={invite.came && !invite.processed}
-      className="invite-to-dm-window"
-    >
-      {invite.isIncoming ? (
-        <IncomingRequestWindow />
-      ) : (
-        <div className="outcoming">{outcomingWindow}</div>
-      )}
-    </ModalWindow>
+    <WaitingForWindow customText="Waiting for user response" isOpen={invite.guestLogin !== ''} />
   );
+
+  // return (
+  //   <ModalWindow
+  //     isOpen={invite.came && !invite.processed}
+  //     className="invite-to-dm-window"
+  //   >
+  //     {invite.isIncoming ? (
+  //       <IncomingRequestWindow />
+  //     ) : (
+  //       <div className="outcoming">{outcomingWindow}</div>
+  //     )}
+  //   </ModalWindow>
+  // );
 };

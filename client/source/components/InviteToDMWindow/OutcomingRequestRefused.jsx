@@ -3,6 +3,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Button } from 'components/Button';
+import { ModalWindow } from 'components/ModalWindow';
 
 export const OutcomingRequestRefused = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ export const OutcomingRequestRefused = () => {
   };
 
   return (
-    <div className="invite-to-dm-window__content request-refused-window">
+    <ModalWindow className="invite-to-dm-window__content request-refused-window" isOpen>
       <div className="request-refused-window__header">
         {`User ${guestLogin} refused your request!`}
       </div>
@@ -25,6 +26,6 @@ export const OutcomingRequestRefused = () => {
       >
         Ok
       </Button>
-    </div>
+    </ModalWindow>
   );
 };
