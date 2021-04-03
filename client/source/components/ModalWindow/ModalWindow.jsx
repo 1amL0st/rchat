@@ -28,9 +28,10 @@ export const ModalWindow = ({
   className,
   priority,
   children,
+  onShouldClose,
 }) => {
   const onRequestClose = () => {
-    console.log('Window shoudl be close!');
+    if (onShouldClose) onShouldClose();
   };
 
   return (

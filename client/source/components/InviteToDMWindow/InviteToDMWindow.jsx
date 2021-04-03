@@ -1,12 +1,9 @@
 import React from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
-import ReactModal from 'react-modal';
+import { useSelector } from 'react-redux';
 
-import { Button } from 'components/Button';
 import { ModalWindow } from 'components/ModalWindow';
 import { WaitingForWindow } from 'components/WaitingForWindow';
-import { Api } from 'api/Api';
 
 import { OutcomingRequestRefused } from './OutcomingRequestRefused';
 import { IncomingRequestWindow } from './IncomingRequest';
@@ -15,7 +12,6 @@ import './InviteToDMWindow.scss';
 
 export const InviteToDMWindow = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
-  const dispatch = useDispatch();
 
   let outcomingWindow;
   if (invite.isAccepted) {
@@ -40,9 +36,7 @@ export const InviteToDMWindow = () => {
       {invite.isIncoming ? (
         <IncomingRequestWindow />
       ) : (
-        <div className="outcoming">
-          {outcomingWindow}
-        </div>
+        <div className="outcoming">{outcomingWindow}</div>
       )}
     </ModalWindow>
   );

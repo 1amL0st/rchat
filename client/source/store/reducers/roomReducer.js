@@ -10,7 +10,9 @@ export const roomReducer = (state = DEFAULT_STATE, action) => {
     case 'LoginChange':
       return {
         ...state,
-        users: state.users.map((login) => (login === action.oldLogin ? action.newLogin : login)),
+        users: state.users.map((login) =>
+          login === action.oldLogin ? action.newLogin : login
+        ),
       };
     case 'ClearInboxExceptLast': {
       const msg = {

@@ -20,7 +20,13 @@ export const UserList = () => {
   };
 
   const userList = users.map((user) => (
-    <div className="user-list__entry" title={user} key={user} onClick={() => Api.inviteToDM(user)}>
+    <div
+      className="user-list__entry"
+      title={user}
+      key={user}
+      aria-hidden
+      onClick={() => Api.inviteToDM(user)}
+    >
       <div className="user-list__entry__name">{user}</div>
     </div>
   ));
@@ -31,9 +37,7 @@ export const UserList = () => {
         <span>Users</span>
         <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />
       </div>
-      <div className="user-list__list">
-        {userList}
-      </div>
+      <div className="user-list__list">{userList}</div>
     </aside>
   );
 };

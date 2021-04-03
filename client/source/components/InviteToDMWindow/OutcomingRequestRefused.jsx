@@ -19,7 +19,12 @@ export const OutcomingRequestRefused = () => {
       <div className="request-refused-window__header">
         {`User ${guestLogin} refused your request!`}
       </div>
-      <Button className="request-refused-window__ok-btn" onClick={onRefuseFormBtnClick}>Ok</Button>
+      <Button
+        className="request-refused-window__ok-btn"
+        onClick={onRefuseFormBtnClick}
+      >
+        Ok
+      </Button>
     </div>
   );
 };

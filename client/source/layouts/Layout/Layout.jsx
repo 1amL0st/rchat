@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 
 import { useSelector } from 'react-redux';
-import ReactModal from 'react-modal';
 import { Route, useHistory } from 'react-router-dom';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
@@ -19,9 +18,6 @@ import './Layout.scss';
 
 export const Layout = () => {
   const isLogged = useSelector((appStore) => appStore.user.isLogged);
-
-  const invite = useSelector((appStore) => appStore.inviteDM);
-
   const history = useHistory();
 
   useEffect(() => {

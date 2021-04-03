@@ -77,7 +77,8 @@ function serverMsgHandler(msgJson) {
       });
       AppStore.dispatch({
         type: 'ShowWaitingForWindow',
-        waitingText: 'User accepted your DM invite. Server is creating private room for you. Please, wait!',
+        waitingText:
+          'User accepted your DM invite. Server is creating private room for you. Please, wait!',
       });
       break;
     case 'InviteToDMRefused':
