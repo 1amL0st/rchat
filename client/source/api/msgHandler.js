@@ -69,7 +69,10 @@ function serverMsgHandler(msgJson) {
       });
       break;
     case 'InviteUserToDMFail':
-      console.warn('This is working!');
+      AppStore.dispatch({
+        type: 'InviteUserToDMFail',
+        err: msgJson.err,
+      });
       return;
     case 'InviteToDMAccepted':
       AppStore.dispatch({

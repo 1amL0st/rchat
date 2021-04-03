@@ -30,9 +30,12 @@ export const IncomingRequestWindow = () => {
   };
 
   return (
-    <ModalWindow className="invite-to-dm-window__content incoming-invite-window" isOpen>
+    <ModalWindow
+      className="invite-to-dm-window__content incoming-invite-window"
+      isOpen
+    >
       <div className="incoming-invite-window__header">
-        {`User'${invite.inviterLogin}'wants to DM with you...`}
+        {`User '${invite.inviterLogin}' wants to DM with you...`}
       </div>
       <div className="incoming-invite-window__buttons">
         <Button onClick={onAccpectBtn}>Accept</Button>

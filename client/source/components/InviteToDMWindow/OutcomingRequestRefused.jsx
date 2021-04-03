@@ -16,7 +16,10 @@ export const OutcomingRequestRefused = () => {
   };
 
   return (
-    <ModalWindow className="invite-to-dm-window__content request-refused-window" isOpen>
+    <ModalWindow
+      className="invite-to-dm-window__content request-refused-window"
+      isOpen
+    >
       <div className="request-refused-window__header">
         {`User ${guestLogin} refused your request!`}
       </div>

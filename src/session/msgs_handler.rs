@@ -38,70 +38,6 @@ impl Handler<Text> for Session {
         MessageResult(())
     }
 }
-
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct InviteToDMRequest {
-    pub inviter: String,
-    pub inviter_addr: Addr<Session>,
-}
-
-impl Handler<InviteToDMRequest> for Session {
-    type Result = MessageResult<InviteToDMRequest>;
-
-    fn handle(&mut self, msg: InviteToDMRequest, ctx: &mut Self::Context) -> Self::Result {
-        println!("inviter = {} gues = {}", msg.inviter, self.login);
-        ctx.text(serverMsgs::invite_user_to_dm_request(&msg.inviter));
-        self.invites.push(Inviter {
-            addr: msg.inviter_addr,
-            login: msg.inviter,
-        });
-        MessageResult(())
-    }
-}
-
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct InviteToDMAccepted {
-    pub guest: String,
-}
-
-impl Handler<InviteToDMAccepted> for Session {
-    type Result = MessageResult<InviteToDMAccepted>;
-
-    fn handle(&mut self, msg: InviteToDMAccepted, ctx: &mut Self::Context) -> Self::Result {
-        println!("inviter = {} guest = {}", self.login, msg.guest);
-        ctx.text(serverMsgs::invite_user_to_dm_accepted(&msg.guest));
-
-        self.server
-            .try_send(ServerHandlerMsgs::CreateDM {
-                first_login: msg.guest,
-                second_login: self.login.clone(),
-            })
-            .unwrap();
-
-        println!("Invite is accepted!");
-        MessageResult(())
-    }
-}
-
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct InviteToDMRefused {
-    pub guest: String,
-}
-
-impl Handler<InviteToDMRefused> for Session {
-    type Result = MessageResult<InviteToDMRefused>;
-
-    fn handle(&mut self, msg: InviteToDMRefused, ctx: &mut Self::Context) -> Self::Result {
-        println!("inviter = {} guest = {}", self.login, msg.guest);
-        ctx.text(serverMsgs::invite_user_to_dm_refused(&msg.guest));
-        println!("Invite is refused!");
-        MessageResult(())
-    }
-}
-
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct YouJoinedRoom {
@@ -121,6 +57,66 @@ impl Handler<YouJoinedRoom> for Session {
     }
 }
 
+#[derive(Message)]
+#[rtype(result = "Result<(), String>")]
+pub struct InviteToDMRequest {
+    pub inviter: String,
+    pub inviter_addr: Addr<Session>,
+}
+
+impl Handler<InviteToDMRequest> for Session {
+    type Result = MessageResult<InviteToDMRequest>;
+
+    fn handle(&mut self, msg: InviteToDMRequest, ctx: &mut Self::Context) -> Self::Result {
+        if self.invites.len() == 0 {
+            ctx.text(serverMsgs::invite_user_to_dm_request(&msg.inviter));
+            self.invites.push(Inviter {
+                addr: msg.inviter_addr,
+                login: msg.inviter,
+            });
+            return MessageResult(Ok(()));
+        } else {
+            return MessageResult(Err("User already has a request!".to_string()));
+        }
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InviteToDMAccepted {
+    pub guest: String,
+}
+
+impl Handler<InviteToDMAccepted> for Session {
+    type Result = MessageResult<InviteToDMAccepted>;
+
+    fn handle(&mut self, msg: InviteToDMAccepted, ctx: &mut Self::Context) -> Self::Result {
+        ctx.text(serverMsgs::invite_user_to_dm_accepted(&msg.guest));
+
+        self.server
+            .try_send(ServerHandlerMsgs::CreateDM {
+                first_login: msg.guest,
+                second_login: self.login.clone(),
+            })
+            .unwrap();
+
+        MessageResult(())
+    }
+}
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InviteToDMRefused {
+    pub guest: String,
+}
+
+impl Handler<InviteToDMRefused> for Session {
+    type Result = MessageResult<InviteToDMRefused>;
+
+    fn handle(&mut self, msg: InviteToDMRefused, ctx: &mut Self::Context) -> Self::Result {
+        ctx.text(serverMsgs::invite_user_to_dm_refused(&msg.guest));
+        MessageResult(())
+    }
+}
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct InviteToDMRoomCreated {}

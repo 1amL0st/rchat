@@ -1,4 +1,6 @@
 const DEFAULT_STATE = {
+  isFailed: false,
+  errText: '',
   isAccepted: false,
   isRefused: false,
   isIncoming: false,
@@ -10,6 +12,12 @@ const DEFAULT_STATE = {
 
 export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
+    case 'HideErrWindow':
+      return {
+        ...state,
+        isFailed: false,
+        came: false,
+      };
     case 'ShowIncomingToDMRequest':
       return {
         isIncoming: true,
@@ -19,6 +27,7 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
       };
     case 'ShowOutcomingToDMRequest':
       return {
+        isFailed: false,
         isRefused: false,
         isAccepted: false,
         isIncoming: false,
@@ -36,11 +45,16 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
         ...state,
         isRefused: true,
       };
-
     case 'OutcomingInviteToDMAccepted':
       return {
         ...state,
         isAccepted: true,
+      };
+    case 'InviteUserToDMFail':
+      return {
+        ...state,
+        isFailed: true,
+        errText: action.err,
       };
     default:
       return state;

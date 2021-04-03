@@ -11,20 +11,20 @@ export const WaitingForWindow = ({ customText, isOpen }) => {
     (appStore) => appStore.waitingFor.waitingText,
   );
 
-  const isWaiting = useSelector(
-    (appStore) => appStore.waitingFor.isWaiting,
-  );
+  const isWaiting = useSelector((appStore) => appStore.waitingFor.isWaiting);
 
   const text = customText ?? waitingForText;
   return (
-    <ModalWindow className="waiting-for-window" priority="High" isOpen={isWaiting || isOpen}>
+    <ModalWindow
+      className="waiting-for-window"
+      priority="High"
+      isOpen={isWaiting || isOpen}
+    >
       <div className="lds-ripple">
         <div />
         <div />
       </div>
-      <div>
-        {text}
-      </div>
+      <div>{text}</div>
     </ModalWindow>
   );
 };

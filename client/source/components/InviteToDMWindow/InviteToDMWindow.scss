@@ -7,9 +7,6 @@
 }
 
 .request-refused-window {
-  &__header {
-  }
-
   &__ok-btn {
     margin-top: 16px;
   }
@@ -22,5 +19,11 @@
 
   .button {
     margin: 0 16px;
+  }
+}
+
+.invite-request-fail {
+  .button {
+    margin-top: 16px;
   }
 }

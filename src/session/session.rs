@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use actix::*;
 
-use actix_web_actors::ws;
+use actix_web_actors::ws::{self, WebsocketContext};
 
 use crate::server::msgs_handlers::{
     CreateRoom, CurrentRoom, FindUser, JoinRoom, ListRooms, ListUsers, Login, TextMsg,
@@ -258,7 +258,11 @@ impl Session {
     }
 
     fn handle_cmd_invite_to_dm_refuse(&mut self) {
-        let inviter = &self.invites[0];
+        if self.invites.is_empty() {
+            return;
+        }
+
+        let inviter = &self.invites.pop().unwrap();
         inviter
             .addr
             .try_send(sessionsMsgs::InviteToDMRefused {
@@ -268,13 +272,43 @@ impl Session {
     }
 
     fn handle_cmd_invite_to_dm_accpet(&mut self) {
-        let inviter = &self.invites[0];
+        if self.invites.is_empty() {
+            return;
+        }
+
+        let inviter = &self.invites.pop().unwrap();
         inviter
             .addr
             .try_send(sessionsMsgs::InviteToDMAccepted {
                 guest: self.login.clone(),
             })
             .unwrap();
+    }
+
+    fn handler(
+        &self,
+        ctx: &mut WebsocketContext<Session>,
+        guest_addr: Addr<Session>,
+        guest_login: String,
+    ) {
+        guest_addr
+            .send(sessionsMsgs::InviteToDMRequest {
+                inviter: self.login.clone(),
+                inviter_addr: ctx.address(),
+            })
+            .into_actor(self)
+            .then(move |res, act, ctx| {
+                if let Ok(result) = res {
+                    match result {
+                        Ok(_) => (),
+                        Err(err) => ctx.text(serverMsgs::invite_user_to_dm_fail(&err)),
+                    }
+                } else {
+                    panic!("Something went wrong!")
+                }
+                fut::ready(())
+            })
+            .wait(ctx);
     }
 
     fn handle_cmd_invite_to_dm(
@@ -295,12 +329,13 @@ impl Session {
             .then(move |res, act, ctx| {
                 if let Ok(result) = res {
                     if let Ok(guest_addr) = result {
-                        guest_addr
-                            .try_send(sessionsMsgs::InviteToDMRequest {
-                                inviter: act.login.clone(),
-                                inviter_addr: ctx.address(),
-                            })
-                            .unwrap();
+                        act.handler(ctx, guest_addr, guest_login);
+                        // guest_addr
+                        //     .try_send(sessionsMsgs::InviteToDMRequest {
+                        //         inviter: act.login.clone(),
+                        //         inviter_addr: ctx.address(),
+                        //     })
+                        //     .unwrap();
                     } else {
                         ctx.text(serverMsgs::invite_user_to_dm_fail(&format!(
                             "User {} not found!",

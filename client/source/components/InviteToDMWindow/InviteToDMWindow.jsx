@@ -2,11 +2,11 @@ import React from 'react';
 
 import { useSelector } from 'react-redux';
 
-import { ModalWindow } from 'components/ModalWindow';
 import { WaitingForWindow } from 'components/WaitingForWindow';
 
 import { OutcomingRequestRefused } from './OutcomingRequestRefused';
 import { IncomingRequestWindow } from './IncomingRequest';
+import { InviteToDMRequestFail } from './InviteToDMRequestFail';
 
 import './InviteToDMWindow.scss';
 
@@ -17,33 +17,21 @@ export const InviteToDMWindow = () => {
     return null;
   }
 
+  if (invite.isFailed) {
+    return <InviteToDMRequestFail />;
+  }
+
   if (invite.isIncoming) {
     return <IncomingRequestWindow />;
   }
 
-  if (invite.isAccepted) {
-    return (
-      <div className="request-accepted">Request is accepted!</div>
-    );
-  } if (invite.isRefused) {
-    return (
-      <OutcomingRequestRefused />
-    );
+  if (invite.isRefused) {
+    return <OutcomingRequestRefused />;
   }
   return (
-    <WaitingForWindow customText="Waiting for user response" isOpen={invite.guestLogin !== ''} />
+    <WaitingForWindow
+      customText="Waiting for user response"
+      isOpen={invite.guestLogin !== ''}
+    />
   );
-
-  // return (
-  //   <ModalWindow
-  //     isOpen={invite.came && !invite.processed}
-  //     className="invite-to-dm-window"
-  //   >
-  //     {invite.isIncoming ? (
-  //       <IncomingRequestWindow />
-  //     ) : (
-  //       <div className="outcoming">{outcomingWindow}</div>
-  //     )}
-  //   </ModalWindow>
-  // );
 };
