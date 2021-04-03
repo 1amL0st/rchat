@@ -9,7 +9,7 @@ import './WaitingForWindow.scss';
 
 export const WaitingForWindow = ({ customText }) => {
   const waitingForText = useSelector(
-    (appStore) => appStore.waitingFor.waitingText
+    (appStore) => appStore.waitingFor.waitingText,
   );
 
   const text = customText ?? waitingForText;

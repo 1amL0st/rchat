@@ -4,7 +4,7 @@ export function useSwipeEvent(
   targetHorzOffset,
   targetVertOffset,
   onSwipe,
-  elementRef
+  elementRef,
 ) {
   const isRegistered = useRef(false);
   const isDown = useRef(false);
@@ -22,9 +22,9 @@ export function useSwipeEvent(
 
     const doRegisterSwipe = (offset, clientX, clientY) => {
       if (
-        !isRegistered.current &&
-        (Math.abs(offset.x) > targetHorzOffset ||
-          Math.abs(offset.y) > targetVertOffset)
+        !isRegistered.current
+        && (Math.abs(offset.x) > targetHorzOffset
+          || Math.abs(offset.y) > targetVertOffset)
       ) {
         lastPos.current.x = clientX;
         lastPos.current.y = clientY;
@@ -46,7 +46,7 @@ export function useSwipeEvent(
       doRegisterSwipe(
         offset,
         e.changedTouches[0].clientX,
-        e.changedTouches[0].clientY
+        e.changedTouches[0].clientY,
       );
     };
 

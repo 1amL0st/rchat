@@ -130,5 +130,6 @@ pub fn invite_user_to_dm_room_created() -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "InviteToDMRoomCreated"
-    }).to_string()
+    })
+    .to_string()
 }

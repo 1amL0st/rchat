@@ -3,8 +3,8 @@ use actix_web_actors::ws;
 
 use super::session::*;
 use crate::messages::server_msgs as serverMsgs;
-use crate::server::{server};
 use crate::server::msgs_handlers as ServerHandlerMsgs;
+use crate::server::server;
 
 use super::session::Inviter;
 
@@ -43,7 +43,7 @@ impl Handler<Text> for Session {
 #[rtype(result = "()")]
 pub struct InviteToDMRequest {
     pub inviter: String,
-    pub inviter_addr: Addr<Session>
+    pub inviter_addr: Addr<Session>,
 }
 
 impl Handler<InviteToDMRequest> for Session {
@@ -54,7 +54,7 @@ impl Handler<InviteToDMRequest> for Session {
         ctx.text(serverMsgs::invite_user_to_dm_request(&msg.inviter));
         self.invites.push(Inviter {
             addr: msg.inviter_addr,
-            login: msg.inviter
+            login: msg.inviter,
         });
         MessageResult(())
     }
@@ -70,13 +70,15 @@ impl Handler<InviteToDMAccepted> for Session {
     type Result = MessageResult<InviteToDMAccepted>;
 
     fn handle(&mut self, msg: InviteToDMAccepted, ctx: &mut Self::Context) -> Self::Result {
-        println!("inviter = {} guest = {}", self.login,  msg.guest);
+        println!("inviter = {} guest = {}", self.login, msg.guest);
         ctx.text(serverMsgs::invite_user_to_dm_accepted(&msg.guest));
 
-        self.server.try_send( ServerHandlerMsgs::CreateDM {
-            first_login: msg.guest,
-            second_login: self.login.clone()
-        }).unwrap();
+        self.server
+            .try_send(ServerHandlerMsgs::CreateDM {
+                first_login: msg.guest,
+                second_login: self.login.clone(),
+            })
+            .unwrap();
 
         println!("Invite is accepted!");
         MessageResult(())
@@ -104,7 +106,7 @@ impl Handler<InviteToDMRefused> for Session {
 #[rtype(result = "()")]
 pub struct YouJoinedRoom {
     pub room_id: usize,
-    pub room_name: String
+    pub room_name: String,
 }
 
 impl Handler<YouJoinedRoom> for Session {
@@ -121,8 +123,7 @@ impl Handler<YouJoinedRoom> for Session {
 
 #[derive(Message)]
 #[rtype(result = "()")]
-pub struct InviteToDMRoomCreated {
-}
+pub struct InviteToDMRoomCreated {}
 
 impl Handler<InviteToDMRoomCreated> for Session {
     type Result = MessageResult<InviteToDMRoomCreated>;

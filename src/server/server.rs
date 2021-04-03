@@ -142,7 +142,11 @@ impl Server {
         Ok(())
     }
 
-    pub fn create_room_with_name(&mut self, room_name: String, privacy: RoomPrivacy) -> (usize, Room) {
+    pub fn create_room_with_name(
+        &mut self,
+        room_name: String,
+        privacy: RoomPrivacy,
+    ) -> (usize, Room) {
         let mut room_id = rand::random::<usize>();
         while self.rooms.contains_key(&room_id) {
             room_id = rand::random::<usize>();

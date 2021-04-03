@@ -1,6 +1,6 @@
 use actix::prelude::*;
 
-use crate::session::session::{Session};
+use crate::session::session::Session;
 
 type UserAddr = Addr<Session>;
 
