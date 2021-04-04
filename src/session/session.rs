@@ -257,6 +257,7 @@ impl Session {
         }
     }
 
+    // TODO: What if user will enter this command by hand?
     fn handle_cmd_invite_to_dm_refuse(&mut self) {
         if self.invites.is_empty() {
             return;
@@ -271,6 +272,7 @@ impl Session {
             .unwrap();
     }
 
+    // TODO: What if user will enter this command by hand?
     fn handle_cmd_invite_to_dm_accpet(&mut self) {
         if self.invites.is_empty() {
             return;
@@ -330,12 +332,6 @@ impl Session {
                 if let Ok(result) = res {
                     if let Ok(guest_addr) = result {
                         act.handler(ctx, guest_addr, guest_login);
-                        // guest_addr
-                        //     .try_send(sessionsMsgs::InviteToDMRequest {
-                        //         inviter: act.login.clone(),
-                        //         inviter_addr: ctx.address(),
-                        //     })
-                        //     .unwrap();
                     } else {
                         ctx.text(serverMsgs::invite_user_to_dm_fail(&format!(
                             "User {} not found!",

@@ -74,16 +74,18 @@ function serverMsgHandler(msgJson) {
         err: msgJson.err,
       });
       return;
-    case 'InviteToDMAccepted':
+    case 'InviteToDMAccepted': {
       AppStore.dispatch({
         type: 'OutcomingInviteToDMAccepted',
       });
+
+      const { guestLogin } = AppStore.getState().inviteDM;
       AppStore.dispatch({
-        type: 'ShowWaitingForWindow',
-        waitingText:
-          'User accepted your DM invite. Server is creating private room for you. Please, wait!',
+        type: 'ShowWaitCreateDMRoom',
+        waitingText: `User ${guestLogin} accepted your DM invite. Server is creating private room for you. Please, wait!`,
       });
       break;
+    }
     case 'InviteToDMRefused':
       AppStore.dispatch({
         type: 'OutcomingInviteToDMRefused',

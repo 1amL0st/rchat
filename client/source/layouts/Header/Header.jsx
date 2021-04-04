@@ -27,7 +27,7 @@ export const Header = () => {
         <Logo onClick={onLogoClick} />
       </aside>
 
-      <div>{roomName}</div>
+      <div className="header__room-name">{roomName}</div>
 
       <aside>
         <UserPanel />

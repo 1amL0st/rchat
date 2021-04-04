@@ -28,9 +28,10 @@ export const InviteToDMWindow = () => {
   if (invite.isRefused) {
     return <OutcomingRequestRefused />;
   }
+
   return (
     <WaitingForWindow
-      customText="Waiting for user response"
+      text={invite.waitingText}
       isOpen={invite.guestLogin !== ''}
     />
   );

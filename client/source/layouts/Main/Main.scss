@@ -10,14 +10,42 @@
   height: 100%;
   overflow-y: hidden;
 
-  user-select: none;
-
   .chat {
     margin: 0 16px;
+  }
+
+  &__nav {
+    @include flex-layout(row, space-between, center);
+    width: 100%;
+    margin: 8px 0;
+
+    div {
+      @include flex-layout(row, center, center);
+    }
+
+    &__right {
+      span {
+        margin-right: 8px;
+      }
+    }
+
+    &__left {
+      span {
+        margin-left: 8px;
+      }
+    }
+
+    span {
+      color: rgba(245, 245, 245, 0.329);
+    }
   }
 }
 
 @media screen and (max-width: $mobile-screen-width) {
+  .main {
+    flex-direction: column;
+  }
+
   .main .chat {
     margin: 0;
   }

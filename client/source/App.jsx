@@ -8,7 +8,6 @@ import { Layout } from 'layouts/Layout';
 import { Api } from 'api/Api';
 import { CriticalErrWindow } from 'components/CriticalErrWindow';
 import { WaitingForWindow } from 'components/WaitingForWindow';
-import { ModalWindow } from 'components/ModalWindow';
 
 import './App.scss';
 
@@ -16,6 +15,9 @@ const App = () => {
   const [isConnected, setConnected] = useState(false);
   const isErr = useSelector((appStore) => appStore.criticalErr.isErr);
   const isWaitingFor = useSelector((appStore) => appStore.waitingFor.isWaiting);
+  const waitingForText = useSelector(
+    (appStore) => appStore.waitingFor.waitingText,
+  );
 
   useEffect(() => {
     async function connectSocket() {
@@ -30,10 +32,7 @@ const App = () => {
   }
   return (
     <div className="app">
-      {/* <ModalWindow priority="High" isOpen={isWaitingFor}>
-        <WaitingForWindow />
-      </ModalWindow> */}
-      <WaitingForWindow />
+      <WaitingForWindow isOpen={isWaitingFor} text={waitingForText} />
       {isConnected && (
         <BrowserRouter>
           <Layout />

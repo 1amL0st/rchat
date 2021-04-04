@@ -13,7 +13,7 @@ export const Logo = ({ onClick }) => {
   return (
     <div className="logo" onClick={onClickHandler} aria-hidden>
       <img className="logo__img" src={logo} alt="Logo" />
-      <p className="logo__text">rchat</p>
+      <span className="logo__text">rchat</span>
     </div>
   );
 };

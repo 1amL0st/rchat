@@ -28,7 +28,7 @@ impl Server {
         );
 
         #[cfg(debug_assertions)]
-        for i in 1..10 {
+        for i in 1..30 {
             rooms.insert(
                 i,
                 Room::new(format!("room_{}", i), HashSet::new(), RoomPrivacy::Public),

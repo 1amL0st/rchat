@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
   processed: false,
   inviterLogin: '',
   guestLogin: '',
+  waitingText: '',
 };
 
 export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
@@ -34,6 +35,7 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
         came: true,
         processed: false,
         guestLogin: action.guestLogin,
+        waitingText: 'Waiting for user response',
       };
     case 'HideInviteToDMWindow':
       return {
@@ -55,6 +57,11 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
         ...state,
         isFailed: true,
         errText: action.err,
+      };
+    case 'ShowWaitCreateDMRoom':
+      return {
+        ...state,
+        waitingText: action.waitingText,
       };
     default:
       return state;

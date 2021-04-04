@@ -291,7 +291,7 @@ impl Handler<CreateDM> for Server {
             })
             .unwrap();
 
-        // std::thread::sleep(std::time::Duration::from_secs(60));
+        // std::thread::sleep(std::time::Duration::from_secs(60000));
 
         first_user
             .addr
