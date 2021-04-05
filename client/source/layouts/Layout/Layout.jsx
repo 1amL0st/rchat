@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 import { SignUpWindow } from 'layouts/SignUpWindow';
 import { UserWindow } from 'components/UserWindow';
-import { LeaveWindow } from 'layouts/Header/LeaveWindow';
 import { ROUTES } from 'constants/Routes';
 
 import { InviteToDMWindow } from 'components/InviteToDMWindow';
@@ -16,13 +15,6 @@ import './Layout.scss';
 
 export const Layout = () => {
   const isLogged = useSelector((appStore) => appStore.user.isLogged);
-  const history = useHistory();
-
-  useEffect(() => {
-    if (!isLogged) {
-      history.push('/sign_up');
-    }
-  }, [history, isLogged]);
 
   return (
     <div className="layout">
@@ -33,14 +25,9 @@ export const Layout = () => {
           <Main />
         </div>
       </Route>
-      <Route path={ROUTES.SignUp}>
-        <SignUpWindow />
-      </Route>
+      {!isLogged && <SignUpWindow />}
       <Route path={ROUTES.UserWindow}>
         <UserWindow />
-      </Route>
-      <Route path={ROUTES.LeaveWindow}>
-        <LeaveWindow />
       </Route>
     </div>
   );

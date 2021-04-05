@@ -1,20 +1,15 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 
-import { Window } from 'components/Window';
+import PropTypes from 'prop-types';
+
+import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
 
-export const LeaveWindow = () => {
-  const history = useHistory();
-
-  const onYesBtn = () => {
-    window.location.reload();
-  };
-
-  const onClose = () => history.goBack();
+export const LeaveWindow = ({ onClose }) => {
+  const onYesBtn = () => window.location.reload();
 
   return (
-    <Window className="leave-window" onShouldClose={onClose}>
+    <ModalWindow className="leave-window" onClose={onClose} isOpen>
       <div>
         Are you sure you want leave?
         <br />
@@ -28,6 +23,10 @@ export const LeaveWindow = () => {
           No
         </Button>
       </div>
-    </Window>
+    </ModalWindow>
   );
+};
+
+LeaveWindow.propTypes = {
+  onClose: PropTypes.func.isRequired,
 };

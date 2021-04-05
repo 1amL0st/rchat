@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+import { useSelector } from 'react-redux';
+
 import { Api } from 'api/Api';
 import { Button } from 'components/Button';
 import { METRICS } from 'constants/Metrics';
@@ -8,17 +10,18 @@ import './MsgInput.scss';
 
 export const MsgInput = () => {
   const [message, setMessage] = useState('');
+  const isLogged = useSelector((appStore) => appStore.user.isLogged);
+
   const textAreaRef = useRef();
 
   const focus = () => {
-    // This focus doesn't work well on mobile. Do this only for desktop
     if (window.innerWidth >= METRICS.mobileScreenWidth) {
       textAreaRef.current.focus();
     }
   };
 
   const onSendBtn = () => {
-    if (message.trim() !== 0) {
+    if (message.trim() !== '') {
       Api.sendMsg(message);
     }
     setMessage('');
@@ -34,7 +37,7 @@ export const MsgInput = () => {
 
   useEffect(() => {
     focus();
-  }, []);
+  }, [isLogged]);
 
   return (
     <div className="msg-input">

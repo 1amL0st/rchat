@@ -1,4 +1,8 @@
+@import 'styles/mixins';
+
 .signup-window {
+  @include flex-layout(column, flex-start, center);
+  
   &__warning {
     text-align: center;
     color: lightgreen;

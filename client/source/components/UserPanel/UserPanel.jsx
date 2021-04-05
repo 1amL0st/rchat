@@ -7,13 +7,15 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ROUTES } from 'constants/Routes';
+import { LeaveWindow } from 'layouts/Header/LeaveWindow';
+
 import { IconButton } from 'components/IconButton';
 import { Button } from 'components/Button';
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './UserPanel.scss';
 
-const List = ({ onClose }) => {
+const List = ({ onClose, onLeaveWindowOpen }) => {
   const userLogin = useSelector((appStore) => appStore.user.login);
   const history = useHistory();
   const listRef = useRef();
@@ -35,17 +37,22 @@ const List = ({ onClose }) => {
     <div className={classNames('user-panel__list')} ref={listRef}>
       <span className="user-panel__name">{userLogin}</span>
       <Button onClick={onProfileClick}>Edit Profile</Button>
-      <Button onClick={() => history.push(ROUTES.LeaveWindow)}>Leave</Button>
+      <Button onClick={onLeaveWindowOpen}>Leave</Button>
     </div>
   );
 };
 
 List.propTypes = {
   onClose: PropTypes.func.isRequired,
+  onLeaveWindowOpen: PropTypes.func.isRequired,
 };
 
 export const UserPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLeaveWindowOpen, setIsLeaveWindowOpen] = useState(false);
+
+  const onLeaveWindowClose = () => setIsLeaveWindowOpen(!isLeaveWindowOpen);
+  const onLeaveWindowOpen = () => setIsLeaveWindowOpen(true);
 
   return (
     <div className="user-panel">
@@ -54,7 +61,13 @@ export const UserPanel = () => {
         onClick={() => setIsOpen(!isOpen)}
         icon={Icons.faUserCog}
       />
-      {isOpen && <List onClose={() => setIsOpen(false)} />}
+      {isOpen && (
+        <List
+          onClose={() => setIsOpen(false)}
+          onLeaveWindowOpen={onLeaveWindowOpen}
+        />
+      )}
+      {isLeaveWindowOpen && <LeaveWindow onClose={onLeaveWindowClose} />}
     </div>
   );
 };

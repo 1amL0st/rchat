@@ -1,20 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useCallback } from 'react';
+
+import { useDispatch } from 'react-redux';
 
 import { Api } from 'api/Api';
 
 import { Button } from 'components/Button';
-import { Window } from 'components/Window';
+import { ModalWindow } from 'components/ModalWindow';
 
 import './SignUpWindow.scss';
 
 export const SignUpWindow = () => {
-  const history = useHistory();
-  const isLogged = useSelector((appStore) => appStore.user.isLogged);
-
   const [login, setLogin] = useState('');
-  const loginInputRef = useRef();
   const [err, setErr] = useState('');
 
   const dispatch = useDispatch();
@@ -26,7 +22,6 @@ export const SignUpWindow = () => {
           type: 'SetUserLogin',
           login: l,
         });
-        history.push('/');
       })
       .catch((e) => setErr(e));
   };
@@ -38,19 +33,14 @@ export const SignUpWindow = () => {
     }
   };
 
-  useEffect(() => {
-    if (isLogged) {
-      history.replace('/');
-    }
-    loginInputRef.current.focus();
-  }, [isLogged, history]);
+  const loginInputRef = useCallback((input) => input?.focus(), []);
 
   const onLoginInputChange = (e) => {
     setLogin(e.target.value);
   };
 
   return (
-    <Window className="signup-window">
+    <ModalWindow className="signup-window" isOpen>
       <div className="signup-window__warning">
         Warning
         <br />
@@ -70,6 +60,6 @@ export const SignUpWindow = () => {
           Login
         </Button>
       </div>
-    </Window>
+    </ModalWindow>
   );
 };
