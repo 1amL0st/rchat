@@ -1,6 +1,6 @@
 const DEFAULT_STATE = {
   messages: [],
-  roomName: 'Loading...',
+  roomName: 'Logging...',
   rooms: [],
   users: [],
 };

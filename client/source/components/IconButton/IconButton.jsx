@@ -1,6 +1,6 @@
+// TODO: Find IconDefinition type for icon prop
 /* eslint react/prop-types: 0 */
 /* eslint react/forbid-prop-types: 0 */
-// TODO: Find IconDefinition type for icon prop
 
 import React from 'react';
 import PropTypes from 'prop-types';

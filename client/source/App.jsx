@@ -32,7 +32,10 @@ const App = () => {
   }
   return (
     <div className="app">
-      <WaitingForWindow isOpen={isWaitingFor}>
+      <WaitingForWindow
+        isOpen={isWaitingFor}
+        className="waiting-for-connection-window"
+      >
         {waitingForText}
       </WaitingForWindow>
       {isConnected && (

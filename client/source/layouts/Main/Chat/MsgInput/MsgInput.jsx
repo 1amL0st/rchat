@@ -1,27 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import { useSelector } from 'react-redux';
-
 import { Api } from 'api/Api';
-import { Button } from 'components/Button';
-import { METRICS } from 'constants/Metrics';
 
 import './MsgInput.scss';
 
 export const MsgInput = () => {
   const [message, setMessage] = useState('');
   const isLogged = useSelector((appStore) => appStore.user.isLogged);
-
   const textAreaRef = useRef();
 
-  const focus = () => {
-    if (window.innerWidth >= METRICS.mobileScreenWidth) {
-      textAreaRef.current.focus();
-    }
-  };
+  const focus = () => textAreaRef.current.focus();
 
   const onSendBtn = () => {
-    if (message.trim() !== '') {
+    if (message.trim()) {
       Api.sendMsg(message);
     }
     setMessage('');
@@ -39,6 +31,9 @@ export const MsgInput = () => {
     focus();
   }, [isLogged]);
 
+  // TODO: Button must have some text inside it, but our button has only image
+  /* eslint jsx-a11y/control-has-associated-label: 0 */
+
   return (
     <div className="msg-input">
       <textarea
@@ -50,7 +45,11 @@ export const MsgInput = () => {
         onKeyDown={onTextAreaKeydown}
         maxLength={2048}
       />
-      <Button onClick={onSendBtn}>Send</Button>
+      <button
+        className="button msg-input__send-btn"
+        onClick={onSendBtn}
+        type="button"
+      />
     </div>
   );
 };

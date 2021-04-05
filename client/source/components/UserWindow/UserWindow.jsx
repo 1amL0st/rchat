@@ -36,7 +36,7 @@ export const UserWindow = () => {
   const onClose = () => history.goBack();
 
   return (
-    <Window className="user-window" onClose={onClose}>
+    <Window className="user-window" onShouldClose={onClose}>
       <div className="user-window__header">{login}</div>
       <p
         className={classNames('user-window__msg', {

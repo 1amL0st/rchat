@@ -5,6 +5,18 @@
   @include flex-layout(column, center, center);
   position: relative;
   width: 100%;
+
+  &__send-btn {
+    position: absolute;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+
+    background-color: $main-dark-blue-color;
+    background-image: url('icons/logo.png');
+    background-size: cover;
+    z-index: 10;
+  }
 }
 
 .msg-input__textarea {
@@ -22,12 +34,4 @@
     outline: none;
     border-color: rgb(133, 133, 133);
   }
-}
-
-.msg-input .button {
-  margin-top: 4px;
-  width: 100%;
-
-  background-repeat: no-repeat;
-  background-position: center;
 }
