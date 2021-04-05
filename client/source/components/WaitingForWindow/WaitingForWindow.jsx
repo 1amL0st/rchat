@@ -1,26 +1,36 @@
 import React from 'react';
 
+import classNames from 'class-names';
 import PropTypes from 'prop-types';
+
 import { ModalWindow } from 'components/ModalWindow';
 
 import './WaitingForWindow.scss';
 
-export const WaitingForWindow = ({ text, isOpen }) => (
-  <ModalWindow className="waiting-for-window" priority="High" isOpen={isOpen}>
+export const WaitingForWindow = ({ className, isOpen, children }) => (
+  <ModalWindow
+    className={classNames('waiting-for-window', className)}
+    priority="High"
+    isOpen={isOpen}
+  >
     <div className="lds-ripple">
       <div />
       <div />
     </div>
-    <div>{text}</div>
+    {children}
   </ModalWindow>
 );
 
 WaitingForWindow.defaultProps = {
-  text: null,
+  className: null,
   isOpen: false,
 };
 
 WaitingForWindow.propTypes = {
-  text: PropTypes.string,
+  className: PropTypes.string,
   isOpen: PropTypes.bool,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 };

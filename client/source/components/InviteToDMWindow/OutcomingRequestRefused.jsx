@@ -9,7 +9,7 @@ export const OutcomingRequestRefused = () => {
   const dispatch = useDispatch();
   const guestLogin = useSelector((appStore) => appStore.inviteDM.guestLogin);
 
-  const onRefuseFormBtnClick = () => {
+  const hideWindow = () => {
     dispatch({
       type: 'HideInviteToDMWindow',
     });
@@ -17,16 +17,14 @@ export const OutcomingRequestRefused = () => {
 
   return (
     <ModalWindow
+      onClose={hideWindow}
       className="invite-to-dm-window__content request-refused-window"
       isOpen
     >
       <div className="request-refused-window__header">
         {`User ${guestLogin} refused your request!`}
       </div>
-      <Button
-        className="request-refused-window__ok-btn"
-        onClick={onRefuseFormBtnClick}
-      >
+      <Button className="request-refused-window__ok-btn" onClick={hideWindow}>
         Ok
       </Button>
     </ModalWindow>

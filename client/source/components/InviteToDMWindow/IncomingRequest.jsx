@@ -31,6 +31,7 @@ export const IncomingRequestWindow = () => {
 
   return (
     <ModalWindow
+      onClose={onRefuseBtn}
       className="invite-to-dm-window__content incoming-invite-window"
       isOpen
     >

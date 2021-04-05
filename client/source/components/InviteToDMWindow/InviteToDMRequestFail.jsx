@@ -10,7 +10,7 @@ export const InviteToDMRequestFail = () => {
 
   const dispatch = useDispatch();
 
-  const onClick = () => {
+  const hideWindow = () => {
     dispatch({
       type: 'HideErrWindow',
     });
@@ -19,10 +19,11 @@ export const InviteToDMRequestFail = () => {
   return (
     <ModalWindow
       className="invite-to-dm-window__content invite-request-fail"
+      onClose={hideWindow}
       isOpen
     >
       <div>{invite.errText}</div>
-      <Button onClick={onClick}>Ok</Button>
+      <Button onClick={hideWindow}>Ok</Button>
     </ModalWindow>
   );
 };
