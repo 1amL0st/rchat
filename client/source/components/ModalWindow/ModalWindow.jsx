@@ -19,6 +19,12 @@ const makeStyles = (priority) => {
       padding: '16px',
       borderRadius: '8px',
       backgroundColor: '#1d2b47',
+      '&:focus': {
+        border: '1px solid red',
+      },
+    },
+    'content:focus': {
+      border: '1px solid red',
     },
   };
 };
@@ -28,10 +34,10 @@ export const ModalWindow = ({
   className,
   priority,
   children,
-  onShouldClose,
+  onClose,
 }) => {
   const onRequestClose = () => {
-    if (onShouldClose) onShouldClose();
+    if (onClose) onClose();
   };
 
   return (
@@ -52,14 +58,14 @@ export const ModalWindow = ({
 ModalWindow.defaultProps = {
   priority: 'Low',
   className: '',
-  onShouldClose: null,
+  onClose: null,
 };
 
 ModalWindow.propTypes = {
   priority: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   className: PropTypes.string,
-  onShouldClose: PropTypes.func,
+  onClose: PropTypes.func,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

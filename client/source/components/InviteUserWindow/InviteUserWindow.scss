@@ -1,6 +1,9 @@
 @import 'styles/constants';
+@import 'styles/mixins';
 
 .invite-user-window {
+  @include flex-layout(column, flex-start, center);
+  
   &__msg {
     line-height: 32px;
     height: 32px;

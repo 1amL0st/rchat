@@ -1,23 +1,21 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+
+import PropTypes from 'prop-types';
 
 import { Api } from 'api/Api';
 import { Button } from 'components/Button';
-import { Window } from 'components/Window';
+import { ModalWindow } from 'components/ModalWindow';
 
 import './CreateRoomWindow.scss';
 
-export const CreateRoomWindow = () => {
-  const roomNameInputRef = useRef();
-
-  const history = useHistory();
+export const CreateRoomWindow = ({ onClose }) => {
   const [roomName, setRoomName] = useState('');
   const [err, setErr] = useState('');
 
   const onCreateRoomBtn = () => {
     Api.createRoom(roomName)
       .then(() => {
-        history.goBack();
+        onClose();
       })
       .catch((e) => setErr(e));
   };
@@ -28,16 +26,12 @@ export const CreateRoomWindow = () => {
     }
   };
 
-  const onClose = () => history.goBack();
-
-  useEffect(() => {
-    roomNameInputRef.current.focus();
-  }, []);
+  const inputRef = useCallback((input) => input?.focus(), []);
 
   return (
-    <Window className="create-room-window" onShouldClose={onClose}>
+    <ModalWindow className="create-room-window" onClose={onClose} isOpen>
       <input
-        ref={roomNameInputRef}
+        ref={inputRef}
         maxLength={32}
         type="text"
         placeholder="Enter room name"
@@ -56,12 +50,16 @@ export const CreateRoomWindow = () => {
         </Button>
         <Button
           size="small"
-          onClick={() => history.goBack()}
+          onClick={onClose}
           className="create-room-window__cancel_btn"
         >
           Cancel
         </Button>
       </div>
-    </Window>
+    </ModalWindow>
   );
+};
+
+CreateRoomWindow.propTypes = {
+  onClose: PropTypes.func.isRequired,
 };

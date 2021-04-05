@@ -6,8 +6,6 @@ import { Route, useHistory } from 'react-router-dom';
 import { SignUpWindow } from 'layouts/SignUpWindow';
 import { UserWindow } from 'components/UserWindow';
 import { LeaveWindow } from 'layouts/Header/LeaveWindow';
-import { CreateRoomWindow } from 'components/CreateRoomWindow';
-import { InviteUserWindow } from 'components/InviteUserWindow';
 import { ROUTES } from 'constants/Routes';
 
 import { InviteToDMWindow } from 'components/InviteToDMWindow';
@@ -43,12 +41,6 @@ export const Layout = () => {
       </Route>
       <Route path={ROUTES.LeaveWindow}>
         <LeaveWindow />
-      </Route>
-      <Route path={ROUTES.CreateRoom}>
-        <CreateRoomWindow />
-      </Route>
-      <Route path={ROUTES.InviteUser}>
-        <InviteUserWindow />
       </Route>
     </div>
   );

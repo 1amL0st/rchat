@@ -1,19 +1,17 @@
-import React from 'react';
-
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { ROUTES } from 'constants/Routes';
 import { Api } from 'api/Api';
 import { IconButton } from 'components/IconButton';
 
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './RoomList.scss';
+import { CreateRoomWindow } from 'components/CreateRoomWIndow';
 
 export const RoomList = () => {
   const rooms = useSelector((appStore) => appStore.room.rooms);
-  const history = useHistory();
+  const [isCreateWindowOpen, switchCreateWindow] = useState(false);
 
   const onRoomClick = (room) => {
     Api.joinRoom(room)
@@ -24,14 +22,17 @@ export const RoomList = () => {
       .catch(() => console.log('Join error!'));
   };
 
+  const onPlusBtnClick = () => switchCreateWindow(!isCreateWindowOpen);
+
+  const onCloseCreateRoomWindow = () => {
+    onPlusBtnClick();
+  };
+
   return (
     <aside className="room-list">
       <div className="room-list__header">
         <span>Rooms</span>
-        <IconButton
-          onClick={() => history.push(ROUTES.CreateRoom)}
-          icon={Icons.faPlus}
-        />
+        <IconButton onClick={onPlusBtnClick} icon={Icons.faPlus} />
       </div>
       <div className="room-list__list">
         {rooms.map((room) => (
@@ -46,6 +47,9 @@ export const RoomList = () => {
           </div>
         ))}
       </div>
+      {isCreateWindowOpen && (
+        <CreateRoomWindow onClose={onCloseCreateRoomWindow} />
+      )}
     </aside>
   );
 };

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { IconButton } from 'components/IconButton';
-import { ROUTES } from 'constants/Routes';
+import { InviteUserWindow } from 'components/InviteUserWindow';
+
 import { Api } from 'api/Api';
 
 import * as Icons from '@fortawesome/free-solid-svg-icons';
@@ -12,12 +12,12 @@ import * as Icons from '@fortawesome/free-solid-svg-icons';
 import './UserList.scss';
 
 export const UserList = () => {
-  const users = useSelector((appStore) => appStore.room.users);
-  const history = useHistory();
+  const [isInviteWindowOpen, setIsInviteWindowOpen] = useState(false);
 
-  const onInviteFrined = () => {
-    history.push(ROUTES.InviteUser);
-  };
+  const users = useSelector((appStore) => appStore.room.users);
+
+  const onInviteFrined = () => setIsInviteWindowOpen(!isInviteWindowOpen);
+  const onInviteWindowClose = () => setIsInviteWindowOpen(!isInviteWindowOpen);
 
   const userList = users.map((user) => (
     <div
@@ -38,6 +38,7 @@ export const UserList = () => {
         <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />
       </div>
       <div className="user-list__list">{userList}</div>
+      {isInviteWindowOpen && <InviteUserWindow onClose={onInviteWindowClose} />}
     </aside>
   );
 };

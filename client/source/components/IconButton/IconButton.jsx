@@ -1,9 +1,12 @@
+/* eslint react/prop-types: 0 */
+/* eslint react/forbid-prop-types: 0 */
+// TODO: Find IconDefinition type for icon prop
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'class-names';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import './IconButton.scss';
 
@@ -31,5 +34,5 @@ IconButton.defaultProps = {
 IconButton.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
-  icon: PropTypes.shape(IconDefinition).isRequired,
+  icon: PropTypes.any.isRequired,
 };

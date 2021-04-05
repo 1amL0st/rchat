@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 
-import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-import { Window } from 'components/Window';
+import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
 
 import './InviteUserWindow.scss';
 
-export const InviteUserWindow = () => {
-  const history = useHistory();
+export const InviteUserWindow = ({ onClose }) => {
   const [msg, setMsg] = useState('');
 
   const onCopyLinkHandler = () => {
@@ -23,10 +22,8 @@ export const InviteUserWindow = () => {
     setMsg('Link is copied to clipboard!');
   };
 
-  const onClose = () => history.goBack();
-
   return (
-    <Window className="invite-user-window" onShouldClose={onClose}>
+    <ModalWindow className="invite-user-window" onClose={onClose} isOpen>
       <div>This is invite user window</div>
       <p className="invite-user-window__msg">{msg}</p>
       <Button
@@ -38,6 +35,10 @@ export const InviteUserWindow = () => {
       <Button onClick={onClose} className="invite-user-window__close">
         Close
       </Button>
-    </Window>
+    </ModalWindow>
   );
+};
+
+InviteUserWindow.propTypes = {
+  onClose: PropTypes.func.isRequired,
 };
