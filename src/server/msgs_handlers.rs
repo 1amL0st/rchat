@@ -96,15 +96,8 @@ impl Handler<Leave> for Server {
     type Result = ();
 
     fn handle(&mut self, msg: Leave, _: &mut Self::Context) {
-        let cur_room = self.rooms.get_mut(&msg.room_id).unwrap();
-        cur_room.users.remove(&msg.login);
-
-        let cur_room_name = cur_room.name.clone();
-        if msg.room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
-            let msg_text = serverMsgs::room_destroy(&cur_room.name);
-            self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &msg.login);
-            self.rooms.remove(&msg.room_id);
-        }
+        let cur_room_name = self.rooms.get(&msg.room_id).unwrap().name.clone();
+        self.move_user_out_room(msg.room_id, &msg.login);
 
         if msg.login != "" {
             self.users.remove(&msg.login);

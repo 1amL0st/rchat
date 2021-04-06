@@ -102,15 +102,21 @@ impl Server {
             .collect()
     }
 
-    pub fn move_user_to_room(&mut self, to_room_id: usize, cur_room_id: usize, login: &String) {
-        let current_room = self.rooms.get_mut(&cur_room_id).unwrap();
-        current_room.users.remove(login);
+    pub fn move_user_out_room(&mut self, room_id: usize, user_login: &String) {
+        let cur_room = self.rooms.get_mut(&room_id).unwrap();
+        cur_room.users.remove(user_login);
 
-        if current_room.users.len() == 0 && cur_room_id != MAIN_ROOM_ID {
-            let msg_text = serverMsgs::room_destroy(&current_room.name);
-            self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &login);
-            self.rooms.remove(&cur_room_id);
+        if room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
+            if cur_room.privacy == RoomPrivacy::Private {
+                let msg_text = serverMsgs::room_destroy(&cur_room.name);
+                self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &user_login);
+            }
+            self.rooms.remove(&room_id);
         }
+    }
+
+    pub fn move_user_to_room(&mut self, to_room_id: usize, cur_room_id: usize, login: &String) {
+        self.move_user_out_room(cur_room_id, login);
 
         let to_room = self.rooms.get_mut(&to_room_id).unwrap();
         to_room.users.insert(login.clone());
