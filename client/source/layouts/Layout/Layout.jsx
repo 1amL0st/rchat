@@ -19,11 +19,9 @@ export const Layout = () => {
   return (
     <div className="layout">
       <Route path="/" exact>
-        <div className="layout">
-          <InviteToDMWindow />
-          <Header />
-          <Main />
-        </div>
+        <InviteToDMWindow />
+        <Header />
+        <Main />
       </Route>
       {!isLogged && <SignUpWindow />}
       <Route path={ROUTES.UserWindow}>

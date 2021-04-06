@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -33,7 +33,7 @@ export const SignUpWindow = () => {
     }
   };
 
-  const loginInputRef = useCallback((input) => input?.focus(), []);
+  const loginInputRef = (input) => input?.focus();
 
   const onLoginInputChange = (e) => {
     setLogin(e.target.value);

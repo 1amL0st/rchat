@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,6 +28,15 @@ export const IncomingRequestWindow = () => {
 
     Api.acceptInviteToDM();
   };
+
+  useEffect(() => {
+    const keydownHandler = (e) => {
+      if (e.code === 'Enter') onAccpectBtn();
+    };
+
+    window.addEventListener('keydown', keydownHandler);
+    return () => window.removeEventListener('keydown', keydownHandler);
+  }, []);
 
   return (
     <ModalWindow

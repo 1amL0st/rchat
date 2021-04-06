@@ -15,11 +15,12 @@ export const UserList = () => {
   const [isInviteWindowOpen, setIsInviteWindowOpen] = useState(false);
 
   const users = useSelector((appStore) => appStore.room.users);
+  const userLogin = useSelector((appStore) => appStore.user.login);
 
   const onInviteFrined = () => setIsInviteWindowOpen(!isInviteWindowOpen);
   const onInviteWindowClose = () => setIsInviteWindowOpen(!isInviteWindowOpen);
 
-  const userList = users.map((user) => (
+  const userList = users.filter((user) => user !== userLogin).map((user) => (
     <div
       className="user-list__entry"
       title={user}

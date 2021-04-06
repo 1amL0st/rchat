@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -26,7 +26,7 @@ export const CreateRoomWindow = ({ onClose }) => {
     }
   };
 
-  const inputRef = useCallback((input) => input?.focus(), []);
+  const inputRef = (input) => input?.focus();
 
   return (
     <ModalWindow className="create-room-window" onClose={onClose} isOpen>

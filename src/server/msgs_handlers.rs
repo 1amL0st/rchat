@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use actix::prelude::*;
 use actix::{Actor, Handler};
 
@@ -209,15 +207,6 @@ impl Handler<CreateRoom> for Server {
             }
         }
 
-        // let mut room_id = rand::random::<usize>();
-        // while self.rooms.contains_key(&room_id) {
-        //     room_id = rand::random::<usize>();
-        // }
-
-        // self.rooms.insert(
-        //     room_id,
-        //     Room::new(msg.room_name, HashSet::new(), RoomPrivacy::Public),
-        // );
         let (room_id, room) = self.create_room_with_name(msg.room_name, RoomPrivacy::Public);
         self.rooms.insert(room_id, room);
 
