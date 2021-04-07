@@ -9,7 +9,6 @@ use crate::server::msgs_handlers::{
 };
 use crate::{
     messages::{self},
-    server,
     server::Server,
 };
 
@@ -19,13 +18,19 @@ use messages::server_msgs as serverMsgs;
 
 use crate::constants::*;
 
-pub struct Inviter {
+pub struct IncomingInvite {
     pub addr: Addr<Session>,
     pub login: String,
 }
 
+pub struct OutcomingInvite {
+    guest_login: String,
+    guest_addr: Addr<Session>
+}
+
 pub struct Session {
-    pub invites: Vec<Inviter>,
+    pub incoming_invites: Vec<IncomingInvite>,
+    pub outcoming_invite: Option<OutcomingInvite>,
 
     pub hb: Instant,
 
@@ -38,10 +43,11 @@ pub struct Session {
 impl Session {
     pub fn new(server: Addr<Server>, name: String) -> Self {
         Session {
-            invites: Vec::new(),
+            incoming_invites: Vec::new(),
             room_id: 0,
             server: server,
             login: name,
+            outcoming_invite: None,
             hb: Instant::now(),
         }
     }
@@ -257,13 +263,12 @@ impl Session {
         }
     }
 
-    // TODO: What if user will enter this command by hand?
-    fn handle_cmd_invite_to_dm_refuse(&mut self) {
-        if self.invites.is_empty() {
+    fn handle_cmd_invite_dm_refuse(&mut self) {
+        if self.incoming_invites.is_empty() {
             return;
         }
 
-        let inviter = &self.invites.pop().unwrap();
+        let inviter = &self.incoming_invites.pop().unwrap();
         inviter
             .addr
             .try_send(sessionsMsgs::InviteToDMRefused {
@@ -273,12 +278,12 @@ impl Session {
     }
 
     // TODO: What if user will enter this command by hand?
-    fn handle_cmd_invite_to_dm_accpet(&mut self) {
-        if self.invites.is_empty() {
+    fn handle_cmd_invite_dm_accpet(&mut self) {
+        if self.incoming_invites.is_empty() {
             return;
         }
 
-        let inviter = &self.invites.pop().unwrap();
+        let inviter = &self.incoming_invites.pop().unwrap();
         inviter
             .addr
             .try_send(sessionsMsgs::InviteToDMAccepted {
@@ -287,11 +292,18 @@ impl Session {
             .unwrap();
     }
 
-    fn handler(
+    fn handle_cmd_dm_invite_cancel(&mut self) {
+        if let Some(outcoming_invite) = &self.outcoming_invite {
+            outcoming_invite.guest_addr.do_send(sessionsMsgs::InviteToDMCanceled {
+                inviter_login: self.login.clone()
+            });
+        }
+    }
+
+    fn send_dm_invite_to_guest(
         &self,
         ctx: &mut WebsocketContext<Session>,
         guest_addr: Addr<Session>,
-        guest_login: String,
     ) {
         guest_addr
             .send(sessionsMsgs::InviteToDMRequest {
@@ -331,7 +343,11 @@ impl Session {
             .then(move |res, act, ctx| {
                 if let Ok(result) = res {
                     if let Ok(guest_addr) = result {
-                        act.handler(ctx, guest_addr, guest_login);
+                        act.outcoming_invite = Some(OutcomingInvite {
+                            guest_login: guest_login,
+                            guest_addr: guest_addr.clone()
+                        });
+                        act.send_dm_invite_to_guest(ctx, guest_addr);
                     } else {
                         ctx.text(serverMsgs::invite_user_to_dm_fail(&format!(
                             "User {} not found!",
@@ -372,8 +388,9 @@ impl Session {
                 }
                 "/list_users" => self.handle_cmd_list_users(text, ctx),
 
-                "/invite_to_dm_refuse" => self.handle_cmd_invite_to_dm_refuse(),
-                "/invite_to_dm_accept" => self.handle_cmd_invite_to_dm_accpet(),
+                "/invite_to_dm_refuse" => self.handle_cmd_invite_dm_refuse(),
+                "/invite_to_dm_accept" => self.handle_cmd_invite_dm_accpet(),
+                "/invite_to_dm_cancel" => self.handle_cmd_dm_invite_cancel(),
                 "/invite_to_dm" => self.handle_cmd_invite_to_dm(ctx, text[14..].to_string()),
                 _ => self.handle_user_msg(text, ctx),
             }

@@ -25,7 +25,7 @@ export const Main = () => {
     setScreenNumber(1);
   }, [currentRoomName]);
 
-  const SCREEN_NAMES = ['Rooms', 'Chat', 'Users'];
+  const SCREEN_NAMES = ['Room list', 'Chat', 'User list'];
 
   const screens = [
     <RoomList key={0} />,

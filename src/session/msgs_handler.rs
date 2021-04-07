@@ -6,7 +6,7 @@ use crate::messages::server_msgs as serverMsgs;
 use crate::server::msgs_handlers as ServerHandlerMsgs;
 use crate::server::server;
 
-use super::session::Inviter;
+use super::session::IncomingInvite;
 
 impl Actor for Session {
     type Context = ws::WebsocketContext<Self>;
@@ -68,9 +68,9 @@ impl Handler<InviteToDMRequest> for Session {
     type Result = MessageResult<InviteToDMRequest>;
 
     fn handle(&mut self, msg: InviteToDMRequest, ctx: &mut Self::Context) -> Self::Result {
-        if self.invites.len() == 0 {
+        if self.incoming_invites.len() == 0 {
             ctx.text(serverMsgs::invite_user_to_dm_request(&msg.inviter));
-            self.invites.push(Inviter {
+            self.incoming_invites.push(IncomingInvite {
                 addr: msg.inviter_addr,
                 login: msg.inviter,
             });
@@ -91,6 +91,7 @@ impl Handler<InviteToDMAccepted> for Session {
     type Result = MessageResult<InviteToDMAccepted>;
 
     fn handle(&mut self, msg: InviteToDMAccepted, ctx: &mut Self::Context) -> Self::Result {
+        self.outcoming_invite = None;
         ctx.text(serverMsgs::invite_user_to_dm_accepted(&msg.guest));
 
         self.server
@@ -113,6 +114,7 @@ impl Handler<InviteToDMRefused> for Session {
     type Result = MessageResult<InviteToDMRefused>;
 
     fn handle(&mut self, msg: InviteToDMRefused, ctx: &mut Self::Context) -> Self::Result {
+        self.outcoming_invite = None;
         ctx.text(serverMsgs::invite_user_to_dm_refused(&msg.guest));
         MessageResult(())
     }
@@ -124,8 +126,27 @@ pub struct InviteToDMRoomCreated {}
 impl Handler<InviteToDMRoomCreated> for Session {
     type Result = MessageResult<InviteToDMRoomCreated>;
 
-    fn handle(&mut self, msg: InviteToDMRoomCreated, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, _: InviteToDMRoomCreated, ctx: &mut Self::Context) -> Self::Result {
         ctx.text(serverMsgs::invite_user_to_dm_room_created());
+        MessageResult(())
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InviteToDMCanceled {
+    pub inviter_login: String
+}
+
+impl Handler<InviteToDMCanceled> for Session {
+    type Result = MessageResult<InviteToDMCanceled>;
+
+    fn handle(&mut self, msg: InviteToDMCanceled, ctx: &mut Self::Context) -> Self::Result {
+        let pos = self.incoming_invites.iter()
+            .position(|invite| invite.login == msg.inviter_login).unwrap();
+        self.incoming_invites.remove(pos);
+
+        ctx.text(serverMsgs::invite_user_to_dm_canceled(&msg.inviter_login));
         MessageResult(())
     }
 }

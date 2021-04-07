@@ -86,6 +86,11 @@ function serverMsgHandler(msgJson) {
       });
       break;
     }
+    case 'InviteToDMCanceled':
+      AppStore.dispatch({
+        type: 'IncomingInviteToDMCanceled',
+      });
+      break;
     case 'InviteToDMRefused':
       AppStore.dispatch({
         type: 'OutcomingInviteToDMRefused',

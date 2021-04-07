@@ -92,6 +92,14 @@ export const Api = {
     this.socket.send('/invite_to_dm_accept');
   },
 
+  cancelInviteToDM() {
+    this.socket.send('/invite_to_dm_cancel');
+
+    AppStore.dispatch({
+      type: 'OutcomingInviteToDMCanceled',
+    });
+  },
+
   refuseInviteToDM() {
     this.socket.send('/invite_to_dm_refuse');
   },

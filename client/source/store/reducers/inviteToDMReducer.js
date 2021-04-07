@@ -4,6 +4,7 @@ const DEFAULT_STATE = {
   isAccepted: false,
   isRefused: false,
   isIncoming: false,
+  incomingCanceled: false,
   came: false,
   processed: false,
   inviterLogin: '',
@@ -25,6 +26,15 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
         came: true,
         processed: false,
         inviterLogin: action.inviterLogin,
+      };
+    case 'OutcomingInviteToDMCanceled':
+      return {
+        guestLogin: '',
+      };
+    case 'IncomingInviteToDMCanceled':
+      return {
+        ...state,
+        incomingCanceled: true,
       };
     case 'ShowOutcomingToDMRequest':
       return {

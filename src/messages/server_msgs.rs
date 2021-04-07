@@ -133,3 +133,11 @@ pub fn invite_user_to_dm_room_created() -> String {
     })
     .to_string()
 }
+
+pub fn invite_user_to_dm_canceled(inviter_login: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "InviteToDMCanceled",
+        "inviter": inviter_login
+    }).to_string()
+}
