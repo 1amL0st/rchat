@@ -1,26 +1,18 @@
 import { MAIN_ROOM_NAME } from 'constants/Api';
 import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
+
+import { WaitingForWindowController } from './WaitingForWindowController';
+
 /*
   NOTE: These two functions... Maybe you shuold place them in separate file...
         And make two functions for showing|hiding criticalErrWindow...
 */
 
-function showWaitingWindow(text) {
-  AppStore.dispatch({
-    type: 'ShowWaitingForWindow',
-    waitingText: text,
-  });
-}
-
-function hideWaitingWindow() {
-  AppStore.dispatch({
-    type: 'HideWaitingForWindow',
-  });
-}
-
 export const Api = {
   socket: null,
+
+  waitingForWindowController: WaitingForWindowController,
 
   async connect() {
     return new Promise((resolve) => {
@@ -29,13 +21,13 @@ export const Api = {
         + window.location.host
       }/ws/`;
 
-      showWaitingWindow('Waiting for connection');
+      this.waitingForWindowController.showWaitingWindow('Waiting for connection');
 
       this.socket = new WebSocket(wsURI);
 
       // TODO: Detect if user is offline
       this.socket.onclose = () => {
-        hideWaitingWindow();
+        this.waitingForWindowController.hideWaitingWindow();
         AppStore.dispatch({
           type: 'SetCriticalErr',
           errText: 'Socket was closed! This is critical error!',
@@ -43,7 +35,7 @@ export const Api = {
       };
 
       this.socket.onerror = () => {
-        hideWaitingWindow();
+        this.waitingForWindowController.hideWaitingWindow();
         AppStore.dispatch({
           type: 'SetCriticalErr',
           errText: 'Some error happened!',
@@ -51,7 +43,7 @@ export const Api = {
       };
 
       this.socket.onopen = () => {
-        hideWaitingWindow();
+        this.waitingForWindowController.hideWaitingWindow();
         this.socket.addEventListener('message', msgHandler.bind(this));
         resolve();
       };

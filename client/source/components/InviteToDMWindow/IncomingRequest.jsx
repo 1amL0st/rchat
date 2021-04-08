@@ -20,12 +20,7 @@ export const IncomingRequestWindow = () => {
   };
 
   const onAccpectBtn = useCallback(() => {
-    dispatch({
-      type: 'ShowWaitingForWindow',
-      waitingText:
-        'You accepted DM request. Server is creating private room for you. Please, wait!',
-    });
-
+    Api.waitingForWindowController.showWaitingWinodw('You accepted DM request. Server is creating private room for you. Please, wait!');
     Api.acceptInviteToDM();
   }, [dispatch]);
 

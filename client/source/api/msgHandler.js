@@ -1,4 +1,5 @@
 import { AppStore } from 'store/store';
+import { WaitingForWindowController } from './WaitingForWindowController';
 
 function buildMsg(msgJson) {
   const userLogin = AppStore.getState().user.login;
@@ -100,9 +101,7 @@ function serverMsgHandler(msgJson) {
       AppStore.dispatch({
         type: 'HideInviteToDMWindow',
       });
-      AppStore.dispatch({
-        type: 'HideWaitingForWindow',
-      });
+      WaitingForWindowController.hideWaitingWindow();
       break;
     /** ****************************** */
     case 'YouJoinedRoom':
