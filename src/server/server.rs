@@ -107,7 +107,7 @@ impl Server {
         cur_room.users.remove(user_login);
 
         if room_id != MAIN_ROOM_ID && cur_room.users.len() == 0 {
-            if cur_room.privacy == RoomPrivacy::Private {
+            if cur_room.privacy != RoomPrivacy::Private {
                 let msg_text = serverMsgs::room_destroy(&cur_room.name);
                 self.send_msg_to_room(msg_text, MAIN_ROOM_ID, &user_login);
             }
