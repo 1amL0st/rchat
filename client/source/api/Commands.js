@@ -29,5 +29,11 @@ export function Commands(socketObj) {
     queryRoomList() {
       this.socket.send('/list_rooms');
     },
+
+    queryRoomInfo() {
+      this.queryCurrentRoomName();
+      this.queryUserList();
+      this.queryRoomList();
+    },
   };
 }

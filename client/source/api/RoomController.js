@@ -1,5 +1,4 @@
 import { AppStore } from 'store/store';
-// import { Api } from 'api/Api';
 
 export function RoomController(socketObj, commandsController) {
   return {
@@ -27,12 +26,8 @@ export function RoomController(socketObj, commandsController) {
 
     updateAfterJoin() {
       this.clearInboxExceptLast();
-
-      this.commands.queryRoomList();
-      this.commands.queryCurrentRoomName();
-
       this.clearUserList();
-      this.commands.queryUserList();
+      this.commands.queryRoomInfo();
     },
 
     async joinRoom(room) {
@@ -95,14 +90,12 @@ export function RoomController(socketObj, commandsController) {
           });
           break;
         case 'UserConnected':
+          // TODO: Here we can send only user name and add it to store
           this.commands.queryUserList();
           break;
         case 'YouJoinedRoom':
           this.updateAfterJoin();
-
-          this.commands.queryCurrentRoomName();
-          this.commands.queryUserList();
-          this.commands.queryRoomList();
+          this.commands.queryRoomInfo();
           break;
         case 'UserJoinedRoom':
           AppStore.dispatch({

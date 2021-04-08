@@ -16,6 +16,12 @@ export function UserController(socketObj) {
             reject(json.text);
           } else {
             socket.removeEventListener('message', handler);
+
+            AppStore.dispatch({
+              type: 'SetUserLogin',
+              login,
+            });
+
             resolve();
           }
         };
@@ -33,6 +39,10 @@ export function UserController(socketObj) {
           const json = JSON.parse(e.data);
           if (json.subType === 'LoggingSuccess') {
             socket.removeEventListener('message', handler);
+            AppStore.dispatch({
+              type: 'SetUserLogin',
+              login,
+            });
             resolve(json.login);
           } else {
             reject(json.text);
@@ -51,14 +61,10 @@ export function UserController(socketObj) {
             type: 'LoggingSuccess',
             login: msgJson.login,
           });
-
-          Api.queryCurrentRoomName();
-          Api.queryUserList();
-          Api.queryRoomList();
-
+          Api.commands.queryRoomInfo();
           break;
         case 'LoggingFailed':
-          return true;
+          break;
         case 'LoginChangeNotify':
           AppStore.dispatch({
             type: 'LoginChange',
@@ -69,7 +75,6 @@ export function UserController(socketObj) {
         default:
           return false;
       }
-
       return true;
     },
   };

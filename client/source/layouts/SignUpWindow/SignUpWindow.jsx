@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 
-import { useDispatch } from 'react-redux';
-
 import { Api } from 'api/Api';
-
 import { Button } from 'components/Button';
 import { ModalWindow } from 'components/ModalWindow';
 
@@ -13,18 +10,8 @@ export const SignUpWindow = () => {
   const [login, setLogin] = useState('');
   const [err, setErr] = useState('');
 
-  const dispatch = useDispatch();
   const onLoginBtn = async () => {
-    console.log('onLoginBtn = ', Api);
-    Api.userController
-      .logging(login)
-      .then((l) => {
-        dispatch({
-          type: 'SetUserLogin',
-          login: l,
-        });
-      })
-      .catch((e) => setErr(e));
+    Api.userController.logging(login).catch((e) => setErr(e));
   };
 
   const onLoginInputKeyDown = (e) => {

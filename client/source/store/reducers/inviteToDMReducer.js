@@ -68,7 +68,7 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
         isFailed: true,
         errText: action.err,
       };
-    case 'ShowWaitCreateDMRoom':
+    case 'InviteUserToDMWaitForRoomCreate':
       return {
         ...state,
         waitingText: action.waitingText,

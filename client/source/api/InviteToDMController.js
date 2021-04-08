@@ -46,7 +46,7 @@ export function InviteToDMController(socketObj) {
 
           const { guestLogin } = AppStore.getState().inviteDM;
           AppStore.dispatch({
-            type: 'ShowWaitCreateDMRoom',
+            type: 'InviteUserToDMWaitForRoomCreate',
             waitingText: `User ${guestLogin} accepted your DM invite. Server is creating private room for you. Please, wait!`,
           });
           break;
