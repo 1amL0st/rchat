@@ -25,7 +25,7 @@ pub struct IncomingInvite {
 
 pub struct OutcomingInvite {
     guest_login: String,
-    guest_addr: Addr<Session>
+    guest_addr: Addr<Session>,
 }
 
 pub struct Session {
@@ -294,9 +294,11 @@ impl Session {
 
     fn handle_cmd_dm_invite_cancel(&mut self) {
         if let Some(outcoming_invite) = &self.outcoming_invite {
-            outcoming_invite.guest_addr.do_send(sessionsMsgs::InviteToDMCanceled {
-                inviter_login: self.login.clone()
-            });
+            outcoming_invite
+                .guest_addr
+                .do_send(sessionsMsgs::InviteToDMCanceled {
+                    inviter_login: self.login.clone(),
+                });
         }
     }
 
@@ -345,7 +347,7 @@ impl Session {
                     if let Ok(guest_addr) = result {
                         act.outcoming_invite = Some(OutcomingInvite {
                             guest_login: guest_login,
-                            guest_addr: guest_addr.clone()
+                            guest_addr: guest_addr.clone(),
                         });
                         act.send_dm_invite_to_guest(ctx, guest_addr);
                     } else {

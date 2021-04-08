@@ -135,15 +135,18 @@ impl Handler<InviteToDMRoomCreated> for Session {
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct InviteToDMCanceled {
-    pub inviter_login: String
+    pub inviter_login: String,
 }
 
 impl Handler<InviteToDMCanceled> for Session {
     type Result = MessageResult<InviteToDMCanceled>;
 
     fn handle(&mut self, msg: InviteToDMCanceled, ctx: &mut Self::Context) -> Self::Result {
-        let pos = self.incoming_invites.iter()
-            .position(|invite| invite.login == msg.inviter_login).unwrap();
+        let pos = self
+            .incoming_invites
+            .iter()
+            .position(|invite| invite.login == msg.inviter_login)
+            .unwrap();
         self.incoming_invites.remove(pos);
 
         ctx.text(serverMsgs::invite_user_to_dm_canceled(&msg.inviter_login));

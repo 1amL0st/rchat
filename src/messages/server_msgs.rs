@@ -139,5 +139,6 @@ pub fn invite_user_to_dm_canceled(inviter_login: &String) -> String {
         "author": "Server",
         "subType": "InviteToDMCanceled",
         "inviter": inviter_login
-    }).to_string()
+    })
+    .to_string()
 }

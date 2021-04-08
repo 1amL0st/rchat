@@ -20,17 +20,19 @@ export const UserList = () => {
   const onInviteFrined = () => setIsInviteWindowOpen(!isInviteWindowOpen);
   const onInviteWindowClose = () => setIsInviteWindowOpen(!isInviteWindowOpen);
 
-  const userList = users.filter((user) => user !== userLogin).map((user) => (
-    <div
-      className="user-list__entry"
-      title={user}
-      key={user}
-      aria-hidden
-      onClick={() => Api.inviteToDM(user)}
-    >
-      <div className="user-list__entry__name">{user}</div>
-    </div>
-  ));
+  const userList = users
+    .filter((user) => user !== userLogin)
+    .map((user) => (
+      <div
+        className="user-list__entry"
+        title={user}
+        key={user}
+        aria-hidden
+        onClick={() => Api.inviteToDM(user)}
+      >
+        <div className="user-list__entry__name">{user}</div>
+      </div>
+    ));
 
   return (
     <aside className="user-list">
