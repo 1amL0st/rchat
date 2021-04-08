@@ -19,7 +19,6 @@ export const InviteToDMWindow = () => {
 
   const onCancelRequest = () => {
     Api.cancelInviteToDM();
-    console.log('OnCancelRequest!');
   };
 
   if (!(invite.came && !invite.processed)) {

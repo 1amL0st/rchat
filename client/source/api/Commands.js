@@ -6,11 +6,11 @@ export function Commands(socketObj) {
       this.socket.send(msg);
     },
 
-    getCurrentRoomName() {
+    queryCurrentRoomName() {
       this.socket.send('/current_room');
     },
 
-    getUserList() {
+    queryUserList() {
       this.socket.send('/list_users');
     },
 
@@ -26,7 +26,7 @@ export function Commands(socketObj) {
       this.socket.send('/invite_to_dm_refuse');
     },
 
-    getRoomList() {
+    queryRoomList() {
       this.socket.send('/list_rooms');
     },
   };

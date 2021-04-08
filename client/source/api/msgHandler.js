@@ -51,7 +51,7 @@ function serverMsgHandler(msgJson) {
       });
       break;
     case 'UserConnected':
-      this.getUserList();
+      this.queryUserList();
       break;
     case 'LoginChangeNotify':
       AppStore.dispatch({
@@ -107,9 +107,9 @@ function serverMsgHandler(msgJson) {
     case 'YouJoinedRoom':
       this.updateAfterJoin();
 
-      this.getCurrentRoomName();
-      this.getUserList();
-      this.getRoomList();
+      this.queryCurrentRoomName();
+      this.queryUserList();
+      this.queryRoomList();
       break;
     case 'FailedToSendMsg':
       break;
@@ -153,8 +153,8 @@ export function msgHandler(e) {
       login: msgJson.login,
     });
 
-    this.getCurrentRoomName();
-    this.getUserList();
-    this.getRoomList();
+    this.queryCurrentRoomName();
+    this.queryUserList();
+    this.queryRoomList();
   }
 }

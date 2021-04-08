@@ -30,6 +30,7 @@ const App = () => {
   if (isErr) {
     return <CriticalErrWindow />;
   }
+
   return (
     <div className="app">
       <WaitingForWindow

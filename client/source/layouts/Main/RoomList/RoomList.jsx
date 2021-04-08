@@ -17,7 +17,7 @@ export const RoomList = () => {
     Api.joinRoom(room)
       .then(() => {
         console.log('You joined room!');
-        Api.getCurrentRoomName();
+        Api.queryCurrentRoomName();
       })
       .catch(() => console.log('Join error!'));
   };

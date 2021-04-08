@@ -7,11 +7,6 @@ import { CriticalErrController } from './CriticalErrController';
 import { UserController } from './UserController';
 import { Commands } from './Commands';
 
-/*
-  NOTE: These two functions... Maybe you shuold place them in separate file...
-        And make two functions for showing|hiding criticalErrWindow...
-*/
-
 export const Api = {
   socket: null,
 
@@ -58,12 +53,12 @@ export const Api = {
     this.commands.sendMsg(msg);
   },
 
-  getCurrentRoomName() {
-    this.commands.getCurrentRoomName();
+  queryCurrentRoomName() {
+    this.commands.queryCurrentRoomName();
   },
 
-  getUserList() {
-    this.commands.getUserList();
+  queryUserList() {
+    this.commands.queryUserList();
   },
 
   inviteToDM(login) {
@@ -100,8 +95,8 @@ export const Api = {
     this.commands.refuseInviteToDM();
   },
 
-  getRoomList() {
-    this.commands.getRoomList();
+  queryRoomList() {
+    this.commands.queryRoomList();
   },
 
   clearUserList() {
@@ -126,11 +121,11 @@ export const Api = {
   updateAfterJoin() {
     this.clearInboxExceptLast();
 
-    this.getRoomList();
-    this.getCurrentRoomName();
+    this.queryRoomList();
+    this.queryCurrentRoomName();
 
     this.clearUserList();
-    this.getUserList();
+    this.queryUserList();
   },
 
   async joinRoom(room) {
