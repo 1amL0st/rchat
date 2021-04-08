@@ -1,4 +1,3 @@
-import { MAIN_ROOM_NAME } from 'constants/Api';
 import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
 
@@ -7,6 +6,7 @@ import { CriticalErrController } from './CriticalErrController';
 import { UserController } from './UserController';
 import { Commands } from './Commands';
 import { RoomController } from './RoomController';
+import { InviteToDMController } from './InviteToDMController';
 
 export const Api = {
   socket: null,
@@ -16,6 +16,7 @@ export const Api = {
   userController: null,
   commands: null,
   roomController: null,
+  inviteToDMController: null,
 
   async connect() {
     return new Promise((resolve) => {
@@ -50,6 +51,7 @@ export const Api = {
         this.userController = new UserController(this.socket);
         this.commands = new Commands(this.socket);
         this.roomController = new RoomController(this.socket, this.commands);
+        this.inviteToDMController = new InviteToDMController(this.socket);
 
         resolve();
       };
@@ -69,21 +71,7 @@ export const Api = {
   },
 
   inviteToDM(login) {
-    const store = AppStore.getState();
-    const userLogin = store.user.login;
-    const { roomName } = store.room;
-
-    if (userLogin !== login && roomName === MAIN_ROOM_NAME) {
-      const request = `/invite_to_dm ${login}`;
-
-      AppStore.dispatch({
-        type: 'ShowOutcomingToDMRequest',
-        guestLogin: login,
-      });
-
-      console.log('Request = ', request);
-      this.socket.send(request);
-    }
+    this.inviteToDMController.inviteToDM(login);
   },
 
   acceptInviteToDM() {

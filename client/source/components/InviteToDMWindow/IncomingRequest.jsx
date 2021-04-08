@@ -24,7 +24,7 @@ export const IncomingRequestWindow = () => {
       'You accepted DM request. Server is creating private room for you. Please, wait!',
     );
     Api.acceptInviteToDM();
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     const keydownHandler = (e) => {
