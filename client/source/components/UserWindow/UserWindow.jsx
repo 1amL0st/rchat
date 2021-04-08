@@ -22,7 +22,8 @@ export const UserWindow = () => {
   const history = useHistory();
 
   const onNewLoginApply = () => {
-    Api.userController.setNewLogin(inputLogin)
+    Api.userController
+      .setNewLogin(inputLogin)
       .then(() => {
         setMsgText('Login changed!');
         setIsErr(false);

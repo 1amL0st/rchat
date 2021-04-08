@@ -6,6 +6,7 @@ import { WaitingForWindowController } from './WaitingForWindowController';
 import { CriticalErrController } from './CriticalErrController';
 import { UserController } from './UserController';
 import { Commands } from './Commands';
+import { RoomController } from './RoomController';
 
 export const Api = {
   socket: null,
@@ -14,6 +15,7 @@ export const Api = {
   criticalErrController: CriticalErrController,
   userController: null,
   commands: null,
+  roomController: null,
 
   async connect() {
     return new Promise((resolve) => {
@@ -22,14 +24,18 @@ export const Api = {
         + window.location.host
       }/ws/`;
 
-      this.waitingForWindowController.showWaitingWindow('Waiting for connection');
+      this.waitingForWindowController.showWaitingWindow(
+        'Waiting for connection',
+      );
 
       this.socket = new WebSocket(wsURI);
 
       // TODO: Detect if user is offline
       this.socket.onclose = () => {
         this.waitingForWindowController.hideWaitingWindow();
-        this.criticalErrController.setErr('Socket was closed! This is critical error!');
+        this.criticalErrController.setErr(
+          'Socket was closed! This is critical error!',
+        );
       };
 
       this.socket.onerror = () => {
@@ -43,6 +49,7 @@ export const Api = {
 
         this.userController = new UserController(this.socket);
         this.commands = new Commands(this.socket);
+        this.roomController = new RoomController(this.socket, this.commands);
 
         resolve();
       };
@@ -99,73 +106,21 @@ export const Api = {
     this.commands.queryRoomList();
   },
 
-  clearUserList() {
-    AppStore.dispatch({
-      type: 'ClearUserList',
-    });
-  },
-
-  clearInbox(lastMsg) {
-    AppStore.dispatch({
-      type: 'ClearInbox',
-      lastMsg,
-    });
-  },
-
-  clearInboxExceptLast() {
-    AppStore.dispatch({
-      type: 'ClearInboxExceptLast',
-    });
-  },
-
   updateAfterJoin() {
-    this.clearInboxExceptLast();
+    this.roomController.clearInboxExceptLast();
 
-    this.queryRoomList();
-    this.queryCurrentRoomName();
+    this.commands.queryRoomList();
+    this.commands.queryCurrentRoomName();
 
-    this.clearUserList();
-    this.queryUserList();
+    this.roomController.clearUserList();
+    this.commands.queryUserList();
   },
 
   async joinRoom(room) {
-    return new Promise((resolve) => {
-      const { socket } = this;
-
-      const handler = (e) => {
-        const json = JSON.parse(e.data);
-        if (json.subType === 'YouJoinedRoom') {
-          socket.removeEventListener('message', handler);
-          this.updateAfterJoin();
-          resolve();
-        } else {
-          socket.removeEventListener('message', handler);
-          resolve();
-        }
-      };
-
-      socket.addEventListener('message', handler);
-      socket.send(`/join ${room}`);
-    });
+    return this.roomController.joinRoom(room);
   },
 
   async createRoom(roomName) {
-    return new Promise((resolve, reject) => {
-      const { socket } = this;
-
-      const handler = (e) => {
-        const json = JSON.parse(e.data);
-        if (json.subType === 'YouJoinedRoom') {
-          socket.removeEventListener('message', handler);
-          this.updateAfterJoin(json);
-          resolve();
-        } else {
-          reject(json.text);
-        }
-      };
-
-      socket.addEventListener('message', handler);
-      socket.send(`/create_room ${roomName}`);
-    });
+    return this.roomController.createRoom(roomName);
   },
 };

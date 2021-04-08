@@ -10,49 +10,8 @@ function buildMsg(msgJson) {
   };
 }
 
-function dataMsgHandler(msgJson) {
-  switch (msgJson.subType) {
-    case 'CurRoom':
-      AppStore.dispatch({
-        type: 'SetRoomName',
-        name: msgJson.name,
-      });
-      break;
-    case 'UserList':
-      AppStore.dispatch({
-        type: 'SetUserList',
-        users: msgJson.users,
-      });
-      break;
-    case 'RoomList':
-      AppStore.dispatch({
-        type: 'SetRoomList',
-        rooms: msgJson.rooms,
-      });
-      break;
-    default:
-      console.warn('Unknown subtype!');
-      break;
-  }
-}
-
 function serverMsgHandler(msgJson) {
   switch (msgJson.subType) {
-    case 'RoomDestroyed':
-      AppStore.dispatch({
-        type: 'RemoveRoom',
-        room: msgJson.room,
-      });
-      break;
-    case 'UserLeftRoom':
-      AppStore.dispatch({
-        type: 'RemoveUser',
-        userLogin: msgJson.login,
-      });
-      break;
-    case 'UserConnected':
-      this.queryUserList();
-      break;
     /* InviteToDM|DirectMessages code */
     case 'InviteToDMRequest':
       AppStore.dispatch({
@@ -95,20 +54,7 @@ function serverMsgHandler(msgJson) {
       WaitingForWindowController.hideWaitingWindow();
       break;
     /** ****************************** */
-    case 'YouJoinedRoom':
-      this.updateAfterJoin();
-
-      this.queryCurrentRoomName();
-      this.queryUserList();
-      this.queryRoomList();
-      break;
     case 'FailedToSendMsg':
-      break;
-    case 'UserJoinedRoom':
-      AppStore.dispatch({
-        type: 'AddUser',
-        login: msgJson.login,
-      });
       break;
     default:
       console.warn('Unknown server msg handler subType ', msgJson);
@@ -126,7 +72,10 @@ function serverMsgHandler(msgJson) {
 export function msgHandler(e) {
   const msgJson = JSON.parse(e.data);
 
-  if (this.userController.msgHandler(msgJson)) {
+  const handled = this.userController.msgHandler(msgJson)
+    || this.roomController.msgHandler(msgJson);
+
+  if (handled) {
     if (msgJson.author && msgJson.text) {
       AppStore.dispatch({
         type: 'AddMsg',
@@ -136,9 +85,12 @@ export function msgHandler(e) {
     return;
   }
 
-  if (msgJson.type === 'DataMsg') {
-    dataMsgHandler.call(this, msgJson);
-  } else if (msgJson.author === 'Server') {
+  if (msgJson.author === 'Server') {
     serverMsgHandler.call(this, msgJson);
+  } else if (msgJson.author && msgJson.text) {
+    AppStore.dispatch({
+      type: 'AddMsg',
+      message: buildMsg(msgJson),
+    });
   }
 }
