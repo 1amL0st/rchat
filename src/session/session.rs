@@ -248,7 +248,7 @@ impl Session {
     }
 
     fn handle_user_msg(&mut self, text: String, ctx: &mut ws::WebsocketContext<Self>) {
-        if text.chars().count() <= 2048 {
+        if text.chars().count() <= MAX_TEXT_MSG_LENGTH {
             self.server
                 .try_send(TextMsg {
                     author: self.login.to_string(),
@@ -402,6 +402,7 @@ impl Session {
     pub fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
+                println!("User {} timeout interval!", act.login); // TODO: Tushkan's bug: Server can close sockets because of... I don't know the reason
                 ctx.stop();
                 return;
             }
