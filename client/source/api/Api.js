@@ -4,6 +4,8 @@ import { AppStore } from '../store/store';
 
 import { WaitingForWindowController } from './WaitingForWindowController';
 import { CriticalErrController } from './CriticalErrController';
+import { UserController } from './UserController';
+import { Commands } from './Commands';
 
 /*
   NOTE: These two functions... Maybe you shuold place them in separate file...
@@ -15,6 +17,8 @@ export const Api = {
 
   waitingForWindowController: WaitingForWindowController,
   criticalErrController: CriticalErrController,
+  userController: null,
+  commands: null,
 
   async connect() {
     return new Promise((resolve) => {
@@ -41,21 +45,25 @@ export const Api = {
       this.socket.onopen = () => {
         this.waitingForWindowController.hideWaitingWindow();
         this.socket.addEventListener('message', msgHandler.bind(this));
+
+        this.userController = new UserController(this.socket);
+        this.commands = new Commands(this.socket);
+
         resolve();
       };
     });
   },
 
   sendMsg(msg) {
-    this.socket.send(msg);
+    this.commands.sendMsg(msg);
   },
 
   getCurrentRoomName() {
-    this.socket.send('/current_room');
+    this.commands.getCurrentRoomName();
   },
 
   getUserList() {
-    this.socket.send('/list_users');
+    this.commands.getUserList();
   },
 
   inviteToDM(login) {
@@ -77,11 +85,11 @@ export const Api = {
   },
 
   acceptInviteToDM() {
-    this.socket.send('/invite_to_dm_accept');
+    this.commands.acceptInviteToDM();
   },
 
   cancelInviteToDM() {
-    this.socket.send('/invite_to_dm_cancel');
+    this.commands.cancelInviteToDM();
 
     AppStore.dispatch({
       type: 'OutcomingInviteToDMCanceled',
@@ -89,11 +97,11 @@ export const Api = {
   },
 
   refuseInviteToDM() {
-    this.socket.send('/invite_to_dm_refuse');
+    this.commands.refuseInviteToDM();
   },
 
   getRoomList() {
-    this.socket.send('/list_rooms');
+    this.commands.getRoomList();
   },
 
   clearUserList() {
@@ -143,45 +151,6 @@ export const Api = {
 
       socket.addEventListener('message', handler);
       socket.send(`/join ${room}`);
-    });
-  },
-
-  async setNewLogin(login) {
-    return new Promise((resolve, reject) => {
-      const { socket } = this;
-
-      const handler = (e) => {
-        const json = JSON.parse(e.data);
-        if (json.subType === 'LoggingFailed') {
-          socket.removeEventListener('message', handler);
-          reject(json.text);
-        } else {
-          socket.removeEventListener('message', handler);
-          resolve();
-        }
-      };
-
-      socket.addEventListener('message', handler);
-      socket.send(`/login ${login}`);
-    });
-  },
-
-  async logging(login) {
-    return new Promise((resolve, reject) => {
-      const { socket } = this;
-
-      const handler = (e) => {
-        const json = JSON.parse(e.data);
-        if (json.subType === 'LoggingSuccess') {
-          socket.removeEventListener('message', handler);
-          resolve(json.login);
-        } else {
-          reject(json.text);
-        }
-      };
-
-      socket.addEventListener('message', handler);
-      socket.send(`/login ${login}`);
     });
   },
 
