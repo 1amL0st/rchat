@@ -1,4 +1,5 @@
 import { AppStore } from 'store/store';
+import { Api } from 'api/Api';
 
 export function UserController(socketObj) {
   return {
@@ -41,6 +42,35 @@ export function UserController(socketObj) {
         socket.addEventListener('message', handler);
         socket.send(`/login ${login}`);
       });
+    },
+
+    msgHandler(msgJson) {
+      switch (msgJson.subType) {
+        case 'LoggingSuccess':
+          AppStore.dispatch({
+            type: 'LoggingSuccess',
+            login: msgJson.login,
+          });
+
+          Api.queryCurrentRoomName();
+          Api.queryUserList();
+          Api.queryRoomList();
+
+          break;
+        case 'LoggingFailed':
+          return true;
+        case 'LoginChangeNotify':
+          AppStore.dispatch({
+            type: 'LoginChange',
+            oldLogin: msgJson.oldLogin,
+            newLogin: msgJson.newLogin,
+          });
+          break;
+        default:
+          return false;
+      }
+
+      return true;
     },
   };
 }

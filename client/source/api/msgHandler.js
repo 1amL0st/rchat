@@ -53,15 +53,6 @@ function serverMsgHandler(msgJson) {
     case 'UserConnected':
       this.queryUserList();
       break;
-    case 'LoginChangeNotify':
-      AppStore.dispatch({
-        type: 'LoginChange',
-        oldLogin: msgJson.oldLogin,
-        newLogin: msgJson.newLogin,
-      });
-      break;
-    case 'LoggingFailed':
-      return;
     /* InviteToDM|DirectMessages code */
     case 'InviteToDMRequest':
       AppStore.dispatch({
@@ -133,28 +124,21 @@ function serverMsgHandler(msgJson) {
 }
 
 export function msgHandler(e) {
-  console.log('e.data = ', e.data);
   const msgJson = JSON.parse(e.data);
+
+  if (this.userController.msgHandler(msgJson)) {
+    if (msgJson.author && msgJson.text) {
+      AppStore.dispatch({
+        type: 'AddMsg',
+        message: buildMsg(msgJson),
+      });
+    }
+    return;
+  }
 
   if (msgJson.type === 'DataMsg') {
     dataMsgHandler.call(this, msgJson);
   } else if (msgJson.author === 'Server') {
     serverMsgHandler.call(this, msgJson);
-  } else if (msgJson.author && msgJson.text) {
-    AppStore.dispatch({
-      type: 'AddMsg',
-      message: buildMsg(msgJson),
-    });
-  }
-
-  if (msgJson.subType === 'LoggingSuccess') {
-    AppStore.dispatch({
-      type: 'LoggingSuccess',
-      login: msgJson.login,
-    });
-
-    this.queryCurrentRoomName();
-    this.queryUserList();
-    this.queryRoomList();
   }
 }
