@@ -8,3 +8,5 @@ export const AppStore = createStore(
   rootReducer,
   composeEnhancers(applyMiddleware()),
 );
+
+console.log('RUNNING STORE>JS');

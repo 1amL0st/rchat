@@ -3,6 +3,7 @@ import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
 
 import { WaitingForWindowController } from './WaitingForWindowController';
+import { CriticalErrController } from './CriticalErrController';
 
 /*
   NOTE: These two functions... Maybe you shuold place them in separate file...
@@ -13,6 +14,7 @@ export const Api = {
   socket: null,
 
   waitingForWindowController: WaitingForWindowController,
+  criticalErrController: CriticalErrController,
 
   async connect() {
     return new Promise((resolve) => {
@@ -28,18 +30,12 @@ export const Api = {
       // TODO: Detect if user is offline
       this.socket.onclose = () => {
         this.waitingForWindowController.hideWaitingWindow();
-        AppStore.dispatch({
-          type: 'SetCriticalErr',
-          errText: 'Socket was closed! This is critical error!',
-        });
+        this.criticalErrController.setErr('Socket was closed! This is critical error!');
       };
 
       this.socket.onerror = () => {
         this.waitingForWindowController.hideWaitingWindow();
-        AppStore.dispatch({
-          type: 'SetCriticalErr',
-          errText: 'Some error happened!',
-        });
+        this.criticalErrController.setErr('Some error happened!');
       };
 
       this.socket.onopen = () => {
