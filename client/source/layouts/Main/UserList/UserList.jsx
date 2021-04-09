@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
 
@@ -11,14 +11,24 @@ import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './UserList.scss';
 
-export const UserList = () => {
+export const UserList = ({ style }) => {
   const [isInviteWindowOpen, setIsInviteWindowOpen] = useState(false);
+  const userListRef = useRef();
 
   const users = useSelector((appStore) => appStore.room.users);
   const userLogin = useSelector((appStore) => appStore.user.login);
 
   const onInviteFrined = () => setIsInviteWindowOpen(!isInviteWindowOpen);
   const onInviteWindowClose = () => setIsInviteWindowOpen(!isInviteWindowOpen);
+
+  useEffect(() => {
+    const onTouchMove = (e) => {
+      e.stopPropagation();
+    };
+    userListRef.current.addEventListener('touchmove', onTouchMove);
+
+    return () => userListRef.current.removeEventListener('touchmove', onTouchMove);
+  }, []);
 
   const userList = users
     .filter((user) => user !== userLogin)
@@ -35,7 +45,7 @@ export const UserList = () => {
     ));
 
   return (
-    <aside className="user-list">
+    <aside className="user-list" style={style} ref={userListRef}>
       <div className="user-list__header">
         <span>Users</span>
         <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />

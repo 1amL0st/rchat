@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import classNames from 'class-names';
 import { useSelector } from 'react-redux';
 import { useWindowDimensions } from 'hooks/useWindowDimensions';
-
-import { IconButton } from 'components/IconButton';
-import * as Icons from '@fortawesome/free-solid-svg-icons';
+import { useSwipeEvent } from 'hooks/useSwipeEvent';
 
 import { METRICS } from 'constants/Metrics';
+import { MAIN_ROOM_NAME } from 'constants/Api';
+
 import { Chat } from './Chat';
 import { RoomList } from './RoomList';
 import { UserList } from './UserList';
@@ -16,16 +17,35 @@ import './Main.scss';
 export const Main = () => {
   const { width: windowWidth } = useWindowDimensions();
   const screenCount = 3;
+  const [shouldDisplayRoomList, setShouldDisplayRoomList] = useState(true);
+
+  const [roomList, setRoomList] = useState({
+    leftOffset: -100,
+    isOpen: false,
+  });
+
+  const [userList, setUserList] = useState({
+    rightOffset: -100,
+    isOpen: false,
+  });
 
   const mainRef = useRef();
   const [screenNumber, setScreenNumber] = useState(1);
   const currentRoomName = useSelector((appStore) => appStore.room.roomName);
 
   useEffect(() => {
-    setScreenNumber(1);
-  }, [currentRoomName]);
+    setRoomList({
+      leftOffset: -100,
+      isOpen: false,
+    });
 
-  const SCREEN_NAMES = ['Room list', 'Chat', 'User list'];
+    setUserList({
+      isOpen: false,
+      rightOffset: -100,
+    });
+
+    setShouldDisplayRoomList(currentRoomName === MAIN_ROOM_NAME);
+  }, [currentRoomName]);
 
   const screens = [
     <RoomList key={0} />,
@@ -33,33 +53,82 @@ export const Main = () => {
     <UserList key={2} />,
   ];
 
-  const leftScreenNumber = (sn) => (sn === 0 ? screenCount - 1 : sn - 1);
-  const rightScreenNumber = (sn) => (sn === screenCount - 1 ? 0 : sn + 1);
+  const onSwipe = (offset) => {
+    console.log('OnSwipe = ', offset);
+  };
 
-  const toLeftScreen = () => setScreenNumber(leftScreenNumber(screenNumber));
-  const toRightScreen = () => setScreenNumber(rightScreenNumber(screenNumber));
+  const onSwipeStop = () => {
+    setRoomList({
+      leftOffset: roomList.isOpen ? 0 : -100,
+      isOpen: roomList.isOpen,
+    });
 
-  if (windowWidth > METRICS.mobileScreenWidth) {
-    return (
-      <main className="main" ref={mainRef}>
-        {screens}
-      </main>
-    );
-  }
+    setUserList({
+      isOpen: userList.isOpen,
+      rightOffset: userList.isOpen ? 0 : -100,
+    });
+  };
+
+  const LIMIT = -40;
+  const REV_LIMIT = (-100 - LIMIT);
+
+  const onSwipeMove = (offset) => {
+    if (offset.x >= 0) {
+      if (userList.isOpen) {
+        const isOpen = userList.isOpen && userList.rightOffset > REV_LIMIT;
+        setUserList({
+          isOpen,
+          rightOffset: (isOpen) ? userList.rightOffset - (offset.x * 100 / windowWidth) : -100,
+        });
+      } else if (shouldDisplayRoomList) {
+        const isOpen = roomList.isOpen || roomList.leftOffset > LIMIT;
+        setRoomList({
+          isOpen,
+          leftOffset: (isOpen) ? 0 : roomList.leftOffset + (offset.x * 100 / windowWidth),
+        });
+      }
+    } else if (roomList.isOpen) {
+      const isOpen = roomList.isOpen && roomList.leftOffset > REV_LIMIT;
+      setRoomList({
+        isOpen,
+        leftOffset: (isOpen) ? roomList.leftOffset + (offset.x * 100 / windowWidth) : -100,
+      });
+    } else {
+      const isOpen = userList.isOpen || userList.rightOffset > LIMIT;
+      setUserList({
+        isOpen,
+        rightOffset: (!isOpen) ? userList.rightOffset - (offset.x * 100 / windowWidth) : 0,
+      });
+    }
+  };
+
+  useSwipeEvent(1000000, 0, onSwipe, onSwipeMove, onSwipeStop, mainRef);
+
+  // if (windowWidth > METRICS.mobileScreenWidth) {
+  //   return (
+  //     <main className="main" ref={mainRef}>
+  //       {screens}
+  //     </main>
+  //   );
+  // }
+
+  const roomListStyle = {
+    left: `${roomList.leftOffset}%`,
+  };
+
+  const userListStyle = {
+    right: `${userList.rightOffset}%`,
+  };
 
   return (
     <main className="main" ref={mainRef}>
-      <nav className="main__nav">
-        <div className="main__nav__left" aria-hidden onClick={toLeftScreen}>
-          <IconButton icon={Icons.faArrowLeft} />
-          <span>{SCREEN_NAMES[leftScreenNumber(screenNumber)]}</span>
-        </div>
-        <div className="main__nav__right" aria-hidden onClick={toRightScreen}>
-          <span>{SCREEN_NAMES[rightScreenNumber(screenNumber)]}</span>
-          <IconButton icon={Icons.faArrowRight} />
-        </div>
-      </nav>
-      {screens[screenNumber]}
+      {shouldDisplayRoomList && (
+        <RoomList
+          style={roomListStyle}
+        />
+      )}
+      <Chat />
+      <UserList style={userListStyle} />
     </main>
   );
 };

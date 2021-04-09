@@ -9,6 +9,8 @@
 
   width: 100%;
   height: 100%;
+
+  background-color: $main-dark-color;
 }
 
 .list-list {
@@ -60,4 +62,10 @@
   text-align: left;
 
   margin: 8px 0;
+}
+
+@media screen and (max-width: $mobile-screen-width) {
+  .list {
+    padding: 0 16px;
+  }
 }

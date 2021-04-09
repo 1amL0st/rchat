@@ -4,9 +4,12 @@ export function useSwipeEvent(
   targetHorzOffset,
   targetVertOffset,
   onSwipe,
-  elementRef
+  onSwipeMove,
+  onSwipeStop,
+  elementRef,
 ) {
   const isRegistered = useRef(false);
+  const dir = useRef(null);
   const isDown = useRef(false);
   const lastPos = useRef();
 
@@ -20,11 +23,31 @@ export function useSwipeEvent(
       };
     };
 
-    const doRegisterSwipe = (offset, clientX, clientY) => {
+    const registerSwipe = (offset, clientX, clientY) => {
+      if (dir.current === null) {
+        if (offset.x > 0) {
+          dir.current = 'right';
+        } else {
+          dir.current = 'left';
+        }
+      } else if (dir.current === 'right' && offset.x < 0) {
+        dir.current = 'left';
+      } else if (dir.current === 'left' && offset.x > 0) {
+        dir.current = 'right';
+      }
+
+      onSwipeMove({
+        x: clientX - lastPos.current.x,
+        y: lastPos.current.y - clientY,
+      });
+
+      lastPos.current.x = clientX;
+      lastPos.current.y = clientY;
+
       if (
-        !isRegistered.current &&
-        (Math.abs(offset.x) > targetHorzOffset ||
-          Math.abs(offset.y) > targetVertOffset)
+        !isRegistered.current
+        && (Math.abs(offset.x) > targetHorzOffset
+          || Math.abs(offset.y) > targetVertOffset)
       ) {
         lastPos.current.x = clientX;
         lastPos.current.y = clientY;
@@ -34,7 +57,6 @@ export function useSwipeEvent(
     };
 
     const onTouchMove = (e) => {
-      console.log('e = ', e);
       const x = e.changedTouches[0].clientX;
       const y = e.changedTouches[0].clientY;
 
@@ -43,10 +65,10 @@ export function useSwipeEvent(
         y: y - lastPos.current.y,
       };
 
-      doRegisterSwipe(
+      registerSwipe(
         offset,
         e.changedTouches[0].clientX,
-        e.changedTouches[0].clientY
+        e.changedTouches[0].clientY,
       );
     };
 
@@ -62,18 +84,22 @@ export function useSwipeEvent(
           y: e.clientY - lastPos.current.y,
         };
 
-        doRegisterSwipe(offset, e.clientX, e.clientY);
+        registerSwipe(offset, e.clientX, e.clientY);
       }
     };
 
     const onMouseLeave = () => {
       isRegistered.current = false;
       isDown.current = false;
+      dir.current = false;
+      onSwipeStop();
     };
 
     const onMouseUp = () => {
       isDown.current = false;
       isRegistered.current = false;
+      dir.current = false;
+      onSwipeStop();
     };
 
     const element = elementRef.current;
