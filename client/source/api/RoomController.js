@@ -38,6 +38,7 @@ export function RoomController(socketObj, commandsController) {
           const json = JSON.parse(e.data);
           if (json.subType === 'YouJoinedRoom') {
             socket.removeEventListener('message', handler);
+            this.commands.queryCurrentRoomName();
             this.updateAfterJoin();
             resolve();
           } else {

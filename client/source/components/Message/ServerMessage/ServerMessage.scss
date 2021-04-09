@@ -1,3 +1,35 @@
+@import 'styles/constants';
+
 .server-message {
+  display: flex;
+  flex-direction: column;
+
+  background-color: $main-dark-blue-color;
+
+  border-radius: 16px 16px 16px 0;
+  padding: 8px 16px;
+
+  text-align: left;
+
+  * {
+    color: white;
+  }
+
+  &__author {
+    font-size: 17px;
+    font-family: 'Lora';
+    align-self: flex-start;
   
+    margin-bottom: 4px;
+  }
+
+  &__text {
+    white-space: pre-line;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+
+    text-align: left;
+  }
 }

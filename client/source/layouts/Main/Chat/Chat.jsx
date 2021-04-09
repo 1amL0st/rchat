@@ -17,9 +17,10 @@ export const Chat = () => {
   const messageList = messages.map((msg) => (
     <Message
       key={msg.id}
-      author={msg.author}
-      text={msg.text}
-      isOwn={msg.isOwn}
+      // author={msg.author}
+      // text={msg.text}
+      // isOwn={msg.isOwn}
+      msgJson={msg}
     />
   ));
 

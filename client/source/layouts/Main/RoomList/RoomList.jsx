@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { Api } from 'api/Api';
 import { IconButton } from 'components/IconButton';
+import { MAIN_ROOM_NAME } from 'constants/Api';
 
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 
@@ -10,16 +11,11 @@ import './RoomList.scss';
 import { CreateRoomWindow } from 'components/CreateRoomWIndow';
 
 export const RoomList = () => {
-  const rooms = useSelector((appStore) => appStore.room.rooms);
+  const room = useSelector((appStore) => appStore.room);
   const [isCreateWindowOpen, switchCreateWindow] = useState(false);
 
   const onRoomClick = (room) => {
-    Api.joinRoom(room)
-      .then(() => {
-        console.log('You joined room!');
-        Api.queryCurrentRoomName();
-      })
-      .catch(() => console.log('Join error!'));
+    Api.joinRoom(room).catch(() => console.log('Join error!'));
   };
 
   const onPlusBtnClick = () => switchCreateWindow(!isCreateWindowOpen);
@@ -28,6 +24,10 @@ export const RoomList = () => {
     onPlusBtnClick();
   };
 
+  if (room.roomName !== MAIN_ROOM_NAME) {
+    return null;
+  }
+
   return (
     <aside className="room-list">
       <div className="room-list__header">
@@ -35,15 +35,15 @@ export const RoomList = () => {
         <IconButton onClick={onPlusBtnClick} icon={Icons.faPlus} />
       </div>
       <div className="room-list__list">
-        {rooms.map((room) => (
+        {room.rooms.map((r) => (
           <div
             className="room-list__entry"
-            key={room}
-            onClick={() => onRoomClick(room)}
+            key={r}
+            onClick={() => onRoomClick(r)}
             aria-hidden
-            title={room}
+            title={r}
           >
-            <div className="room-list__entry__name">{room}</div>
+            <div className="room-list__entry__name">{r}</div>
           </div>
         ))}
       </div>

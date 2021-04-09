@@ -85,10 +85,7 @@ impl Session {
                             ctx.text(serverMsgs::logging_success(&login));
 
                             if old_login == "" {
-                                ctx.text(serverMsgs::user_connected(&format!(
-                                    "{}, you're connected! Welcome to rchat!",
-                                    login
-                                )));
+                                ctx.text(serverMsgs::user_connected(&login));
                             }
                         }
                         Err(err) => {

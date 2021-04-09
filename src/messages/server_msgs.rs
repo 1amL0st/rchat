@@ -21,8 +21,13 @@ pub fn user_joined_room_fail(err: &String) -> String {
     make(&err, &"UserJoinedRoom".to_string())
 }
 
-pub fn user_connected(text: &String) -> String {
-    make(text, &"UserConnected".to_string())
+pub fn user_connected(login: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "UserConnected",
+        "login": login
+    }).to_string()
+    //make(text, &"UserConnected".to_string())
 }
 
 pub fn failed_to_send_msg(reason: &String) -> String {

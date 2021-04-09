@@ -1,3 +1,5 @@
+/* eslint react/forbid-prop-types: 0 */
+
 import React from 'react';
 
 import PropTypes from 'prop-types';
@@ -5,14 +7,12 @@ import PropTypes from 'prop-types';
 import { ServerMessage } from './ServerMessage';
 import { UserMessage } from './UserMessage';
 
-export const Message = ({ author, text, isOwn }) => (author === 'Server' ? (
-  <ServerMessage text={text} />
+export const Message = ({ msgJson }) => (msgJson.author === 'Server' ? (
+  <ServerMessage msgJson={msgJson} />
 ) : (
-  <UserMessage author={author} text={text} isOwn={isOwn} />
+  <UserMessage msgJson={msgJson} />
 ));
 
 Message.propTypes = {
-  author: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
-  isOwn: PropTypes.bool.isRequired,
+  msgJson: PropTypes.any.isRequired,
 };
