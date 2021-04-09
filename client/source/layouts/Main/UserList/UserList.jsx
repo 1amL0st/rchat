@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import { IconButton } from 'components/IconButton';
 import { InviteUserWindow } from 'components/InviteUserWindow';
@@ -11,7 +12,7 @@ import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './UserList.scss';
 
-export const UserList = ({ style }) => {
+export const UserList = ({ rightOffset }) => {
   const [isInviteWindowOpen, setIsInviteWindowOpen] = useState(false);
   const userListRef = useRef();
 
@@ -22,13 +23,18 @@ export const UserList = ({ style }) => {
   const onInviteWindowClose = () => setIsInviteWindowOpen(!isInviteWindowOpen);
 
   useEffect(() => {
-    const onTouchMove = (e) => {
-      e.stopPropagation();
-    };
-    userListRef.current.addEventListener('touchmove', onTouchMove);
+    const stopEventPropagation = (e) => e.stopPropagation();
 
-    return () => userListRef.current.removeEventListener('touchmove', onTouchMove);
-  }, []);
+    userListRef.current?.addEventListener('touchmove', stopEventPropagation);
+    userListRef.current?.addEventListener('mousemove', stopEventPropagation);
+
+    const copy = userListRef.current;
+
+    return () => {
+      copy.removeEventListener('touchmove', stopEventPropagation);
+      copy.removeEventListener('mousemove', stopEventPropagation);
+    };
+  }, [userListRef]);
 
   const userList = users
     .filter((user) => user !== userLogin)
@@ -45,7 +51,13 @@ export const UserList = ({ style }) => {
     ));
 
   return (
-    <aside className="user-list" style={style} ref={userListRef}>
+    <aside
+      className="user-list"
+      style={{
+        right: `${rightOffset}%`,
+      }}
+      ref={userListRef}
+    >
       <div className="user-list__header">
         <span>Users</span>
         <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />
@@ -54,4 +66,8 @@ export const UserList = ({ style }) => {
       {isInviteWindowOpen && <InviteUserWindow onClose={onInviteWindowClose} />}
     </aside>
   );
+};
+
+UserList.propTypes = {
+  rightOffset: PropTypes.number.isRequired,
 };

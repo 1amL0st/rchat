@@ -11,5 +11,8 @@ export const ServerMessage = ({ msgJson }) => (
 );
 
 ServerMessage.propTypes = {
-  msgJson: PropTypes.any.isRequired,
+  msgJson: PropTypes.shape({
+    author: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+  }).isRequired,
 };

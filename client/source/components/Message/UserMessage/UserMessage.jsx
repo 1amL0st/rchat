@@ -20,5 +20,9 @@ export const UserMessage = ({ msgJson }) => {
 };
 
 UserMessage.propTypes = {
-  msgJson: PropTypes.any.isRequired,
+  msgJson: PropTypes.shape({
+    author: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    isOwn: PropTypes.bool.isRequired,
+  }).isRequired,
 };

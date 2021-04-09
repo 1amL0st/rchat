@@ -12,6 +12,12 @@ export const roomReducer = (state = DEFAULT_STATE, action) => {
         ...state,
         users: state.users.map((login) => (login === action.oldLogin ? action.newLogin : login)),
       };
+    case 'ClearInbox': {
+      return {
+        ...state,
+        messages: [],
+      };
+    }
     case 'ClearInboxExceptLast': {
       const msg = {
         ...state.messages[state.messages.length - 1],

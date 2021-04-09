@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import classNames from 'class-names';
 import { useSelector } from 'react-redux';
 import { useWindowDimensions } from 'hooks/useWindowDimensions';
 import { useSwipeEvent } from 'hooks/useSwipeEvent';
 
-import { METRICS } from 'constants/Metrics';
 import { MAIN_ROOM_NAME } from 'constants/Api';
 
 import { Chat } from './Chat';
@@ -16,7 +14,6 @@ import './Main.scss';
 
 export const Main = () => {
   const { width: windowWidth } = useWindowDimensions();
-  const screenCount = 3;
   const [shouldDisplayRoomList, setShouldDisplayRoomList] = useState(true);
 
   const [roomList, setRoomList] = useState({
@@ -30,7 +27,6 @@ export const Main = () => {
   });
 
   const mainRef = useRef();
-  const [screenNumber, setScreenNumber] = useState(1);
   const currentRoomName = useSelector((appStore) => appStore.room.roomName);
 
   useEffect(() => {
@@ -47,14 +43,8 @@ export const Main = () => {
     setShouldDisplayRoomList(currentRoomName === MAIN_ROOM_NAME);
   }, [currentRoomName]);
 
-  const screens = [
-    <RoomList key={0} />,
-    <Chat key={1} />,
-    <UserList key={2} />,
-  ];
-
-  const onSwipe = (offset) => {
-    console.log('OnSwipe = ', offset);
+  const onSwipe = () => {
+    // console.log('OnSwipe = ', offset);
   };
 
   const onSwipeStop = () => {
@@ -70,7 +60,7 @@ export const Main = () => {
   };
 
   const LIMIT = -40;
-  const REV_LIMIT = (-100 - LIMIT);
+  const REV_LIMIT = -100 - LIMIT;
 
   const onSwipeMove = (offset) => {
     if (offset.x >= 0) {
@@ -78,57 +68,45 @@ export const Main = () => {
         const isOpen = userList.isOpen && userList.rightOffset > REV_LIMIT;
         setUserList({
           isOpen,
-          rightOffset: (isOpen) ? userList.rightOffset - (offset.x * 100 / windowWidth) : -100,
+          rightOffset: isOpen
+            ? userList.rightOffset - (offset.x * 100) / windowWidth
+            : -100,
         });
       } else if (shouldDisplayRoomList) {
         const isOpen = roomList.isOpen || roomList.leftOffset > LIMIT;
         setRoomList({
           isOpen,
-          leftOffset: (isOpen) ? 0 : roomList.leftOffset + (offset.x * 100 / windowWidth),
+          leftOffset: isOpen
+            ? 0
+            : roomList.leftOffset + (offset.x * 100) / windowWidth,
         });
       }
     } else if (roomList.isOpen) {
       const isOpen = roomList.isOpen && roomList.leftOffset > REV_LIMIT;
       setRoomList({
         isOpen,
-        leftOffset: (isOpen) ? roomList.leftOffset + (offset.x * 100 / windowWidth) : -100,
+        leftOffset: isOpen
+          ? roomList.leftOffset + (offset.x * 100) / windowWidth
+          : -100,
       });
     } else {
       const isOpen = userList.isOpen || userList.rightOffset > LIMIT;
       setUserList({
         isOpen,
-        rightOffset: (!isOpen) ? userList.rightOffset - (offset.x * 100 / windowWidth) : 0,
+        rightOffset: !isOpen
+          ? userList.rightOffset - (offset.x * 100) / windowWidth
+          : 0,
       });
     }
   };
 
   useSwipeEvent(1000000, 0, onSwipe, onSwipeMove, onSwipeStop, mainRef);
 
-  // if (windowWidth > METRICS.mobileScreenWidth) {
-  //   return (
-  //     <main className="main" ref={mainRef}>
-  //       {screens}
-  //     </main>
-  //   );
-  // }
-
-  const roomListStyle = {
-    left: `${roomList.leftOffset}%`,
-  };
-
-  const userListStyle = {
-    right: `${userList.rightOffset}%`,
-  };
-
   return (
     <main className="main" ref={mainRef}>
-      {shouldDisplayRoomList && (
-        <RoomList
-          style={roomListStyle}
-        />
-      )}
+      {shouldDisplayRoomList && <RoomList leftOffset={roomList.leftOffset} />}
       <Chat />
-      <UserList style={userListStyle} />
+      <UserList rightOffset={userList.rightOffset} />
     </main>
   );
 };

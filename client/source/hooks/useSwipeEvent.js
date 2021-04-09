@@ -102,6 +102,9 @@ export function useSwipeEvent(
       onSwipeStop();
     };
 
+    // TODO: runs on each parent component rereneder and this looks very bad!
+    // console.warn('UseSwipeEvent');
+
     const element = elementRef.current;
 
     element.addEventListener('touchstart', onTouchStart);
@@ -125,5 +128,12 @@ export function useSwipeEvent(
       element.removeEventListener('mousemove', onMouseMove);
       element.removeEventListener('mouseleave', onMouseLeave);
     };
-  }, [targetHorzOffset, targetVertOffset, onSwipe, elementRef]);
+  }, [
+    targetHorzOffset,
+    targetVertOffset,
+    onSwipe,
+    elementRef,
+    onSwipeStop,
+    onSwipeMove,
+  ]);
 }

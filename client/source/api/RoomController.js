@@ -11,21 +11,20 @@ export function RoomController(socketObj, commandsController) {
       });
     },
 
-    clearInbox(lastMsg) {
-      AppStore.dispatch({
-        type: 'ClearInbox',
-        lastMsg,
-      });
-    },
-
     clearInboxExceptLast() {
       AppStore.dispatch({
         type: 'ClearInboxExceptLast',
       });
     },
 
+    clearInbox() {
+      AppStore.dispatch({
+        type: 'ClearInbox',
+      });
+    },
+
     updateAfterJoin() {
-      this.clearInboxExceptLast();
+      this.clearInbox();
       this.clearUserList();
       this.commands.queryRoomInfo();
     },

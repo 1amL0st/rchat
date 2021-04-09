@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
 import { useSelector } from 'react-redux';
 
+import PropTypes from 'prop-types';
 import classNames from 'class-names';
 
 import { Api } from 'api/Api';
@@ -12,8 +14,7 @@ import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './RoomList.scss';
 
-// TODO: You can pass position of the list instead of style...
-export const RoomList = ({ className, style }) => {
+export const RoomList = ({ className, leftOffset }) => {
   const roomStore = useSelector((appStore) => appStore.room);
   const [isCreateWindowOpen, switchCreateWindow] = useState(false);
   const roomListRef = useRef();
@@ -29,19 +30,31 @@ export const RoomList = ({ className, style }) => {
   };
 
   useEffect(() => {
-    const onTouchMove = (e) => {
-      e.stopPropagation();
+    const stopEventPropagation = (e) => e.stopPropagation();
+
+    roomListRef.current?.addEventListener('touchmove', stopEventPropagation);
+    roomListRef.current?.addEventListener('mousemove', stopEventPropagation);
+
+    const copy = roomListRef.current;
+
+    return () => {
+      copy?.removeEventListener('touchmove', stopEventPropagation);
+      copy?.removeEventListener('mousemove', stopEventPropagation);
     };
-    roomListRef.current?.addEventListener('touchmove', onTouchMove);
-    return () => roomListRef.current?.removeEventListener('touchmove', onTouchMove);
-  }, []);
+  }, [roomListRef]);
 
   if (roomStore.roomName !== MAIN_ROOM_NAME) {
     return null;
   }
 
   return (
-    <aside className={classNames('room-list', className)} style={style} ref={roomListRef}>
+    <aside
+      className={classNames('room-list', className)}
+      style={{
+        left: `${leftOffset}%`,
+      }}
+      ref={roomListRef}
+    >
       <div className="room-list__header">
         <span>Rooms</span>
         <IconButton onClick={onPlusBtnClick} icon={Icons.faPlus} />
@@ -64,4 +77,13 @@ export const RoomList = ({ className, style }) => {
       )}
     </aside>
   );
+};
+
+RoomList.defaultProps = {
+  className: '',
+};
+
+RoomList.propTypes = {
+  className: PropTypes.string,
+  leftOffset: PropTypes.number.isRequired,
 };

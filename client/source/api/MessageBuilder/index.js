@@ -26,7 +26,8 @@ function buildMsg(msgJson) {
   //   case 'UserConnected':
   //   {
   //     const userLogin = AppStore.getState().user.login;
-  //     const text = (userLogin === msgJson.login) ? `${msgJson.login}, you're connected! Welcome to rchat!` : `User ${msgJson.login} connected!`;
+  //     const text = (userLogin === msgJson.login) ?
+  //  `${msgJson.login}, you're connected! Welcome to rchat!` : `User ${msgJson.login} connected!`;
   //     return {
   //       author: 'Server',
   //       text,
