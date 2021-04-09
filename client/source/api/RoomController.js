@@ -61,8 +61,8 @@ export function RoomController(socketObj, commandsController) {
             socket.removeEventListener('message', handler);
             this.updateAfterJoin(json);
             resolve();
-          } else {
-            reject(json.text);
+          } else if (json.subType === 'RoomCreationFail') {
+            reject(json.reason);
           }
         };
 
@@ -88,6 +88,8 @@ export function RoomController(socketObj, commandsController) {
             type: 'RemoveUser',
             userLogin: msgJson.login,
           });
+          break;
+        case 'RoomCreationFail':
           break;
         case 'UserConnected':
           // TODO: Here we can send only user name and add it to store

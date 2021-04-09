@@ -17,7 +17,10 @@ export const CreateRoomWindow = ({ onClose }) => {
       .then(() => {
         onClose();
       })
-      .catch((e) => setErr(e));
+      .catch((e) => {
+        setErr(e);
+        console.log('e = ', e);
+      });
   };
 
   const onKeyDown = (e) => {

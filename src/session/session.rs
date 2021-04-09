@@ -24,7 +24,6 @@ pub struct IncomingInvite {
 }
 
 pub struct OutcomingInvite {
-    guest_login: String,
     guest_addr: Addr<Session>,
 }
 
@@ -56,7 +55,7 @@ impl Session {
         let recipient = ctx.address();
 
         let msg = if self.login == "" {
-            serverMsgs::user_joined_room(format!("User {} joined!", login), login.clone())
+            serverMsgs::user_joined_room(&login)
         } else {
             messages::make_text_msg(
                 "Server".to_string(),
@@ -310,7 +309,7 @@ impl Session {
                 inviter_addr: ctx.address(),
             })
             .into_actor(self)
-            .then(move |res, act, ctx| {
+            .then(move |res, _, ctx| {
                 if let Ok(result) = res {
                     match result {
                         Ok(_) => (),
@@ -343,7 +342,6 @@ impl Session {
                 if let Ok(result) = res {
                     if let Ok(guest_addr) = result {
                         act.outcoming_invite = Some(OutcomingInvite {
-                            guest_login: guest_login,
                             guest_addr: guest_addr.clone(),
                         });
                         act.send_dm_invite_to_guest(ctx, guest_addr);

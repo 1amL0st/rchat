@@ -1,24 +1,28 @@
-pub fn user_joined_room(text: String, login: String) -> String {
+pub fn user_joined_room(login: &String) -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "UserJoinedRoom",
-        "text": text,
         "login": login,
     })
     .to_string()
 }
 
-pub fn you_joined_room(room: &String) -> String {
+pub fn you_joined_room(room_name: &String) -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "YouJoinedRoom",
-        "text": format!("You joined room {}", room),
+        "roomName": room_name
     })
     .to_string()
 }
-
-pub fn user_joined_room_fail(err: &String) -> String {
-    make(&err, &"UserJoinedRoom".to_string())
+// TODO: Need to handle this message on client side
+pub fn user_joined_room_fail(reason: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "YouJoinRoomFail",
+        "reason": reason
+    })
+    .to_string()
 }
 
 pub fn user_connected(login: &String) -> String {
@@ -26,31 +30,36 @@ pub fn user_connected(login: &String) -> String {
         "author": "Server",
         "subType": "UserConnected",
         "login": login
-    }).to_string()
-    //make(text, &"UserConnected".to_string())
+    })
+    .to_string()
 }
 
 pub fn failed_to_send_msg(reason: &String) -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "FailedToSendMsg",
-        "text": reason
+        "reason": reason
     })
     .to_string()
 }
 
-pub fn user_left_room_custom_text(text: &String, login: &String) -> String {
+pub fn user_left_room_custom_text(room_name: &String, login: &String) -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "UserLeftRoom",
-        "text": text,
+        "roomName": room_name,
         "login": login
     })
     .to_string()
 }
 
-pub fn logging_fail(err_text: &String) -> String {
-    make(err_text, &"LoggingFailed".to_string())
+pub fn logging_fail(reason: &String) -> String {
+    serde_json::json!({
+        "author": "Server",
+        "subType": "LoggingFailed",
+        "reason": reason
+    })
+    .to_string()
 }
 
 pub fn logging_success(new_login: &String) -> String {
@@ -62,18 +71,23 @@ pub fn logging_success(new_login: &String) -> String {
     .to_string()
 }
 
-pub fn room_creation_fail(err_text: String) -> String {
-    make(&err_text, &"RoomCreationFail".to_string())
-}
-
-pub fn make(text: &String, sub_type: &String) -> String {
+pub fn room_creation_fail(reason: String) -> String {
     serde_json::json!({
-        "subType": sub_type,
         "author": "Server",
-        "text": text
+        "subType": "RoomCreationFail",
+        "reason": reason
     })
     .to_string()
 }
+
+// pub fn make(text: &String, sub_type: &String) -> String {
+//     serde_json::json!({
+//         "subType": sub_type,
+//         "author": "Server",
+//         "text": text
+//     })
+//     .to_string()
+// }
 
 pub fn room_destroy(room_name: &String) -> String {
     serde_json::json!({

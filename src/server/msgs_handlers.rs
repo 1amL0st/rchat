@@ -99,10 +99,7 @@ impl Handler<Leave> for Server {
 
         if msg.login != "" {
             self.users.remove(&msg.login);
-            let msg_text = serverMsgs::user_left_room_custom_text(
-                &format!("User {} has left room {}", msg.login, cur_room_name),
-                &msg.login,
-            );
+            let msg_text = serverMsgs::user_left_room_custom_text(&cur_room_name, &msg.login);
             self.send_msg_to_room(msg_text, msg.room_id, &String::new());
         }
     }
@@ -225,7 +222,7 @@ pub struct FindUser {
 impl Handler<FindUser> for Server {
     type Result = MessageResult<FindUser>;
 
-    fn handle(&mut self, msg: FindUser, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: FindUser, _: &mut Self::Context) -> Self::Result {
         if let Some(user_login) = self.rooms.get(&MAIN_ROOM_ID).unwrap().users.get(&msg.login) {
             if let Some(user) = self.users.get(user_login) {
                 MessageResult(Ok(user.addr.clone()))
@@ -247,7 +244,7 @@ pub struct CreateDM {
 impl Handler<CreateDM> for Server {
     type Result = MessageResult<CreateDM>;
 
-    fn handle(&mut self, msg: CreateDM, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: CreateDM, _: &mut Self::Context) -> Self::Result {
         let (room_id, room) =
             self.create_room_with_name("Private room".to_string(), RoomPrivacy::Private);
         let room_name = room.name.clone();

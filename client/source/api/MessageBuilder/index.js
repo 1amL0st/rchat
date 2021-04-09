@@ -12,7 +12,6 @@ function buildTextMsg(msgJson) {
 }
 
 function buildMsg(msgJson) {
-  console.log('buildMsg = ', msgJson);
   if (msgJson.author !== 'Server') {
     return null;
   }

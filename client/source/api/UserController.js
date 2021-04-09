@@ -13,7 +13,7 @@ export function UserController(socketObj) {
           const json = JSON.parse(e.data);
           if (json.subType === 'LoggingFailed') {
             socket.removeEventListener('message', handler);
-            reject(json.text);
+            reject(json.reason);
           } else {
             socket.removeEventListener('message', handler);
 
@@ -45,7 +45,7 @@ export function UserController(socketObj) {
             });
             resolve(json.login);
           } else {
-            reject(json.text);
+            reject(json.reason);
           }
         };
 

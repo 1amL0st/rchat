@@ -4,7 +4,6 @@ use actix_web_actors::ws;
 use super::session::*;
 use crate::messages::server_msgs as serverMsgs;
 use crate::server::msgs_handlers as ServerHandlerMsgs;
-use crate::server::server;
 
 use super::session::IncomingInvite;
 
