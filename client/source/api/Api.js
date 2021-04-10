@@ -10,6 +10,7 @@ import { InviteToDMController } from './InviteToDMController';
 
 export const Api = {
   socket: null,
+  isOffline: false,
 
   waitingForWindowController: WaitingForWindowController,
   criticalErrController: CriticalErrController,
@@ -33,14 +34,16 @@ export const Api = {
 
       this.socket.onclose = () => {
         this.waitingForWindowController.hideWaitingWindow();
-        this.criticalErrController.setErr(
-          'Socket was closed! This is critical error!',
-        );
       };
 
       this.socket.onerror = () => {
         this.waitingForWindowController.hideWaitingWindow();
-        this.criticalErrController.setErr('Some error happened!');
+
+        // TODO: Looks like this doesn't work on server...
+        const err = (this.isOffline) ? 'Looks like you\'re offline' : 'Unkown error!';
+        this.criticalErrController.setErr(
+          `Socket was closed! ${err}`,
+        );
       };
 
       this.socket.onopen = () => {
@@ -56,6 +59,7 @@ export const Api = {
       };
 
       window.addEventListener('offline', () => {
+        this.isOffline = true;
         this.criticalErrController.setErr("You're offline!");
       });
     });
