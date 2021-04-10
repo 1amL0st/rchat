@@ -31,7 +31,6 @@ export const Api = {
 
       this.socket = new WebSocket(wsURI);
 
-      // TODO: Detect if user is offline
       this.socket.onclose = () => {
         this.waitingForWindowController.hideWaitingWindow();
         this.criticalErrController.setErr(
@@ -55,6 +54,10 @@ export const Api = {
 
         resolve();
       };
+
+      window.addEventListener('offline', () => {
+        this.criticalErrController.setErr("You're offline!");
+      });
     });
   },
 

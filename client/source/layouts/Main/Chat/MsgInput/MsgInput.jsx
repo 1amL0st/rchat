@@ -31,9 +31,6 @@ export const MsgInput = () => {
     focus();
   }, [isLogged]);
 
-  // TODO: Button must have some text inside it, but our button has only image
-  /* eslint jsx-a11y/control-has-associated-label: 0 */
-
   return (
     <div className="msg-input">
       <textarea
@@ -49,6 +46,7 @@ export const MsgInput = () => {
         className="button msg-input__send-btn"
         onClick={onSendBtn}
         type="button"
+        aria-label="Send"
       />
     </div>
   );

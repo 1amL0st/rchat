@@ -213,7 +213,7 @@ impl Handler<CreateRoom> for Server {
     }
 }
 #[derive(Message)]
-#[rtype(result = "Result<Addr<Session>, String>")] // TODO: can i set result = Addr<Session>?
+#[rtype(result = "Result<Addr<Session>, String>")]
 pub struct FindUser {
     pub login: String,
     pub addr: Addr<Session>,

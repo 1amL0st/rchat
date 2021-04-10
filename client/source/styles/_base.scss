@@ -1,9 +1,6 @@
 @import 'styles/mixins';
 @import 'styles/constants';
 
-// TODO: Maybe these classes should be renmaed with __
-// list__list, list__entry
-
 .list {
   @include flex-layout(column, flex-start, center);
 

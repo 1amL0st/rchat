@@ -165,7 +165,7 @@ impl Session {
                             ctx.text(serverMsgs::you_joined_room(&m))
                         }
                         Err(err) => {
-                            ctx.text(serverMsgs::user_joined_room_fail(&err));
+                            ctx.text(serverMsgs::you_joined_room_fail(&err));
                         }
                     }
                 } else {
@@ -273,7 +273,6 @@ impl Session {
             .unwrap();
     }
 
-    // TODO: What if user will enter this command by hand?
     fn handle_cmd_invite_dm_accpet(&mut self) {
         if self.incoming_invites.is_empty() {
             return;
@@ -397,7 +396,8 @@ impl Session {
     pub fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
-                println!("User {} timeout interval!", act.login); // TODO: Tushkan's bug: Server can close sockets because of... I don't know the reason
+                 // TODO: Tushkan's bug: Server can close sockets because of... I don't know the reason
+                println!("User {} timeout interval!", act.login);
                 ctx.stop();
                 return;
             }

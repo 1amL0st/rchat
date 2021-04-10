@@ -92,8 +92,10 @@ export function RoomController(socketObj, commandsController) {
         case 'RoomCreationFail':
           break;
         case 'UserConnected':
-          // TODO: Here we can send only user name and add it to store
-          this.commands.queryUserList();
+          AppStore.dispatch({
+            type: 'AddUser',
+            login: msgJson.login,
+          });
           break;
         case 'YouJoinedRoom':
           this.updateAfterJoin();

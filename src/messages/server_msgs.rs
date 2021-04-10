@@ -15,8 +15,8 @@ pub fn you_joined_room(room_name: &String) -> String {
     })
     .to_string()
 }
-// TODO: Need to handle this message on client side
-pub fn user_joined_room_fail(reason: &String) -> String {
+
+pub fn you_joined_room_fail(reason: &String) -> String {
     serde_json::json!({
         "author": "Server",
         "subType": "YouJoinRoomFail",

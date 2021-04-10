@@ -1,5 +1,3 @@
-/* eslint react/destructuring-assignment: 0 */
-
 import { AppStore } from 'store/store';
 
 function buildTextMsg(msgJson) {
@@ -16,25 +14,21 @@ function buildMsg(msgJson) {
     return null;
   }
 
-  // switch (msgJson.subType) {
-  //   case 'UserJoinedRoom':
-  //     return {
-  //       author: 'Server',
-  //       text: `User ${msgJson.login} joined room!`,
-  //     };
-  //   case 'UserConnected':
-  //   {
-  //     const userLogin = AppStore.getState().user.login;
-  //     const text = (userLogin === msgJson.login) ?
-  //  `${msgJson.login}, you're connected! Welcome to rchat!` : `User ${msgJson.login} connected!`;
-  //     return {
-  //       author: 'Server',
-  //       text,
-  //     };
-  //   }
-  //   default:
-  //     break;
-  // }
+  switch (msgJson.subType) {
+    case 'UserConnected':
+    {
+      const userLogin = AppStore.getState().user.login;
+      if (userLogin === msgJson.login) {
+        return {
+          'author': 'Server',
+          text: `${msgJson.login}, you're connected! Welcome to rchat!`,
+        };
+      }
+      break;
+    }
+    default:
+      break;
+  }
 
   return null;
 }
