@@ -9,6 +9,9 @@
   padding: 8px;
   border: none;
 
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   overflow-x: hidden;
 
   cursor: pointer;

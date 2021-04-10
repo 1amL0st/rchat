@@ -15,12 +15,11 @@ function buildMsg(msgJson) {
   }
 
   switch (msgJson.subType) {
-    case 'UserConnected':
-    {
+    case 'UserConnected': {
       const userLogin = AppStore.getState().user.login;
       if (userLogin === msgJson.login) {
         return {
-          'author': 'Server',
+          author: 'Server',
           text: `${msgJson.login}, you're connected! Welcome to rchat!`,
         };
       }

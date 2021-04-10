@@ -5,6 +5,7 @@ const MiniSCCExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 let isDev = false;
 const outputPath = '../../public/';
@@ -56,7 +57,12 @@ function generatePlugins() {
       fix: true,
       emitWarning: true,
       failOnError: false
-    })
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: "./source/locales", to: path.resolve(__dirname, `${outputPath}/locales`)},
+      ],
+    }),
   ];
 
   if (isDev) {
@@ -84,7 +90,8 @@ function generateConfig(mode) {
         'components': path.resolve(__dirname, '../source/components/'),
         'store': path.resolve(__dirname, '../source/store/'),
         'hooks': path.resolve(__dirname, '../source/hooks/'),
-        "constants": path.resolve(__dirname, '../source/constants')
+        "constants": path.resolve(__dirname, '../source/constants'),
+        "i18n": path.resolve(__dirname, '../source/i18n')
       }
     },
 

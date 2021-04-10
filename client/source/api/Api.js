@@ -40,10 +40,10 @@ export const Api = {
         this.waitingForWindowController.hideWaitingWindow();
 
         // TODO: Looks like this doesn't work on server...
-        const err = (this.isOffline) ? 'Looks like you\'re offline' : 'Unkown error!';
-        this.criticalErrController.setErr(
-          `Socket was closed! ${err}`,
-        );
+        const err = this.isOffline
+          ? "Looks like you're offline"
+          : 'Unkown error!';
+        this.criticalErrController.setErr(`Socket was closed! ${err}`);
       };
 
       this.socket.onopen = () => {

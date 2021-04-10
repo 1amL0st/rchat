@@ -1,0 +1,25 @@
+{
+  "words": {
+    "warning": "Warning",
+    "login": "Login",
+    "rooms": "Rooms",
+    "users": "Users",
+    "cancel": "Cancel",
+    "create": "Create",
+    "leave": "Leave",
+    "apply": "Apply",
+    "yes": "Yes"
+  },
+
+  "phrases": {
+    "enterLogin": "Enter login",
+    "enterRoomName": "Enter room name",
+    "editProfile": "Edit profile",
+    "inputNewLogin": "Input new login",
+    "leaveWindowWarn": "Are you sure you want leave?\nYou'll lose all data!",
+    "copyLink": "Copy Link",
+    "linkCopiedToClipboard": "Link is copied to clipboard!"
+  },
+
+  "developmentWarning": "This service is under development, some bugs are possible!"
+}

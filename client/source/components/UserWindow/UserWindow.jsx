@@ -3,6 +3,7 @@ import classNames from 'class-names';
 
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { Api } from 'api/Api';
 
@@ -16,6 +17,7 @@ export const UserWindow = () => {
 
   const [msgText, setMsgText] = useState('');
   const [isErr, setIsErr] = useState(false);
+  const { t } = useTranslation();
 
   const login = useSelector((appStore) => appStore.user.login);
 
@@ -50,7 +52,7 @@ export const UserWindow = () => {
         <input
           maxLength={32}
           type="text"
-          placeholder="Input new login"
+          placeholder={t('phrases.inputNewLogin')}
           value={inputLogin}
           onChange={(e) => setInputLogin(e.target.value)}
         />
@@ -59,11 +61,11 @@ export const UserWindow = () => {
           onClick={onNewLoginApply}
           className="user-window__apply-login"
         >
-          Apply
+          {t('words.apply')}
         </Button>
       </div>
       <Button className="user-window__close-btn" onClick={onClose} size="small">
-        Cancel
+        {t('words.cancel')}
       </Button>
     </Window>
   );

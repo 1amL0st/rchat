@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { IconButton } from 'components/IconButton';
 import { InviteUserWindow } from 'components/InviteUserWindow';
@@ -15,6 +16,7 @@ import './UserList.scss';
 export const UserList = ({ rightOffset }) => {
   const [isInviteWindowOpen, setIsInviteWindowOpen] = useState(false);
   const userListRef = useRef();
+  const { t } = useTranslation();
 
   const users = useSelector((appStore) => appStore.room.users);
   const userLogin = useSelector((appStore) => appStore.user.login);
@@ -59,7 +61,7 @@ export const UserList = ({ rightOffset }) => {
       ref={userListRef}
     >
       <div className="user-list__header">
-        <span>Users</span>
+        <span>{t('words.users')}</span>
         <IconButton icon={Icons.faPlus} onClick={onInviteFrined} />
       </div>
       <div className="user-list__list">{userList}</div>

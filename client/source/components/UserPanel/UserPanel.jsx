@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import PropTypes from 'prop-types';
 import classNames from 'class-names';
+import { useTranslation } from 'react-i18next';
 
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -19,6 +20,7 @@ const List = ({ onClose, onLeaveWindowOpen }) => {
   const userLogin = useSelector((appStore) => appStore.user.login);
   const history = useHistory();
   const listRef = useRef();
+  const { t } = useTranslation();
 
   const onProfileClick = () => history.push(ROUTES.UserWindow);
 
@@ -36,8 +38,8 @@ const List = ({ onClose, onLeaveWindowOpen }) => {
   return (
     <div className={classNames('user-panel__list')} ref={listRef}>
       <span className="user-panel__name">{userLogin}</span>
-      <Button onClick={onProfileClick}>Edit Profile</Button>
-      <Button onClick={onLeaveWindowOpen}>Leave</Button>
+      <Button onClick={onProfileClick}>{t('phrases.editProfile')}</Button>
+      <Button onClick={onLeaveWindowOpen}>{t('words.leave')}</Button>
     </div>
   );
 };

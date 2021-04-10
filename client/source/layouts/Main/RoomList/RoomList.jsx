@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import PropTypes from 'prop-types';
 import classNames from 'class-names';
@@ -18,6 +19,8 @@ export const RoomList = ({ className, leftOffset }) => {
   const roomStore = useSelector((appStore) => appStore.room);
   const [isCreateWindowOpen, switchCreateWindow] = useState(false);
   const roomListRef = useRef();
+
+  const { t } = useTranslation();
 
   const onRoomClick = (room) => {
     Api.joinRoom(room).catch(() => console.log('Join error!'));
@@ -56,7 +59,7 @@ export const RoomList = ({ className, leftOffset }) => {
       ref={roomListRef}
     >
       <div className="room-list__header">
-        <span>Rooms</span>
+        <span>{t('words.rooms')}</span>
         <IconButton onClick={onPlusBtnClick} icon={Icons.faPlus} />
       </div>
       <div className="room-list__list">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Api } from 'api/Api';
 import { Button } from 'components/Button';
@@ -11,6 +12,7 @@ import './CreateRoomWindow.scss';
 export const CreateRoomWindow = ({ onClose }) => {
   const [roomName, setRoomName] = useState('');
   const [err, setErr] = useState('');
+  const { t } = useTranslation();
 
   const onCreateRoomBtn = () => {
     Api.createRoom(roomName)
@@ -37,7 +39,7 @@ export const CreateRoomWindow = ({ onClose }) => {
         ref={inputRef}
         maxLength={32}
         type="text"
-        placeholder="Enter room name"
+        placeholder={t('phrases.enterRoomName')}
         value={roomName}
         onChange={(e) => setRoomName(e.target.value)}
         onKeyDown={onKeyDown}
@@ -49,14 +51,14 @@ export const CreateRoomWindow = ({ onClose }) => {
           onClick={onCreateRoomBtn}
           className="create-room-window__create-btn"
         >
-          Create
+          {t('words.create')}
         </Button>
         <Button
           size="small"
           onClick={onClose}
           className="create-room-window__cancel_btn"
         >
-          Cancel
+          {t('words.cancel')}
         </Button>
       </div>
     </ModalWindow>
