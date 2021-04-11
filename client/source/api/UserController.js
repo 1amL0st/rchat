@@ -1,3 +1,5 @@
+import { TranslateMessage } from 'i18n/MessageTranslator';
+
 import { AppStore } from 'store/store';
 import { Api } from 'api/Api';
 
@@ -10,7 +12,7 @@ export function UserController(socketObj) {
         const { socket } = this;
 
         const handler = (e) => {
-          const json = JSON.parse(e.data);
+          const json = TranslateMessage(JSON.parse(e.data));
           if (json.subType === 'LoggingFailed') {
             socket.removeEventListener('message', handler);
             reject(json.reason);
@@ -36,7 +38,7 @@ export function UserController(socketObj) {
         const { socket } = this;
 
         const handler = (e) => {
-          const json = JSON.parse(e.data);
+          const json = TranslateMessage(JSON.parse(e.data));
           if (json.subType === 'LoggingSuccess') {
             socket.removeEventListener('message', handler);
             AppStore.dispatch({

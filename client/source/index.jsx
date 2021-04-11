@@ -11,10 +11,10 @@ import 'i18n/i18n';
 import './index.scss';
 
 ReactDOM.render(
-  <Provider store={AppStore}>
-    <Suspense fallback="loading">
+  <Suspense fallback="loading">
+    <Provider store={AppStore}>
       <App />
-    </Suspense>
-  </Provider>,
+    </Provider>
+  </Suspense>,
   document.getElementById('root'),
 );

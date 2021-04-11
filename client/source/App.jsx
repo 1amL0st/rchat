@@ -15,9 +15,6 @@ const App = () => {
   const [isConnected, setConnected] = useState(false);
   const isErr = useSelector((appStore) => appStore.criticalErr.isErr);
   const isWaitingFor = useSelector((appStore) => appStore.waitingFor.isWaiting);
-  const waitingForText = useSelector(
-    (appStore) => appStore.waitingFor.waitingText,
-  );
 
   useEffect(() => {
     async function connectSocket() {
@@ -37,7 +34,8 @@ const App = () => {
         isOpen={isWaitingFor}
         className="waiting-for-connection-window"
       >
-        {waitingForText}
+        <div />
+        {/* {waitingForText} */}
       </WaitingForWindow>
       {isConnected && (
         <BrowserRouter>

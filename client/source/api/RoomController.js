@@ -1,3 +1,4 @@
+import { TranslateMessage } from 'i18n/MessageTranslator';
 import { AppStore } from 'store/store';
 
 export function RoomController(socketObj, commandsController) {
@@ -34,7 +35,7 @@ export function RoomController(socketObj, commandsController) {
         const { socket } = this;
 
         const handler = (e) => {
-          const json = JSON.parse(e.data);
+          const json = TranslateMessage(JSON.parse(e.data));
           if (json.subType === 'YouJoinedRoom') {
             socket.removeEventListener('message', handler);
             this.commands.queryCurrentRoomName();
@@ -56,7 +57,7 @@ export function RoomController(socketObj, commandsController) {
         const { socket } = this;
 
         const handler = (e) => {
-          const json = JSON.parse(e.data);
+          const json = TranslateMessage(JSON.parse(e.data));
           if (json.subType === 'YouJoinedRoom') {
             socket.removeEventListener('message', handler);
             this.updateAfterJoin(json);

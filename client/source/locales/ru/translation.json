@@ -18,7 +18,19 @@
     "inputNewLogin": "Введите новый логин",
     "leaveWindowWarn": "Вы уверены что хоитет выйти?\nВсе данные будут потеряны!",
     "copyLink": "Копировать ссылку",
-    "linkCopiedToClipboard": "Ссылка скопирована!"
+    "linkCopiedToClipboard": "Ссылка скопирована!",
+    "waitingForConnection": "Ожидание соединения...",
+    "youAreConnected": "Вы подключены! Добро пожаловать!"
+  },
+
+  "createRoom": {
+    "roomNameWrongFormat": "Название комнаты имеет неверный формат!",
+    "roomNameExists": "Комната с таким названием уже существует!"
+  },
+
+  "logging": {
+    "loginMustNotBeEmpty": "Логин не должен быть путсым!",
+    "loginExists": "Логин существует"
   },
 
   "developmentWarning": "Чат находится в разработке, поэтому возможны различные баги!"

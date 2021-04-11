@@ -1,3 +1,5 @@
+import i18n from 'i18next';
+
 import { AppStore } from 'store/store';
 
 function buildTextMsg(msgJson) {
@@ -20,7 +22,7 @@ function buildMsg(msgJson) {
       if (userLogin === msgJson.login) {
         return {
           author: 'Server',
-          text: `${msgJson.login}, you're connected! Welcome to rchat!`,
+          text: `${msgJson.login}, ${i18n.t('phrases.youAreConnected')}`,
         };
       }
       break;

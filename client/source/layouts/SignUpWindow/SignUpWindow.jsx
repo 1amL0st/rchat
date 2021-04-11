@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 
 import { Api } from 'api/Api';
 import { Button } from 'components/Button';
@@ -31,6 +32,10 @@ export const SignUpWindow = () => {
     setLogin(e.target.value);
   };
 
+  const onLangChange = (e) => {
+    i18n.changeLanguage(e.target.value);
+  };
+
   return (
     <ModalWindow className="signup-window" isOpen>
       <div className="signup-window__warning">
@@ -52,6 +57,10 @@ export const SignUpWindow = () => {
           {t('words.login')}
         </Button>
       </div>
+      <select className="signup-window__lang-selector" onChange={onLangChange}>
+        <option value="en">En</option>
+        <option value="ru">Ru</option>
+      </select>
     </ModalWindow>
   );
 };

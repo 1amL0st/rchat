@@ -15,4 +15,13 @@
   input {
     margin-bottom: 32px;
   }
+
+  &__lang-selector {
+    margin-top: 16px;
+    color: black;
+
+    option {
+      color: black;
+    }
+  }
 }

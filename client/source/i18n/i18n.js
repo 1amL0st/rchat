@@ -15,9 +15,10 @@ i18n
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
-  });
 
-// console.log(i18n.language);
-// i18n.changeLanguage('ru-RU');
+    react: {
+      useSuspense: true,
+    },
+  });
 
 export default i18n;

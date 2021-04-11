@@ -59,7 +59,7 @@ export const Main = () => {
     });
   };
 
-  const LIMIT = -40;
+  const LIMIT = -25;
   const REV_LIMIT = -100 - LIMIT;
 
   const onSwipeMove = (offset) => {
