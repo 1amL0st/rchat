@@ -1,3 +1,5 @@
+import i18n from 'i18next';
+
 const DEFAULT_STATE = {
   isFailed: false,
   errText: '',
@@ -45,7 +47,7 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
         came: true,
         processed: false,
         guestLogin: action.guestLogin,
-        waitingText: 'Waiting for user response',
+        waitingText: i18n.t('inviteToDM.waitingForUserResponse'),
       };
     case 'HideInviteToDMWindow':
       return {

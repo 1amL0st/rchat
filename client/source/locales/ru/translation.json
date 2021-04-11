@@ -8,7 +8,9 @@
     "create": "Создать",
     "leave": "Выйти",
     "apply": "Применить",
-    "yes": "Да"
+    "yes": "Да",
+    "refuse": "Отклонить",
+    "accept": "Принять"
   },
 
   "phrases": {
@@ -26,6 +28,12 @@
   "createRoom": {
     "roomNameWrongFormat": "Название комнаты имеет неверный формат!",
     "roomNameExists": "Комната с таким названием уже существует!"
+  },
+
+  "inviteToDM": {
+    "waitingForUserResponse": "Ожидание ответа от пользователя",
+    "incomingRequestText": "Пользователь '{{login}}' приглашает вас в приватную комнату...",
+    "outcomingRequestRefused": "Пользователь '{{login}}' отклонил ваш запрос!"
   },
 
   "logging": {

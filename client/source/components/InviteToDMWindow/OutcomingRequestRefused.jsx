@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
+import i18n from 'i18next';
 
 import { Button } from 'components/Button';
 import { ModalWindow } from 'components/ModalWindow';
@@ -22,7 +23,9 @@ export const OutcomingRequestRefused = () => {
       isOpen
     >
       <div className="request-refused-window__header">
-        {`User ${guestLogin} refused your request!`}
+        {i18n.t('inviteToDM.outcomingRequestRefused', {
+          login: guestLogin,
+        })}
       </div>
       <Button className="request-refused-window__ok-btn" onClick={hideWindow}>
         Ok

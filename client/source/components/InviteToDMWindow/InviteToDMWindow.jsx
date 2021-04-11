@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useSelector } from 'react-redux';
+import i18n from 'i18next';
 
 import { Api } from 'api/Api';
 
@@ -48,7 +49,7 @@ export const InviteToDMWindow = () => {
     >
       <div className="invite-to-dm-window__content">
         {invite.waitingText}
-        <Button onClick={onCancelRequest}>Cancel</Button>
+        <Button onClick={onCancelRequest}>{i18n.t('words.cancel')}</Button>
       </div>
     </WaitingForWindow>
   );

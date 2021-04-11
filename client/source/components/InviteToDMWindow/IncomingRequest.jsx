@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
 
 import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
@@ -42,11 +43,11 @@ export const IncomingRequestWindow = () => {
       isOpen
     >
       <div className="incoming-invite-window__header">
-        {`User '${invite.inviterLogin}' wants to DM with you...`}
+        {i18n.t('inviteToDM.incomingRequestText', { login: invite.inviterLogin })}
       </div>
       <div className="incoming-invite-window__buttons">
-        <Button onClick={onAccpectBtn}>Accept</Button>
-        <Button onClick={onRefuseBtn}>Refuse</Button>
+        <Button onClick={onAccpectBtn}>{i18n.t('words.accept')}</Button>
+        <Button onClick={onRefuseBtn}>{i18n.t('words.refuse')}</Button>
       </div>
     </ModalWindow>
   );

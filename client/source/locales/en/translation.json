@@ -8,7 +8,9 @@
     "create": "Create",
     "leave": "Leave",
     "apply": "Apply",
-    "yes": "Yes"
+    "yes": "Yes",
+    "refuse": "Refuse",
+    "accept": "Accept"
   },
 
   "phrases": {
@@ -21,6 +23,12 @@
     "linkCopiedToClipboard": "Link is copied to clipboard!",
     "waitingForConnection": "Waiting for connection...",
     "youAreConnected": "you're connected! Welcome!"
+  },
+
+  "inviteToDM": {
+    "waitingForUserResponse": "Waiting for user response",
+    "incomingRequestText": "User '{{login}}' wants to DM with you...",
+    "outcomingRequestRefused": "User '{{login}}' refused your request!"
   },
 
   "createRoom": {

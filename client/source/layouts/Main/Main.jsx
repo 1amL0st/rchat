@@ -59,8 +59,10 @@ export const Main = () => {
     });
   };
 
-  const LIMIT = -25;
+  const LIMIT = -50;
   const REV_LIMIT = -100 - LIMIT;
+
+  // TODO: Refactor all this...
 
   const onSwipeMove = (offset) => {
     if (offset.x >= 0) {
