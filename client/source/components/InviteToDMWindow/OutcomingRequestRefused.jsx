@@ -1,20 +1,16 @@
 import React from 'react';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import i18n from 'i18next';
 
+import { Api } from 'api/Api';
 import { Button } from 'components/Button';
 import { ModalWindow } from 'components/ModalWindow';
 
 export const OutcomingRequestRefused = () => {
-  const dispatch = useDispatch();
   const guestLogin = useSelector((appStore) => appStore.inviteDM.guestLogin);
 
-  const hideWindow = () => {
-    dispatch({
-      type: 'HideInviteToDMWindow',
-    });
-  };
+  const hideWindow = () => Api.inviteToDMController.hideWindow();
 
   return (
     <ModalWindow

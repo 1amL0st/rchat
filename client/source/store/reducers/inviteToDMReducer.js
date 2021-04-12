@@ -1,6 +1,9 @@
 import i18n from 'i18next';
 
+import { STATES } from 'api/InviteToDMController';
+
 const DEFAULT_STATE = {
+  state: STATES.Processed,
   isFailed: false,
   errText: '',
   isAccepted: false,
@@ -19,11 +22,12 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
     case 'HideErrWindow':
       return {
         ...state,
-        isFailed: false,
+        state: STATES.Failed,
         came: false,
       };
     case 'ShowIncomingToDMRequest':
       return {
+        state: STATES.Incoming,
         isIncoming: true,
         came: true,
         processed: false,
@@ -36,10 +40,11 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
     case 'IncomingInviteToDMCanceled':
       return {
         ...state,
-        incomingCanceled: true,
+        state: STATES.Canceled,
       };
     case 'ShowOutcomingToDMRequest':
       return {
+        state: STATES.Came,
         isFailed: false,
         isRefused: false,
         isAccepted: false,
@@ -52,11 +57,13 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
     case 'HideInviteToDMWindow':
       return {
         ...state,
+        state: STATES.Processed,
         processed: true,
       };
     case 'OutcomingInviteToDMRefused':
       return {
         ...state,
+        state: STATES.Refused,
         isRefused: true,
       };
     case 'OutcomingInviteToDMAccepted':
@@ -67,7 +74,7 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
     case 'InviteUserToDMFail':
       return {
         ...state,
-        isFailed: true,
+        state: STATES.Failed,
         errText: action.err,
       };
     case 'InviteUserToDMWaitForRoomCreate':

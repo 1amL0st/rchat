@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Api } from 'api/Api';
 import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
 
@@ -9,18 +10,12 @@ export const IncomingRequestCanceledWindow = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
   const dispatch = useDispatch();
 
-  const onOkBtn = () => {
-    dispatch({
-      type: 'HideInviteToDMWindow',
-    });
-  };
+  const onOkBtn = () => { Api.inviteToDMController.hideWindow(); };
 
   useEffect(() => {
     const keydownHandler = (e) => {
       if (e.code === 'Enter') {
-        dispatch({
-          type: 'HideInviteToDMWindow',
-        });
+        Api.inviteToDMController.hideWindow();
       }
     };
 

@@ -1,20 +1,14 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
+import { Api } from 'api/Api';
 import { ModalWindow } from 'components/ModalWindow';
 import { Button } from 'components/Button';
-
-import { useSelector, useDispatch } from 'react-redux';
 
 export const InviteToDMRequestFail = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
 
-  const dispatch = useDispatch();
-
-  const hideWindow = () => {
-    dispatch({
-      type: 'HideErrWindow',
-    });
-  };
+  const hideWindow = () => Api.inviteToDMController.hideWindow();
 
   return (
     <ModalWindow

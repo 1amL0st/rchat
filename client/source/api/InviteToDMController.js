@@ -1,11 +1,23 @@
+import i18n from 'i18n/i18n';
 import { AppStore } from 'store/store';
 
 import { MAIN_ROOM_NAME } from 'constants/Api';
 import { WaitingForWindowController } from './WaitingForWindowController';
 
-export function InviteToDMController(socketObj) {
+export const STATES = {
+  'Came': 0,
+  'Failed': 1,
+  'Accepted': 2,
+  'Refused': 3,
+  'Processed': 4,
+  'Canceled': 5,
+  'Incoming': 6,
+};
+
+export function InviteToDMController(socketObj, commandsController) {
   return {
     socket: socketObj,
+    commands: commandsController,
 
     inviteToDM(login) {
       const store = AppStore.getState();
@@ -23,6 +35,29 @@ export function InviteToDMController(socketObj) {
         console.log('Request = ', request);
         this.socket.send(request);
       }
+    },
+
+    hideWindow() {
+      AppStore.dispatch({
+        type: 'HideInviteToDMWindow',
+      });
+    },
+
+    refuseInviteToDM() {
+      this.commands.refuseInviteToDM();
+      this.hideWindow();
+    },
+
+    acceptInviteToDM() {
+      this.commands.acceptInviteToDM();
+    },
+
+    cancelInviteToDM() {
+      this.commands.cancelInviteToDM();
+
+      AppStore.dispatch({
+        type: 'OutcomingInviteToDMCanceled',
+      });
     },
 
     msgHandler(msgJson) {
@@ -47,7 +82,7 @@ export function InviteToDMController(socketObj) {
           const { guestLogin } = AppStore.getState().inviteDM;
           AppStore.dispatch({
             type: 'InviteUserToDMWaitForRoomCreate',
-            waitingText: `User ${guestLogin} accepted your DM invite. Server is creating private room for you. Please, wait!`,
+            waitingText: i18n.t('inviteToDM.waitForRoomCreation', { login: guestLogin }),
           });
           break;
         }

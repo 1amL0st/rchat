@@ -32,8 +32,9 @@
 
   "inviteToDM": {
     "waitingForUserResponse": "Ожидание ответа от пользователя",
-    "incomingRequestText": "Пользователь '{{login}}' приглашает вас в приватную комнату...",
-    "outcomingRequestRefused": "Пользователь '{{login}}' отклонил ваш запрос!"
+    "incomingRequestText": "'{{login}}' приглашает вас в приватную комнату...",
+    "outcomingRequestRefused": "'{{login}}' отклонил ваш запрос!",
+    "waitForRoomCreation": "'{{login}}' принял ваш запрос. Сервер создаёт комнату для вас. Пожалуйста, подождите!"
   },
 
   "logging": {

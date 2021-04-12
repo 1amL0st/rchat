@@ -46,7 +46,7 @@ export const UserList = ({ rightOffset }) => {
         title={user}
         key={user}
         aria-hidden
-        onClick={() => Api.inviteToDM(user)}
+        onClick={() => Api.inviteToDMController.inviteToDM(user)}
       >
         <div className="user-list__entry__name">{user}</div>
       </div>

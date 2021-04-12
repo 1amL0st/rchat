@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import i18n from 'i18next';
 
 import { Api } from 'api/Api';
+import { STATES } from 'api/InviteToDMController';
 
 import { WaitingForWindow } from 'components/WaitingForWindow';
 import { Button } from 'components/Button';
@@ -19,27 +20,22 @@ export const InviteToDMWindow = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
 
   const onCancelRequest = () => {
-    Api.cancelInviteToDM();
+    Api.inviteToDMController.cancelInviteToDM();
   };
 
-  if (!(invite.came && !invite.processed)) {
-    return null;
-  }
-
-  if (invite.isFailed) {
-    return <InviteToDMRequestFail />;
-  }
-
-  if (invite.isIncoming && !invite.incomingCanceled) {
-    return <IncomingRequestWindow />;
-  }
-
-  if (invite.incomingCanceled) {
-    return <IncomingRequestCanceledWindow />;
-  }
-
-  if (invite.isRefused) {
-    return <OutcomingRequestRefused />;
+  switch (invite.state) {
+    case STATES.Incoming:
+      return <IncomingRequestWindow />;
+    case STATES.Failed:
+      return <InviteToDMRequestFail />;
+    case STATES.Canceled:
+      return <IncomingRequestCanceledWindow />;
+    case STATES.Refused:
+      return <OutcomingRequestRefused />;
+    case STATES.Processed:
+      return null;
+    default:
+      break;
   }
 
   return (

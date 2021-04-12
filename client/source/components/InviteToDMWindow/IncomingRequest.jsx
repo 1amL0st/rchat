@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import i18n from 'i18next';
 
 import { ModalWindow } from 'components/ModalWindow';
@@ -10,31 +10,26 @@ import { Api } from 'api/Api';
 
 export const IncomingRequestWindow = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
-  const dispatch = useDispatch();
 
   const onRefuseBtn = () => {
-    Api.refuseInviteToDM();
-
-    dispatch({
-      type: 'HideInviteToDMWindow',
-    });
+    Api.inviteToDMController.refuseInviteToDM();
   };
 
-  const onAccpectBtn = useCallback(() => {
+  const onAcceptBtn = useCallback(() => {
     Api.waitingForWindowController.showWaitingWindow(
       'You accepted DM request. Server is creating private room for you. Please, wait!',
     );
-    Api.acceptInviteToDM();
+    Api.inviteToDMController.acceptInviteToDM();
   }, []);
 
   useEffect(() => {
     const keydownHandler = (e) => {
-      if (e.code === 'Enter') onAccpectBtn();
+      if (e.code === 'Enter') onAcceptBtn();
     };
 
     window.addEventListener('keydown', keydownHandler);
     return () => window.removeEventListener('keydown', keydownHandler);
-  }, [onAccpectBtn]);
+  }, [onAcceptBtn]);
 
   return (
     <ModalWindow
@@ -48,7 +43,7 @@ export const IncomingRequestWindow = () => {
         })}
       </div>
       <div className="incoming-invite-window__buttons">
-        <Button onClick={onAccpectBtn}>{i18n.t('words.accept')}</Button>
+        <Button onClick={onAcceptBtn}>{i18n.t('words.accept')}</Button>
         <Button onClick={onRefuseBtn}>{i18n.t('words.refuse')}</Button>
       </div>
     </ModalWindow>

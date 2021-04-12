@@ -51,7 +51,7 @@ export const Api = {
         this.userController = new UserController(this.socket);
         this.commands = new Commands(this.socket);
         this.roomController = new RoomController(this.socket, this.commands);
-        this.inviteToDMController = new InviteToDMController(this.socket);
+        this.inviteToDMController = new InviteToDMController(this.socket, this.commands);
 
         resolve();
       };
@@ -73,26 +73,6 @@ export const Api = {
 
   queryUserList() {
     this.commands.queryUserList();
-  },
-
-  inviteToDM(login) {
-    this.inviteToDMController.inviteToDM(login);
-  },
-
-  acceptInviteToDM() {
-    this.commands.acceptInviteToDM();
-  },
-
-  cancelInviteToDM() {
-    this.commands.cancelInviteToDM();
-
-    AppStore.dispatch({
-      type: 'OutcomingInviteToDMCanceled',
-    });
-  },
-
-  refuseInviteToDM() {
-    this.commands.refuseInviteToDM();
   },
 
   queryRoomList() {

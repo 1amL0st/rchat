@@ -27,8 +27,9 @@
 
   "inviteToDM": {
     "waitingForUserResponse": "Waiting for user response",
-    "incomingRequestText": "User '{{login}}' wants to DM with you...",
-    "outcomingRequestRefused": "User '{{login}}' refused your request!"
+    "incomingRequestText": "'{{login}}' wants to DM with you...",
+    "outcomingRequestRefused": "'{{login}}' refused your request!",
+    "waitForRoomCreation": "'{{login}}' accepted your DM invite. Server is creating private room for you. Please, wait!"
   },
 
   "createRoom": {
