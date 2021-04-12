@@ -22,7 +22,9 @@ function buildMsg(msgJson) {
       if (userLogin === msgJson.login) {
         return {
           author: 'Server',
-          text: `${msgJson.login}, ${i18n.t('phrases.youAreConnected')}`,
+          text: i18n.t('phrases.youAreConnected', {
+            login: msgJson.login,
+          }),
         };
       }
       break;

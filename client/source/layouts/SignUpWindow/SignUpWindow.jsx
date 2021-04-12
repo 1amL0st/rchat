@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
 
 import { Api } from 'api/Api';
 import { Button } from 'components/Button';
 import { ModalWindow } from 'components/ModalWindow';
+import { LangSelector } from 'components/LangSelector';
 
 import './SignUpWindow.scss';
 
@@ -32,17 +32,9 @@ export const SignUpWindow = () => {
     setLogin(e.target.value);
   };
 
-  const onLangChange = (e) => {
-    i18n.changeLanguage(e.target.value);
-  };
-
   return (
     <ModalWindow className="signup-window" isOpen>
-      <div className="signup-window__warning">
-        {t('words.warning')}
-        <br />
-        {t('developmentWarning')}
-      </div>
+      <div className="signup-window__warning">{t('developmentWarning')}</div>
       <p className="signup-window__error">{err}</p>
       <input
         ref={loginInputRef}
@@ -57,10 +49,7 @@ export const SignUpWindow = () => {
           {t('words.login')}
         </Button>
       </div>
-      <select className="signup-window__lang-selector" onChange={onLangChange}>
-        <option value="en">En</option>
-        <option value="ru">Ru</option>
-      </select>
+      <LangSelector className="signup-window__lang-selector" />
     </ModalWindow>
   );
 };

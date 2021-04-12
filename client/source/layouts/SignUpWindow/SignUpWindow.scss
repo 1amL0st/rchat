@@ -4,6 +4,7 @@
   @include flex-layout(column, flex-start, center);
   
   &__warning {
+    white-space: pre-line;
     text-align: center;
     color: lightgreen;
   }
@@ -18,10 +19,5 @@
 
   &__lang-selector {
     margin-top: 16px;
-    color: black;
-
-    option {
-      color: black;
-    }
   }
 }

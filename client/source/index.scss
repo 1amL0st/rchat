@@ -30,6 +30,10 @@ html, body {
   scrollbar-width: none;
 }
 
+*:focus {
+  border: 1px solid white;
+}
+
 #root {
   display: flex;
   

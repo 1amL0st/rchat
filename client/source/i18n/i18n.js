@@ -11,6 +11,7 @@ i18n
   .init({
     fallbackLng: 'en',
     debug: true,
+    supportedLngs: ['ru', 'en'],
 
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
@@ -20,5 +21,10 @@ i18n
       useSuspense: true,
     },
   });
+
+export const LANGUAGE_LIST = new Map([
+  ['en', 'English'],
+  ['ru', 'Russian'],
+]);
 
 export default i18n;

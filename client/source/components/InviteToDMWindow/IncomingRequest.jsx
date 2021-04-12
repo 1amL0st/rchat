@@ -43,7 +43,9 @@ export const IncomingRequestWindow = () => {
       isOpen
     >
       <div className="incoming-invite-window__header">
-        {i18n.t('inviteToDM.incomingRequestText', { login: invite.inviterLogin })}
+        {i18n.t('inviteToDM.incomingRequestText', {
+          login: invite.inviterLogin,
+        })}
       </div>
       <div className="incoming-invite-window__buttons">
         <Button onClick={onAccpectBtn}>{i18n.t('words.accept')}</Button>

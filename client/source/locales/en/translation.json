@@ -22,7 +22,7 @@
     "copyLink": "Copy Link",
     "linkCopiedToClipboard": "Link is copied to clipboard!",
     "waitingForConnection": "Waiting for connection...",
-    "youAreConnected": "you're connected! Welcome!"
+    "youAreConnected": "{{login}} you're connected! Welcome!"
   },
 
   "inviteToDM": {
@@ -41,5 +41,5 @@
     "loginExists": "Login exists!"
   },
 
-  "developmentWarning": "This service is under development, some bugs are possible!"
+  "developmentWarning": "Warning!\nThis service is under development, some bugs are possible!"
 }

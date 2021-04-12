@@ -1,5 +1,3 @@
-import i18n from 'i18next';
-
 import { msgHandler } from './msgHandler';
 import { AppStore } from '../store/store';
 
@@ -28,9 +26,7 @@ export const Api = {
         + window.location.host
       }/ws/`;
 
-      this.waitingForWindowController.showWaitingWindow(
-        // i18n.t('phrases.waitingForConnection'),
-      );
+      this.waitingForWindowController.showWaitingWindow();
 
       this.socket = new WebSocket(wsURI);
 

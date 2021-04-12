@@ -12,6 +12,8 @@ import { LeaveWindow } from 'layouts/Header/LeaveWindow';
 
 import { IconButton } from 'components/IconButton';
 import { Button } from 'components/Button';
+import { LangSelector } from 'components/LangSelector';
+
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 
 import './UserPanel.scss';
@@ -39,6 +41,7 @@ const List = ({ onClose, onLeaveWindowOpen }) => {
     <div className={classNames('user-panel__list')} ref={listRef}>
       <span className="user-panel__name">{userLogin}</span>
       <Button onClick={onProfileClick}>{t('phrases.editProfile')}</Button>
+      <LangSelector className="user-panel__lang-selector" />
       <Button onClick={onLeaveWindowOpen}>{t('words.leave')}</Button>
     </div>
   );

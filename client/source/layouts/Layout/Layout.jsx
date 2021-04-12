@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { useSelector } from 'react-redux';
 import { Route } from 'react-router-dom';

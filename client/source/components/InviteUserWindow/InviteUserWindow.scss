@@ -5,10 +5,16 @@
   @include flex-layout(column, flex-start, center);
   
   &__msg {
+    margin-top: 0;
     line-height: 32px;
     height: 32px;
 
     color: $main-success-msg-color;
+  }
+
+  .button {
+    min-width: fit-content;
+    width: 100%;
   }
 
   &__copy-btn {

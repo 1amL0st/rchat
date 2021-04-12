@@ -13,7 +13,6 @@ export function msgHandler(e) {
 
   if (handled || msgJson.type === 'TextMsg') {
     const msg = MessageBuilder(msgJson);
-    // console.log('MessageBuilded = ', msg);
     if (msg) {
       AppStore.dispatch({
         type: 'AddMsg',

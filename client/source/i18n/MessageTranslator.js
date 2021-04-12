@@ -6,7 +6,8 @@ function TranslateLoggingFailedMsg(msgJson) {
       ...msgJson,
       reason: i18n.t('logging.loginMustNotBeEmpty'),
     };
-  } if (msgJson.reason === 'Login already exists!') {
+  }
+  if (msgJson.reason === 'Login already exists!') {
     return {
       ...msgJson,
       reason: i18n.t('logging.loginExists'),
@@ -15,12 +16,16 @@ function TranslateLoggingFailedMsg(msgJson) {
 }
 
 function TranslateRoomCreationFailMsg(msgJson) {
-  if (msgJson.reason === 'Couldn\'t create room! A room with such name already exists!') {
+  if (
+    msgJson.reason
+    === "Couldn't create room! A room with such name already exists!"
+  ) {
     return {
       ...msgJson,
       reason: i18n.t('createRoom.roomNameExists'),
     };
-  } if (msgJson.reason === 'Room name has wrong format!') {
+  }
+  if (msgJson.reason === 'Room name has wrong format!') {
     return {
       ...msgJson,
       reason: i18n.t('createRoom.roomNameWrongFormat'),
