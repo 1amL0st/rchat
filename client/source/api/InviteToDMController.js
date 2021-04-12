@@ -5,13 +5,13 @@ import { MAIN_ROOM_NAME } from 'constants/Api';
 import { WaitingForWindowController } from './WaitingForWindowController';
 
 export const STATES = {
-  'Came': 0,
-  'Failed': 1,
-  'Accepted': 2,
-  'Refused': 3,
-  'Processed': 4,
-  'Canceled': 5,
-  'Incoming': 6,
+  Came: 0,
+  Failed: 1,
+  Accepted: 2,
+  Refused: 3,
+  Processed: 4,
+  Canceled: 5,
+  Incoming: 6,
 };
 
 export function InviteToDMController(socketObj, commandsController) {
@@ -82,7 +82,9 @@ export function InviteToDMController(socketObj, commandsController) {
           const { guestLogin } = AppStore.getState().inviteDM;
           AppStore.dispatch({
             type: 'InviteUserToDMWaitForRoomCreate',
-            waitingText: i18n.t('inviteToDM.waitForRoomCreation', { login: guestLogin }),
+            waitingText: i18n.t('inviteToDM.waitForRoomCreation', {
+              login: guestLogin,
+            }),
           });
           break;
         }

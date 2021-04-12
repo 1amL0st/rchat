@@ -10,7 +10,9 @@ export const IncomingRequestCanceledWindow = () => {
   const invite = useSelector((appStore) => appStore.inviteDM);
   const dispatch = useDispatch();
 
-  const onOkBtn = () => { Api.inviteToDMController.hideWindow(); };
+  const onOkBtn = () => {
+    Api.inviteToDMController.hideWindow();
+  };
 
   useEffect(() => {
     const keydownHandler = (e) => {

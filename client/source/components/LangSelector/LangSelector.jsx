@@ -20,6 +20,7 @@ export const LangSelector = ({ className }) => {
 
   return (
     <select
+      value={i18n.language}
       className={classNames('lang-selector', className)}
       onChange={onLangChange}
     >

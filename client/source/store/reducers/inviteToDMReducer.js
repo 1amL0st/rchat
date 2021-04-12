@@ -4,14 +4,7 @@ import { STATES } from 'api/InviteToDMController';
 
 const DEFAULT_STATE = {
   state: STATES.Processed,
-  isFailed: false,
   errText: '',
-  isAccepted: false,
-  isRefused: false,
-  isIncoming: false,
-  incomingCanceled: false,
-  came: false,
-  processed: false,
   inviterLogin: '',
   guestLogin: '',
   waitingText: '',
@@ -23,14 +16,10 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         state: STATES.Failed,
-        came: false,
       };
     case 'ShowIncomingToDMRequest':
       return {
         state: STATES.Incoming,
-        isIncoming: true,
-        came: true,
-        processed: false,
         inviterLogin: action.inviterLogin,
       };
     case 'OutcomingInviteToDMCanceled':
@@ -45,12 +34,6 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
     case 'ShowOutcomingToDMRequest':
       return {
         state: STATES.Came,
-        isFailed: false,
-        isRefused: false,
-        isAccepted: false,
-        isIncoming: false,
-        came: true,
-        processed: false,
         guestLogin: action.guestLogin,
         waitingText: i18n.t('inviteToDM.waitingForUserResponse'),
       };
@@ -58,18 +41,15 @@ export const inviteToDMReducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         state: STATES.Processed,
-        processed: true,
       };
     case 'OutcomingInviteToDMRefused':
       return {
         ...state,
         state: STATES.Refused,
-        isRefused: true,
       };
     case 'OutcomingInviteToDMAccepted':
       return {
         ...state,
-        isAccepted: true,
       };
     case 'InviteUserToDMFail':
       return {

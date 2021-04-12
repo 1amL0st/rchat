@@ -51,7 +51,10 @@ export const Api = {
         this.userController = new UserController(this.socket);
         this.commands = new Commands(this.socket);
         this.roomController = new RoomController(this.socket, this.commands);
-        this.inviteToDMController = new InviteToDMController(this.socket, this.commands);
+        this.inviteToDMController = new InviteToDMController(
+          this.socket,
+          this.commands,
+        );
 
         resolve();
       };
