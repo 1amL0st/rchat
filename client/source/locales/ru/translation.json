@@ -34,7 +34,8 @@
     "waitingForUserResponse": "Ожидание ответа от пользователя",
     "incomingRequestText": "'{{login}}' приглашает вас в приватную комнату...",
     "outcomingRequestRefused": "'{{login}}' отклонил ваш запрос!",
-    "waitForRoomCreation": "'{{login}}' принял ваш запрос. Сервер создаёт комнату для вас. Пожалуйста, подождите!"
+    "waitForRoomCreation": "'{{login}}' принял ваш запрос. Сервер создаёт комнату для вас. Пожалуйста, подождите!",
+    "guestAlreadyHasRequest": "'{{login}}' уже приглашён кем-то другим... Попробуйте позже!"
   },
 
   "logging": {

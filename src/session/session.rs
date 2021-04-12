@@ -301,6 +301,7 @@ impl Session {
         &self,
         ctx: &mut WebsocketContext<Session>,
         guest_addr: Addr<Session>,
+        guest_login: String
     ) {
         guest_addr
             .send(sessionsMsgs::InviteToDMRequest {
@@ -312,7 +313,7 @@ impl Session {
                 if let Ok(result) = res {
                     match result {
                         Ok(_) => (),
-                        Err(err) => ctx.text(serverMsgs::invite_user_to_dm_fail(&err)),
+                        Err(err) => ctx.text(serverMsgs::invite_user_to_dm_fail(&err, &guest_login)),
                     }
                 } else {
                     panic!("Something went wrong!")
@@ -343,12 +344,12 @@ impl Session {
                         act.outcoming_invite = Some(OutcomingInvite {
                             guest_addr: guest_addr.clone(),
                         });
-                        act.send_dm_invite_to_guest(ctx, guest_addr);
+                        act.send_dm_invite_to_guest(ctx, guest_addr, guest_login.clone());
                     } else {
                         ctx.text(serverMsgs::invite_user_to_dm_fail(&format!(
                             "User {} not found!",
-                            guest_login
-                        )))
+                            guest_login,
+                        ), &guest_login))
                     }
                 } else {
                     panic!("Something went wrong!")

@@ -7,7 +7,7 @@ function TranslateLoggingFailedMsg(msgJson) {
       reason: i18n.t('logging.loginMustNotBeEmpty'),
     };
   }
-  if (msgJson.reason === 'Login already exists!') {
+  if (msgJson.reason === 'Login exists!!') {
     return {
       ...msgJson,
       reason: i18n.t('logging.loginExists'),
@@ -33,6 +33,17 @@ function TranslateRoomCreationFailMsg(msgJson) {
   }
 }
 
+function TranslateInviteToDMFail(msgJson) {
+  if (msgJson.reason === 'AlreadyInvited!') {
+    return {
+      ...msgJson,
+      reason: i18n.t('inviteToDM.guestAlreadyHasRequest', {
+        login: msgJson.login, // TODO: Add login here
+      }),
+    };
+  }
+}
+
 export function TranslateMessage(msgJson) {
   if (msgJson.author === 'Server') {
     switch (msgJson.subType) {
@@ -40,6 +51,8 @@ export function TranslateMessage(msgJson) {
         return TranslateLoggingFailedMsg(msgJson);
       case 'RoomCreationFail':
         return TranslateRoomCreationFailMsg(msgJson);
+      case 'InviteUserToDMFail':
+        return TranslateInviteToDMFail(msgJson);
       default:
         break;
     }

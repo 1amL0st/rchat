@@ -10,6 +10,7 @@ import './LangSelector.scss';
 export const LangSelector = ({ className }) => {
   const onLangChange = (e) => {
     i18n.changeLanguage(e.target.value);
+    localStorage.setItem('i18nextLng', e.target.value);
   };
 
   const options = Array.from(LANGUAGE_LIST.keys()).map((lang) => (

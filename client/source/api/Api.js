@@ -1,5 +1,4 @@
 import { msgHandler } from './msgHandler';
-import { AppStore } from '../store/store';
 
 import { WaitingForWindowController } from './WaitingForWindowController';
 import { CriticalErrController } from './CriticalErrController';

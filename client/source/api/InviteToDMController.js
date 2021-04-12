@@ -71,7 +71,7 @@ export function InviteToDMController(socketObj, commandsController) {
         case 'InviteUserToDMFail':
           AppStore.dispatch({
             type: 'InviteUserToDMFail',
-            err: msgJson.err,
+            err: msgJson.reason,
           });
           break;
         case 'InviteToDMAccepted': {

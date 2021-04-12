@@ -75,7 +75,7 @@ impl Handler<InviteToDMRequest> for Session {
             });
             return MessageResult(Ok(()));
         } else {
-            return MessageResult(Err("User already has a request!".to_string()));
+            return MessageResult(Err("AlreadyInvited!".to_string()));
         }
     }
 }

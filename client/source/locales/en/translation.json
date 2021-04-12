@@ -29,7 +29,8 @@
     "waitingForUserResponse": "Waiting for user response",
     "incomingRequestText": "'{{login}}' wants to DM with you...",
     "outcomingRequestRefused": "'{{login}}' refused your request!",
-    "waitForRoomCreation": "'{{login}}' accepted your DM invite. Server is creating private room for you. Please, wait!"
+    "waitForRoomCreation": "'{{login}}' accepted your DM invite. Server is creating private room for you. Please, wait!",
+    "guestAlreadyHasRequest": "'{{login}}' already has request from someone else... Try later!"
   },
 
   "createRoom": {
